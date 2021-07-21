@@ -266,6 +266,32 @@ class Visualizer extends PureComponent {
                     this.props.redo();
                 }
             },
+            [shortcutActions.CUT]: () => {},
+            // optimize: accelerate when continuous click
+            'MOVE-UP': {
+                keys: ['up'],
+                callback: () => {
+                    // this.props.elementActions.moveElementsOnKeyDown({ dx: 0, dy: -1 });
+                }
+            },
+            'MOVE-DOWM': {
+                keys: ['down'],
+                callback: () => {
+                    // this.props.elementActions.moveElementsOnKeyDown({ dx: 0, dy: 1 });
+                }
+            },
+            'MOVE-LEFT': {
+                keys: ['left'],
+                callback: () => {
+                    // this.props.elementActions.moveElementsOnKeyDown({ dx: -1, dy: 0 });
+                }
+            },
+            'MOVE-RIGHT': {
+                keys: ['right'],
+                callback: () => {
+                    // this.props.elementActions.moveElementsOnKeyDown({ dx: 1, dy: 0 });
+                }
+            },
             // optimize: accelerate when continuous click
             'SHOWGCODELAYERS_ADD': {
                 keys: ['alt+up'],

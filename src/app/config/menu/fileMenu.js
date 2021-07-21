@@ -9,7 +9,6 @@ export default {
             id: 'new',
             label: 'New File',
             enabled: true,
-            accelerator: 'CmdOrCtrl+N',
             submenu: [
                 {
                     id: '3dp',
@@ -161,6 +160,7 @@ export default {
             id: 'import',
             label: 'Import',
             enabled: true,
+            accelerator: 'CmdOrCtrl+I',
             click(menuItem, browserWindow) {
                 if (isElectron()) {
                     browserWindow.webContents.send('import');
@@ -173,6 +173,7 @@ export default {
             id: 'export-models',
             label: 'Export Models',
             enabled: true,
+            accelerator: 'CmdOrCtrl+E',
             click(menuItem, browserWindow) {
                 if (isElectron()) {
                     browserWindow.webContents.send('export-model');
@@ -185,6 +186,7 @@ export default {
             id: 'export-gcode',
             label: 'Export G-code',
             enabled: true,
+            accelerator: 'CmdOrCtrl+P',
             click(menuItem, browserWindow) {
                 if (isElectron()) {
                     browserWindow.webContents.send('export-gcode');

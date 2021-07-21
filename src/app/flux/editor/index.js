@@ -1057,6 +1057,47 @@ export const actions = {
         dispatch(actions.resetProcessState(headType));
     },
 
+    selectAllElements: (headType) => (dispatch, getState) => {
+        const { SVGActions } = getState()[headType];
+        dispatch(actions.selectElements(headType, Array.prototype.slice.call(SVGActions.svgContentGroup.group.children)));
+    },
+
+    copy: (headType) => (dispatch, getState) => {
+        const { modelGroup } = getState()[headType];
+        // modelGroup.copy();
+        const { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode } = modelGroup.getSelectedModel();
+        modelGroup.clipboard = [
+            { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode }
+        ];
+    },
+
+    paste: (headType) => (dispatch, getState) => {
+        const { modelGroup } = getState()[headType];
+        // modelGroup.paste();
+        const { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode } = modelGroup.getSelectedModel();
+        const transformation = { ...modelGroup.getSelectedModel().transformation };
+        transformation.positionX += 5;
+        transformation.positionY -= 5;
+        dispatch(actions.generateModel(headType, originalName, uploadName, sourceWidth, sourceHeight, mode,
+            sourceType, config, undefined, transformation));
+        dispatch(actions.resetProcessState(headType));
+
+        // const operations = new Operations();
+        // for (const model of modelGroup.selectedModelArray) {
+        //     const operation = new AddOperation2D({
+        //         target: model,
+        //         parent: null
+        //     });
+        //     operations.push(operation);
+        // }
+        // operations.registCallbackAfterAll(() => {
+        //     dispatch(baseActions.render(headType));
+        // });
+        // dispatch(operationHistoryActions.setOperations(headType, operations));
+
+        dispatch(baseActions.render(headType));
+    },
+
     /**
      * Select models.
      */
