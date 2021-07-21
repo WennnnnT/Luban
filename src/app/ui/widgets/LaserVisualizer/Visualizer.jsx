@@ -61,6 +61,10 @@ class Visualizer extends Component {
         isChangedAfterGcodeGenerating: PropTypes.bool.isRequired,
 
         // func
+        selectAllElements: PropTypes.func.isRequired,
+        cut: PropTypes.func.isRequired,
+        copy: PropTypes.func.isRequired,
+        paste: PropTypes.func.isRequired,
         clearOperationHistory: PropTypes.func.isRequired,
         undo: PropTypes.func.isRequired,
         redo: PropTypes.func.isRequired,
@@ -125,6 +129,21 @@ class Visualizer extends Component {
         },
         redo: () => {
             this.props.redo();
+        },
+        selectAll: () => {
+            this.props.selectAllElements();
+        },
+        unselectAll: () => {
+            this.props.onClearSelection();
+        },
+        copy: () => {
+            this.props.copy();
+        },
+        paste: () => {
+            this.props.paste();
+        },
+        cut: () => {
+            this.props.cut();
         },
         onChangeFile: (event) => {
             const file = event.target.files[0];
@@ -628,7 +647,11 @@ const mapDispatchToProps = (dispatch) => {
         removeSelectedModel: () => dispatch(editorActions.checkToRemoveSelectedModels('laser')),
         duplicateSelectedModel: () => dispatch(editorActions.duplicateSelectedModel('laser')),
 
+        cut: () => dispatch(editorActions.cut('laser')),
+        copy: () => dispatch(editorActions.copy('laser')),
+        paste: () => dispatch(editorActions.paste('laser')),
         onCreateElement: (element) => dispatch(editorActions.createModelFromElement('laser', element)),
+        selectAllElements: () => dispatch(editorActions.selectAllElements('laser')),
         onSelectElements: (elements) => dispatch(editorActions.selectElements('laser', elements)),
         onClearSelection: () => dispatch(editorActions.clearSelection('laser')),
         onMoveSelectedElementsByKey: () => dispatch(editorActions.moveElementsOnKeyUp('laser')),

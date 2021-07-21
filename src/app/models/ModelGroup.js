@@ -661,7 +661,9 @@ class ModelGroup extends EventEmitter {
 
         this.models.forEach((model) => {
             if (model.supportTag) return;
-            this.addModelToSelectedGroup(model);
+            if (model.visible) {
+                this.addModelToSelectedGroup(model);
+            }
         });
 
         this.modelChanged();
@@ -730,6 +732,7 @@ class ModelGroup extends EventEmitter {
                 newModel.meshObject.position.x = point.x;
                 newModel.meshObject.position.y = point.y;
                 newModel.meshObject.updateMatrix();
+                newModel.computeBoundingBox();
 
                 newModel.modelID = modelID || uuid.v4();
             } else {
@@ -783,6 +786,7 @@ class ModelGroup extends EventEmitter {
                 newModel.meshObject.position.y = point.y;
                 // Once the position of selectedGroup is changed, updateMatrix must be called
                 newModel.meshObject.updateMatrix();
+                newModel.computeBoundingBox();
 
                 newModel.modelID = uuid.v4();
 

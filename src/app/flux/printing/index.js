@@ -1058,6 +1058,7 @@ export const actions = {
 
     selectAllModels: () => (dispatch, getState) => {
         const { modelGroup } = getState().printing;
+        dispatch(actions.unselectAllModels());
         const modelState = modelGroup.selectAllModels();
         dispatch(actions.updateState(modelState));
     },
@@ -1313,9 +1314,15 @@ export const actions = {
         dispatch(actions.displayModel());
     },
 
+    cut: () => (dispatch) => {
+        dispatch(actions.copy());
+        dispatch(actions.removeSelectedModel());
+    },
+
     copy: () => (dispatch, getState) => {
         const { modelGroup } = getState().printing;
         modelGroup.copy();
+        dispatch(actions.render());
     },
 
     paste: () => (dispatch, getState) => {
@@ -1323,7 +1330,7 @@ export const actions = {
         const modelState = modelGroup.paste();
 
         const operations = new Operations();
-        for (const model of modelGroup.selectedModelArray) {
+        for (const model of modelGroup.getSelectedModelArray()) {
             const operation = new AddOperation3D({
                 target: model,
                 parent: null

@@ -46,6 +46,7 @@ class Visualizer extends PureComponent {
         selectMultiModel: PropTypes.func.isRequired,
         selectAllModels: PropTypes.func.isRequired,
         unselectAllModels: PropTypes.func.isRequired,
+        cut: PropTypes.func.isRequired,
         copy: PropTypes.func.isRequired,
         paste: PropTypes.func.isRequired,
         undo: PropTypes.func.isRequired,
@@ -264,6 +265,11 @@ class Visualizer extends PureComponent {
             [shortcutActions.REDO]: () => {
                 if (!this.props.inProgress) {
                     this.props.redo();
+                }
+            },
+            [shortcutActions.CUT]: () => {
+                if (!this.props.inProgress) {
+                    this.props.cut();
                 }
             },
             // optimize: accelerate when continuous click
@@ -642,6 +648,7 @@ const mapDispatchToProps = (dispatch) => ({
     selectMultiModel: (intersect, selectEvent) => dispatch(printingActions.selectMultiModel(intersect, selectEvent)),
     unselectAllModels: () => dispatch(printingActions.unselectAllModels()),
     selectAllModels: () => dispatch(printingActions.selectAllModels()),
+    cut: () => dispatch(printingActions.cut()),
     copy: () => dispatch(printingActions.copy()),
     paste: () => dispatch(printingActions.paste()),
     undo: () => dispatch(printingActions.undo('printing')),
