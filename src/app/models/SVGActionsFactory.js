@@ -659,6 +659,18 @@ class SVGActionsFactory {
         }
     }
 
+    selectAllElements() {
+        const childNodes = this.svgContentGroup.group.children;
+        for (const node of childNodes) {
+            const svgModel = this.getSVGModelByElement(node);
+            if (svgModel !== null) {
+                if (svgModel.visible) {
+                    this.selectElements([node]);
+                }
+            }
+        }
+    }
+
     /**
      * Select elements.
      *

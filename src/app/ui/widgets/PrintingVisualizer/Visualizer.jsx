@@ -46,6 +46,7 @@ class Visualizer extends PureComponent {
         selectMultiModel: PropTypes.func.isRequired,
         selectAllModels: PropTypes.func.isRequired,
         unselectAllModels: PropTypes.func.isRequired,
+        cut: PropTypes.func.isRequired,
         copy: PropTypes.func.isRequired,
         paste: PropTypes.func.isRequired,
         undo: PropTypes.func.isRequired,
@@ -266,30 +267,9 @@ class Visualizer extends PureComponent {
                     this.props.redo();
                 }
             },
-            [shortcutActions.CUT]: () => {},
-            // optimize: accelerate when continuous click
-            'MOVE-UP': {
-                keys: ['up'],
-                callback: () => {
-                    // this.props.elementActions.moveElementsOnKeyDown({ dx: 0, dy: -1 });
-                }
-            },
-            'MOVE-DOWM': {
-                keys: ['down'],
-                callback: () => {
-                    // this.props.elementActions.moveElementsOnKeyDown({ dx: 0, dy: 1 });
-                }
-            },
-            'MOVE-LEFT': {
-                keys: ['left'],
-                callback: () => {
-                    // this.props.elementActions.moveElementsOnKeyDown({ dx: -1, dy: 0 });
-                }
-            },
-            'MOVE-RIGHT': {
-                keys: ['right'],
-                callback: () => {
-                    // this.props.elementActions.moveElementsOnKeyDown({ dx: 1, dy: 0 });
+            [shortcutActions.CUT]: () => {
+                if (!this.props.inProgress) {
+                    this.props.cut();
                 }
             },
             // optimize: accelerate when continuous click
@@ -668,6 +648,7 @@ const mapDispatchToProps = (dispatch) => ({
     selectMultiModel: (intersect, selectEvent) => dispatch(printingActions.selectMultiModel(intersect, selectEvent)),
     unselectAllModels: () => dispatch(printingActions.unselectAllModels()),
     selectAllModels: () => dispatch(printingActions.selectAllModels()),
+    cut: () => dispatch(printingActions.cut()),
     copy: () => dispatch(printingActions.copy()),
     paste: () => dispatch(printingActions.paste()),
     undo: () => dispatch(printingActions.undo('printing')),

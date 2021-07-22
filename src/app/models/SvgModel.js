@@ -1131,7 +1131,7 @@ class SvgModel extends BaseModel {
         clone.generateProcessObject3D();
         this.meshObject.updateMatrixWorld();
 
-        clone.setMatrix(this.meshObject.matrixWorld);
+        // clone.setMatrix(this.meshObject.matrixWorld);
 
         return clone;
     }

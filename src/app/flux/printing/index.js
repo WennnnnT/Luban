@@ -1058,6 +1058,7 @@ export const actions = {
 
     selectAllModels: () => (dispatch, getState) => {
         const { modelGroup } = getState().printing;
+        dispatch(actions.unselectAllModels());
         const modelState = modelGroup.selectAllModels();
         dispatch(actions.updateState(modelState));
     },
@@ -1308,6 +1309,11 @@ export const actions = {
         // dispatch(actions.recordSnapshot());
         dispatch(actions.destroyGcodeLine());
         dispatch(actions.displayModel());
+    },
+
+    cut: () => (dispatch) => {
+        dispatch(actions.copy());
+        dispatch(actions.removeSelectedModel());
     },
 
     copy: () => (dispatch, getState) => {

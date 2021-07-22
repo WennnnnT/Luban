@@ -663,7 +663,9 @@ class ModelGroup extends EventEmitter {
 
         this.models.forEach((model) => {
             if (model.supportTag) return;
-            this.addModelToSelectedGroup(model);
+            if (model.visible) {
+                this.addModelToSelectedGroup(model);
+            }
         });
 
         this.modelChanged();
@@ -791,6 +793,9 @@ class ModelGroup extends EventEmitter {
                 this.models.push(newModel);
                 this.object.add(newModel.meshObject);
                 this.addModelToSelectedGroup(newModel);
+                newModel.computeBoundingBox();
+                const overstepped = this._checkOverstepped(newModel);
+                newModel.setOversteppedAndSelected(overstepped, newModel.isSelected);
             }
         });
 

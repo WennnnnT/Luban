@@ -86,7 +86,7 @@ class SVGEditor extends PureComponent {
             [shortcutActions.COPY]: () => { this.props.editorActions.copy(); },
             [shortcutActions.PASTE]: () => { this.props.editorActions.paste(); },
             [shortcutActions.DUPLICATE]: () => { this.props.editorActions.duplicateSelectedModel(); },
-            [shortcutActions.CUT]: () => {},
+            [shortcutActions.CUT]: () => { this.props.editorActions.cut(); },
             // optimize: accelerate when continuous click
             'MOVE-UP': {
                 keys: ['up'],

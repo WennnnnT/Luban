@@ -36,6 +36,7 @@ import Operations from '../operation-history/Operations';
 import MoveOperation2D from '../operation-history/MoveOperation2D';
 import ScaleOperation2D from '../operation-history/ScaleOperation2D';
 import RotateOperation2D from '../operation-history/RotateOperation2D';
+import SvgModel from '../../models/SvgModel';
 
 const getSourceType = (fileName) => {
     let sourceType;
@@ -338,7 +339,7 @@ export const actions = {
      * @param transformation - ?
      * @param modelID - optional, used in project recovery
      */
-    generateModel: (headType, originalName, uploadName, sourceWidth, sourceHeight, mode, sourceType, config, gcodeConfig, transformation, modelID, zIndex) => (dispatch, getState) => {
+    generateModel: (headType, originalName, uploadName, sourceWidth, sourceHeight, mode, sourceType, config, gcodeConfig, transformation, modelID, zIndex, clearSelection = true) => (dispatch, getState) => {
         const { size } = getState().machine;
         const { materials, modelGroup, SVGActions, contentGroup, toolPathGroup } = getState()[headType];
 
@@ -431,7 +432,7 @@ export const actions = {
 
         dispatch(operationHistoryActions.setOperations(headType, operations));
 
-        SVGActions.clearSelection();
+        clearSelection && SVGActions.clearSelection();
         SVGActions.addSelectedSvgModelsByModels([model]);
 
         if (path.extname(uploadName).toLowerCase() === '.stl') {
@@ -1059,42 +1060,56 @@ export const actions = {
 
     selectAllElements: (headType) => (dispatch, getState) => {
         const { SVGActions } = getState()[headType];
-        dispatch(actions.selectElements(headType, Array.prototype.slice.call(SVGActions.svgContentGroup.group.children)));
+        dispatch(actions.clearSelection(headType));
+        SVGActions.selectAllElements();
+        dispatch(baseActions.render(headType));
+    },
+
+    cut: (headType) => (dispatch) => {
+        dispatch(actions.copy(headType));
+        dispatch(actions.removeSelectedModel(headType));
     },
 
     copy: (headType) => (dispatch, getState) => {
         const { modelGroup } = getState()[headType];
-        // modelGroup.copy();
-        const { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode } = modelGroup.getSelectedModel();
-        modelGroup.clipboard = [
-            { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode }
-        ];
+        modelGroup.clipboard = modelGroup.getSelectedModelArray().map(item => item.clone(modelGroup));
+        console.log(modelGroup.clipboard);
     },
 
     paste: (headType) => (dispatch, getState) => {
-        const { modelGroup } = getState()[headType];
-        // modelGroup.paste();
-        const { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode } = modelGroup.getSelectedModel();
-        const transformation = { ...modelGroup.getSelectedModel().transformation };
-        transformation.positionX += 5;
-        transformation.positionY -= 5;
-        dispatch(actions.generateModel(headType, originalName, uploadName, sourceWidth, sourceHeight, mode,
-            sourceType, config, undefined, transformation));
+        const { modelGroup, SVGActions, toolPathGroup } = getState()[headType];
+        const machine = getState().machine;
+
+        dispatch(actions.clearSelection(headType));
+        const operations = new Operations();
+        modelGroup.clipboard.forEach((clonedSVGModel) => {
+            // const clonedSVGModel = item.clone(modelGroup);
+            // clonedSVGModel.transformation = { ...item.transformation };
+            // clonedSVGModel.elem = item.elem.cloneNode(true);
+            const svgModel = new SvgModel(clonedSVGModel, modelGroup);
+            svgModel.elem.id = svgModel.modelID;
+            svgModel.setParent(SVGActions.svgContentGroup.group);
+            svgModel.modelName = modelGroup._createNewModelName(svgModel);
+
+            modelGroup.models.push(svgModel);
+            SVGActions.moveElementsImmediately([svgModel.elem], {
+                newX: svgModel.transformation.positionX + machine.size.x + 5,
+                newY: -svgModel.transformation.positionY + machine.size.y + 5
+            });
+
+            const operation = new AddOperation2D({
+                target: svgModel,
+                svgActions: SVGActions,
+                toolPathGroup
+            });
+            operations.push(operation);
+
+            SVGActions.addSelectedSvgModelsByModels([svgModel]);
+            modelGroup.models = [...modelGroup.models];
+            modelGroup.modelChanged();
+        });
+        dispatch(operationHistoryActions.setOperations(headType, operations));
         dispatch(actions.resetProcessState(headType));
-
-        // const operations = new Operations();
-        // for (const model of modelGroup.selectedModelArray) {
-        //     const operation = new AddOperation2D({
-        //         target: model,
-        //         parent: null
-        //     });
-        //     operations.push(operation);
-        // }
-        // operations.registCallbackAfterAll(() => {
-        //     dispatch(baseActions.render(headType));
-        // });
-        // dispatch(operationHistoryActions.setOperations(headType, operations));
-
         dispatch(baseActions.render(headType));
     },
 
