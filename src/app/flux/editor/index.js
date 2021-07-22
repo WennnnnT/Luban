@@ -36,7 +36,6 @@ import Operations from '../operation-history/Operations';
 import MoveOperation2D from '../operation-history/MoveOperation2D';
 import ScaleOperation2D from '../operation-history/ScaleOperation2D';
 import RotateOperation2D from '../operation-history/RotateOperation2D';
-import SvgModel from '../../models/SvgModel';
 
 const getSourceType = (fileName) => {
     let sourceType;
@@ -1078,7 +1077,7 @@ export const actions = {
 
     paste: (headType) => (dispatch, getState) => {
         const { modelGroup, SVGActions, toolPathGroup } = getState()[headType];
-        const machine = getState().machine;
+        // const machine = getState().machine;
 
         dispatch(actions.clearSelection(headType));
         const operations = new Operations();
@@ -1086,16 +1085,26 @@ export const actions = {
             // const clonedSVGModel = item.clone(modelGroup);
             // clonedSVGModel.transformation = { ...item.transformation };
             // clonedSVGModel.elem = item.elem.cloneNode(true);
-            const svgModel = new SvgModel(clonedSVGModel, modelGroup);
+            clonedSVGModel.transformation.positionX += 5;
+            clonedSVGModel.transformation.positionY -= 5;
+            console.log(clonedSVGModel.transformation.positionX, clonedSVGModel.transformation.positionY);
+            const svgModel = clonedSVGModel.clone(modelGroup);
+            console.log(svgModel.transformation.positionX, svgModel.transformation.positionY);
+            const INDEXMARGIN = 0.02;
             svgModel.elem.id = svgModel.modelID;
             svgModel.setParent(SVGActions.svgContentGroup.group);
             svgModel.modelName = modelGroup._createNewModelName(svgModel);
-
+            modelGroup.resetModelsPositionZByOrder();
+            svgModel.transformation.positionZ = (modelGroup.models.length + 1) * INDEXMARGIN;
+            // svgModel.transformation.positionX += 5;
+            // svgModel.transformation.positionY -= 5;
+            // svgModel.refresh();
+            svgModel.onTransform();
             modelGroup.models.push(svgModel);
-            SVGActions.moveElementsImmediately([svgModel.elem], {
-                newX: svgModel.transformation.positionX + machine.size.x + 5,
-                newY: -svgModel.transformation.positionY + machine.size.y + 5
-            });
+            // SVGActions.moveElementsImmediately([svgModel.elem], {
+            //     newX: svgModel.transformation.positionX + svgModel.size.x + 5,
+            //     newY: -svgModel.transformation.positionY + svgModel.size.y - 5
+            // });
 
             const operation = new AddOperation2D({
                 target: svgModel,
