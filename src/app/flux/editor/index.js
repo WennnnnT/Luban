@@ -338,7 +338,7 @@ export const actions = {
      * @param transformation - ?
      * @param modelID - optional, used in project recovery
      */
-    generateModel: (headType, originalName, uploadName, sourceWidth, sourceHeight, mode, sourceType, config, gcodeConfig, transformation, modelID, zIndex, clearSelection = true) => (dispatch, getState) => {
+    generateModel: (headType, originalName, uploadName, sourceWidth, sourceHeight, mode, sourceType, config, gcodeConfig, transformation, modelID, zIndex) => (dispatch, getState) => {
         const { size } = getState().machine;
         const { materials, modelGroup, SVGActions, contentGroup, toolPathGroup } = getState()[headType];
 
@@ -431,7 +431,7 @@ export const actions = {
 
         dispatch(operationHistoryActions.setOperations(headType, operations));
 
-        clearSelection && SVGActions.clearSelection();
+        SVGActions.clearSelection();
         SVGActions.addSelectedSvgModelsByModels([model]);
 
         if (path.extname(uploadName).toLowerCase() === '.stl') {
@@ -634,15 +634,30 @@ export const actions = {
 
 
     duplicateSelectedModel: (headType) => (dispatch, getState) => {
-        const { modelGroup } = getState()[headType];
+        const { modelGroup, SVGActions, toolPathGroup } = getState()[headType];
 
-        const { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode } = modelGroup.getSelectedModel();
-        const transformation = { ...modelGroup.getSelectedModel().transformation };
-        transformation.positionX += 5;
-        transformation.positionY -= 5;
-        dispatch(actions.generateModel(headType, originalName, uploadName, sourceWidth, sourceHeight, mode,
-            sourceType, config, undefined, transformation));
+        SVGActions.duplicateSelectedModel();
+
+        const operations = new Operations();
+        for (const svgModel of modelGroup.getSelectedModelArray()) {
+            const operation = new AddOperation2D({
+                target: svgModel,
+                svgActions: SVGActions,
+                toolPathGroup
+            });
+            operations.push(operation);
+        }
+
+        dispatch(operationHistoryActions.setOperations(headType, operations));
         dispatch(actions.resetProcessState(headType));
+        dispatch(baseActions.render(headType));
+        // const { originalName, uploadName, config, sourceType, sourceWidth, sourceHeight, mode } = modelGroup.getSelectedModel();
+        // const transformation = { ...modelGroup.getSelectedModel().transformation };
+        // transformation.positionX += 5;
+        // transformation.positionY -= 5;
+        // dispatch(actions.generateModel(headType, originalName, uploadName, sourceWidth, sourceHeight, mode,
+        //     sourceType, config, undefined, transformation));
+        // dispatch(actions.resetProcessState(headType));
     },
 
 
@@ -1070,53 +1085,25 @@ export const actions = {
     },
 
     copy: (headType) => (dispatch, getState) => {
-        const { modelGroup } = getState()[headType];
-        modelGroup.clipboard = modelGroup.getSelectedModelArray().map(item => item.clone(modelGroup));
-        console.log(modelGroup.clipboard);
+        const { SVGActions } = getState()[headType];
+        SVGActions.copy();
     },
 
     paste: (headType) => (dispatch, getState) => {
         const { modelGroup, SVGActions, toolPathGroup } = getState()[headType];
-        // const machine = getState().machine;
 
-        dispatch(actions.clearSelection(headType));
+        SVGActions.paste();
+
         const operations = new Operations();
-        modelGroup.clipboard.forEach((clonedSVGModel) => {
-            // const clonedSVGModel = item.clone(modelGroup);
-            // clonedSVGModel.transformation = { ...item.transformation };
-            // clonedSVGModel.elem = item.elem.cloneNode(true);
-            clonedSVGModel.transformation.positionX += 5;
-            clonedSVGModel.transformation.positionY -= 5;
-            console.log(clonedSVGModel.transformation.positionX, clonedSVGModel.transformation.positionY);
-            const svgModel = clonedSVGModel.clone(modelGroup);
-            console.log(svgModel.transformation.positionX, svgModel.transformation.positionY);
-            const INDEXMARGIN = 0.02;
-            svgModel.elem.id = svgModel.modelID;
-            svgModel.setParent(SVGActions.svgContentGroup.group);
-            svgModel.modelName = modelGroup._createNewModelName(svgModel);
-            modelGroup.resetModelsPositionZByOrder();
-            svgModel.transformation.positionZ = (modelGroup.models.length + 1) * INDEXMARGIN;
-            // svgModel.transformation.positionX += 5;
-            // svgModel.transformation.positionY -= 5;
-            // svgModel.refresh();
-            svgModel.onTransform();
-            modelGroup.models.push(svgModel);
-            // SVGActions.moveElementsImmediately([svgModel.elem], {
-            //     newX: svgModel.transformation.positionX + svgModel.size.x + 5,
-            //     newY: -svgModel.transformation.positionY + svgModel.size.y - 5
-            // });
-
+        for (const svgModel of modelGroup.getSelectedModelArray()) {
             const operation = new AddOperation2D({
                 target: svgModel,
                 svgActions: SVGActions,
                 toolPathGroup
             });
             operations.push(operation);
+        }
 
-            SVGActions.addSelectedSvgModelsByModels([svgModel]);
-            modelGroup.models = [...modelGroup.models];
-            modelGroup.modelChanged();
-        });
         dispatch(operationHistoryActions.setOperations(headType, operations));
         dispatch(actions.resetProcessState(headType));
         dispatch(baseActions.render(headType));

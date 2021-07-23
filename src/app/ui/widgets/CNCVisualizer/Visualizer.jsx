@@ -61,6 +61,10 @@ class Visualizer extends Component {
         renderingTimestamp: PropTypes.number.isRequired,
 
         // func
+        selectAllElements: PropTypes.func.isRequired,
+        cut: PropTypes.func.isRequired,
+        copy: PropTypes.func.isRequired,
+        paste: PropTypes.func.isRequired,
         clearOperationHistory: PropTypes.func.isRequired,
         undo: PropTypes.func.isRequired,
         redo: PropTypes.func.isRequired,
@@ -127,6 +131,21 @@ class Visualizer extends Component {
         },
         redo: () => {
             this.props.redo();
+        },
+        selectAll: () => {
+            this.props.selectAllElements();
+        },
+        unselectAll: () => {
+            this.props.onClearSelection();
+        },
+        copy: () => {
+            this.props.copy();
+        },
+        paste: () => {
+            this.props.paste();
+        },
+        cut: () => {
+            this.props.cut();
         },
         onChangeFile: (event) => {
             const file = event.target.files[0];
@@ -671,7 +690,11 @@ const mapDispatchToProps = (dispatch) => {
         duplicateSelectedModel: () => dispatch(editorActions.duplicateSelectedModel('cnc')),
         removeSelectedModel: () => dispatch(editorActions.checkToRemoveSelectedModels('cnc')),
 
+        cut: () => dispatch(editorActions.cut('cnc')),
+        copy: () => dispatch(editorActions.copy('cnc')),
+        paste: () => dispatch(editorActions.paste('cnc')),
         onCreateElement: (element) => dispatch(editorActions.createModelFromElement('cnc', element)),
+        selectAllElements: () => dispatch(editorActions.selectAllElements('cnc')),
         onSelectElements: (elements) => dispatch(editorActions.selectElements('cnc', elements)),
         onClearSelection: () => dispatch(editorActions.clearSelection('cnc')),
         onMoveSelectedElementsByKey: () => dispatch(editorActions.moveElementsOnKeyUp('cnc')),

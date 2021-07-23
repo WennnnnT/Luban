@@ -91,25 +91,41 @@ class SVGEditor extends PureComponent {
             'MOVE-UP': {
                 keys: ['up'],
                 callback: () => {
-                    this.props.elementActions.moveElementsOnKeyDown({ dx: 0, dy: -1 });
+                    this.props.elementActions.moveElementsStart(this.props.SVGActions.getSelectedElements());
+                    this.props.elementActions.moveElements(this.props.SVGActions.getSelectedElements(), { dx: 0, dy: -1 });
+                },
+                keyupCallback: () => {
+                    this.props.elementActions.moveElementsFinish(this.props.SVGActions.getSelectedElements());
                 }
             },
             'MOVE-DOWM': {
                 keys: ['down'],
                 callback: () => {
-                    this.props.elementActions.moveElementsOnKeyDown({ dx: 0, dy: 1 });
+                    this.props.elementActions.moveElementsStart(this.props.SVGActions.getSelectedElements());
+                    this.props.elementActions.moveElements(this.props.SVGActions.getSelectedElements(), { dx: 0, dy: 1 });
+                },
+                keyupCallback: () => {
+                    this.props.elementActions.moveElementsFinish(this.props.SVGActions.getSelectedElements());
                 }
             },
             'MOVE-LEFT': {
                 keys: ['left'],
                 callback: () => {
-                    this.props.elementActions.moveElementsOnKeyDown({ dx: -1, dy: 0 });
+                    this.props.elementActions.moveElementsStart(this.props.SVGActions.getSelectedElements());
+                    this.props.elementActions.moveElements(this.props.SVGActions.getSelectedElements(), { dx: -1, dy: 0 });
+                },
+                keyupCallback: () => {
+                    this.props.elementActions.moveElementsFinish(this.props.SVGActions.getSelectedElements());
                 }
             },
             'MOVE-RIGHT': {
                 keys: ['right'],
                 callback: () => {
-                    this.props.elementActions.moveElementsOnKeyDown({ dx: 1, dy: 0 });
+                    this.props.elementActions.moveElementsStart(this.props.SVGActions.getSelectedElements());
+                    this.props.elementActions.moveElements(this.props.SVGActions.getSelectedElements(), { dx: 1, dy: 0 });
+                },
+                keyupCallback: () => {
+                    this.props.elementActions.moveElementsFinish(this.props.SVGActions.getSelectedElements());
                 }
             }
 

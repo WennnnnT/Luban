@@ -601,6 +601,55 @@ class SVGActionsFactory {
         });
     }
 
+    copy() {
+        this.modelGroup.clipboard = this.modelGroup.getSelectedModelArray().map(item => item.clone(this.modelGroup));
+    }
+
+    paste() {
+        this.clearSelection();
+        this.modelGroup.clipboard.forEach((clonedSVGModel) => {
+            clonedSVGModel.transformation.positionX += 5;
+            clonedSVGModel.transformation.positionY -= 5;
+            const svgModel = clonedSVGModel.clone(this.modelGroup);
+
+            const INDEXMARGIN = 0.02;
+            svgModel.elem.id = svgModel.modelID;
+            svgModel.setParent(this.svgContentGroup.group);
+            svgModel.modelName = this.modelGroup._createNewModelName(svgModel);
+            this.modelGroup.resetModelsPositionZByOrder();
+            svgModel.transformation.positionZ = (this.modelGroup.models.length + 1) * INDEXMARGIN;
+            svgModel.onTransform();
+            this.modelGroup.models.push(svgModel);
+
+            this.addSelectedSvgModelsByModels([svgModel]);
+            this.modelGroup.models = [...this.modelGroup.models];
+            this.modelGroup.modelChanged();
+        });
+    }
+
+    duplicateSelectedModel() {
+        const selectedModels = this.modelGroup.getSelectedModelArray().map(item => item.clone(this.modelGroup));
+        this.clearSelection();
+        selectedModels.forEach((clonedSVGModel) => {
+            clonedSVGModel.transformation.positionX += 5;
+            clonedSVGModel.transformation.positionY -= 5;
+            const svgModel = clonedSVGModel.clone(this.modelGroup);
+
+            const INDEXMARGIN = 0.02;
+            svgModel.elem.id = svgModel.modelID;
+            svgModel.setParent(this.svgContentGroup.group);
+            svgModel.modelName = this.modelGroup._createNewModelName(svgModel);
+            this.modelGroup.resetModelsPositionZByOrder();
+            svgModel.transformation.positionZ = (this.modelGroup.models.length + 1) * INDEXMARGIN;
+            svgModel.onTransform();
+            this.modelGroup.models.push(svgModel);
+
+            this.addSelectedSvgModelsByModels([svgModel]);
+            this.modelGroup.models = [...this.modelGroup.models];
+            this.modelGroup.modelChanged();
+        });
+    }
+
     /**
      * Create model (SVGModel, Model, etc) from element.
      *

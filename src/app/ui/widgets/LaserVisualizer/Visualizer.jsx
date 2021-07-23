@@ -62,6 +62,7 @@ class Visualizer extends Component {
         isChangedAfterGcodeGenerating: PropTypes.bool.isRequired,
 
         // func
+        selectAllElements: PropTypes.func.isRequired,
         cut: PropTypes.func.isRequired,
         copy: PropTypes.func.isRequired,
         paste: PropTypes.func.isRequired,

@@ -1326,7 +1326,7 @@ export const actions = {
         const modelState = modelGroup.paste();
 
         const operations = new Operations();
-        for (const model of modelGroup.selectedModelArray) {
+        for (const model of modelGroup.getSelectedModelArray()) {
             const operation = new AddOperation3D({
                 target: model,
                 parent: null
