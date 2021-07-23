@@ -709,6 +709,7 @@ class SVGActionsFactory {
     }
 
     selectAllElements() {
+        this.clearSelection();
         const childNodes = this.svgContentGroup.group.children;
         for (const node of childNodes) {
             const svgModel = this.getSVGModelByElement(node);
@@ -740,7 +741,7 @@ class SVGActionsFactory {
         }
 
         const selectedElements = this.svgContentGroup.selectedElements;
-
+        this.modelGroup.selectedModelArray = [...this.modelGroup.selectedModelArray];
         // update selector
         this._resetSelector(selectedElements);
 

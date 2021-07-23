@@ -30,7 +30,7 @@ export const actionKeys = {
 
     [shortcutActions.SELECTALL]: ['mod+a'],
     [shortcutActions.UNSELECT]: ['esc', 'mod+shift+a'],
-    [shortcutActions.DELETE]: ['del'],
+    [shortcutActions.DELETE]: ['del', 'backspace'],
     [shortcutActions.COPY]: ['mod+c'],
     [shortcutActions.PASTE]: ['mod+v'],
     [shortcutActions.DUPLICATE]: ['mod+d'],
