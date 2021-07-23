@@ -26,6 +26,7 @@ export const shortcutActions = {
 export const actionKeys = {
     [shortcutActions.OPEN]: ['mod+O'],
     [shortcutActions.SAVE]: ['mod+s'],
+    [shortcutActions.SAVE_AS]: ['mod+shift+s'],
     [shortcutActions.NEW]: ['mod+n'],
 
     [shortcutActions.SELECTALL]: ['mod+a'],

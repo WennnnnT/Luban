@@ -43,6 +43,12 @@ class App extends PureComponent {
         shortcuts: {
             // TODO: implement file menu actions
             // [shortcutActions.OPEN]: () => { console.log('app.open'); },
+            [shortcutActions.SAVE]: () => {
+                UniApi.Event.emit('save');
+            },
+            [shortcutActions.SAVE_AS]: () => {
+                UniApi.Event.emit('save-as-file');
+            },
             [shortcutActions.IMPORT]: () => {
                 UniApi.Event.emit('appbar-menu:import');
             },
