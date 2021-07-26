@@ -11,7 +11,7 @@ import ModelItem from '../../../views/model-item';
 
 function ObjectListBox(props) {
     // https://github.com/tc39/proposal-optional-chaining
-    const selectedModelArray = useSelector(state => state[props.headType]?.modelGroup?.selectedModelArray, shallowEqual);
+    const selectedModelArray = useSelector(state => state[props.headType]?.modelGroup?.selectedModelArray);
     const models = useSelector(state => state[props.headType]?.modelGroup?.models);
     const inProgress = useSelector(state => state[props.headType]?.inProgress, shallowEqual);
     const previewFailed = useSelector(state => state[props.headType]?.previewFailed, shallowEqual);

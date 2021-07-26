@@ -458,16 +458,26 @@ export const actions = {
 
     // TODO: method docs
     selectTargetModel: (model, headType, isMultiSelect = false) => (dispatch, getState) => {
-        const { SVGActions } = getState()[headType];
+        const { SVGActions, modelGroup } = getState()[headType];
+        let selected = modelGroup.getSelectedModelArray();
+        selected = [...selected];
+        dispatch(actions.clearSelection(headType));
         if (!isMultiSelect) {
             // remove all selected model
-            dispatch(actions.clearSelection(headType));
+            SVGActions.addSelectedSvgModelsByModels([model]);
+        } else {
+            if (selected.find(item => item === model)) {
+                const selectedModels = selected.filter(item => item !== model);
+                modelGroup.emptySelectedModelArray();
+                SVGActions.addSelectedSvgModelsByModels(selectedModels);
+            } else {
+                SVGActions.addSelectedSvgModelsByModels([...selected, model]);
+            }
         }
 
-        SVGActions.addSelectedSvgModelsByModels([model]);
-
+        dispatch(baseActions.render(headType));
         // todo, donot reset here
-        SVGActions.resetSelection();
+        // SVGActions.resetSelection();
     },
 
     changeSelectedModelMode: (headType, sourceType, mode) => async (dispatch, getState) => {
@@ -1074,7 +1084,7 @@ export const actions = {
 
     selectAllElements: (headType) => (dispatch, getState) => {
         const { SVGActions } = getState()[headType];
-        dispatch(actions.clearSelection(headType));
+        // dispatch(actions.clearSelection(headType));
         SVGActions.selectAllElements();
         dispatch(baseActions.render(headType));
     },
