@@ -1319,6 +1319,7 @@ export const actions = {
     copy: () => (dispatch, getState) => {
         const { modelGroup } = getState().printing;
         modelGroup.copy();
+        dispatch(actions.render());
     },
 
     paste: () => (dispatch, getState) => {

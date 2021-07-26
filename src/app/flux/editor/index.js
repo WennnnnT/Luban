@@ -1097,6 +1097,7 @@ export const actions = {
     copy: (headType) => (dispatch, getState) => {
         const { SVGActions } = getState()[headType];
         SVGActions.copy();
+        dispatch(baseActions.render(headType));
     },
 
     paste: (headType) => (dispatch, getState) => {
