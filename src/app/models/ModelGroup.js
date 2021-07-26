@@ -734,6 +734,7 @@ class ModelGroup extends EventEmitter {
                 newModel.meshObject.position.x = point.x;
                 newModel.meshObject.position.y = point.y;
                 newModel.meshObject.updateMatrix();
+                newModel.computeBoundingBox();
 
                 newModel.modelID = modelID || uuid.v4();
             } else {
@@ -787,15 +788,15 @@ class ModelGroup extends EventEmitter {
                 newModel.meshObject.position.y = point.y;
                 // Once the position of selectedGroup is changed, updateMatrix must be called
                 newModel.meshObject.updateMatrix();
+                newModel.computeBoundingBox();
 
                 newModel.modelID = uuid.v4();
 
                 this.models.push(newModel);
                 this.object.add(newModel.meshObject);
                 this.addModelToSelectedGroup(newModel);
-                newModel.computeBoundingBox();
-                const overstepped = this._checkOverstepped(newModel);
-                newModel.setOversteppedAndSelected(overstepped, newModel.isSelected);
+                // const overstepped = this._checkOverstepped(newModel);
+                // newModel.setOversteppedAndSelected(overstepped, newModel.isSelected);
             }
         });
 
