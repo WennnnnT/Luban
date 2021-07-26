@@ -265,7 +265,7 @@ const File = {
  */
 const Dialog = {
     async showOpenFileDialog(type) {
-        let extensions = ['snap3dp', 'snaplzr', 'snapcnc', 'gcode', 'cnc', 'nc'];
+        let extensions = ['snap3dp', 'snaplzr', 'snapcnc'];
         switch (type) {
             case '3dp':
                 extensions = ['stl', 'obj'];
