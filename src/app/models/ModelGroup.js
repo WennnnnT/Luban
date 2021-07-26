@@ -1049,6 +1049,10 @@ class ModelGroup extends EventEmitter {
             if (selected.sourceType === '3d') {
                 selected.stickToPlate();
             }
+            if (selected.supportTag && selected.isSelected) {
+                selected.meshObject.parent.position.setZ(0);
+                selected.meshObject.parent.updateMatrix();
+            }
             selected.computeBoundingBox();
         });
         this.selectedGroup.shouldUpdateBoundingbox = false;

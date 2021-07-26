@@ -1208,6 +1208,10 @@ export const actions = {
     recordModelBeforeTransform: (modelGroup) => (dispatch) => {
         dispatch(operationHistoryActions.clearTargetTmpState(INITIAL_STATE.name));
         for (const model of modelGroup.selectedModelArray) {
+            if (model.supportTag) {
+                dispatch(actions.onModelTransform());
+            }
+            console.log(model.transformation);
             dispatch(operationHistoryActions.updateTargetTmpState(INITIAL_STATE.name, model.modelID, {
                 from: { ...model.transformation }
             }));
@@ -1268,6 +1272,7 @@ export const actions = {
 
     onModelTransform: () => (dispatch, getState) => {
         const { modelGroup } = getState().printing;
+        // console.log(modelGroup);
         modelGroup.onModelTransform();
         // dispatch(actions.updateTransformation(modelState.transformation));
         // dispatch(actions.displayModel());
