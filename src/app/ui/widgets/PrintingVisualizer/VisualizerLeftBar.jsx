@@ -247,13 +247,14 @@ class VisualizerLeftBar extends PureComponent {
                 />
                 <div className="position-ab height-100 border-radius-8 background-color-white width-56 margin-horizontal-8 margin-vertical-8">
                     <nav className={styles.navbar}>
-                        <ul className={styles.nav}>
+                        <ul className={classNames(styles.nav, 'border-bottom-normal')}>
                             <li
-                                className="padding-vertical-4"
+                                className="margin-vertical-4"
                             >
                                 <SvgIcon
                                     type={['hoverSpecial', 'pressSpecial']}
                                     name="ToolbarOpen"
+                                    className="padding-horizontal-4"
                                     onClick={() => {
                                         actions.onClickToUpload();
                                     }}
@@ -263,13 +264,16 @@ class VisualizerLeftBar extends PureComponent {
                                 />
                             </li>
                         </ul>
-                        <ul className={styles.nav}>
+                        <ul className={classNames(styles.nav, 'border-bottom-normal')}>
                             <li
-                                className="padding-vertical-4"
+                                className="margin-vertical-4"
                             >
                                 <SvgIcon
                                     color="#545659"
-                                    className={classNames({ [styles.selected]: (!transformDisabled && transformMode === 'translate') })}
+                                    className={classNames(
+                                        { [styles.selected]: (!transformDisabled && transformMode === 'translate') },
+                                        'padding-horizontal-4'
+                                    )}
                                     // Todo: Add selected props
                                     type={['hoverSpecial', 'pressSpecial']}
                                     name="ToolbarMove"
@@ -281,11 +285,14 @@ class VisualizerLeftBar extends PureComponent {
                                 />
                             </li>
                             <li
-                                className="padding-vertical-4"
+                                className="margin-vertical-4"
                             >
                                 <SvgIcon
                                     color="#545659"
-                                    className={classNames({ [styles.selected]: (!transformDisabled && transformMode === 'scale') })}
+                                    className={classNames(
+                                        { [styles.selected]: (!transformDisabled && transformMode === 'scale') },
+                                        'padding-horizontal-4'
+                                    )}
                                     type={['hoverSpecial', 'pressSpecial']}
                                     name="ToolbarScale"
                                     size={48}
@@ -296,11 +303,14 @@ class VisualizerLeftBar extends PureComponent {
                                 />
                             </li>
                             <li
-                                className="padding-vertical-4"
+                                className="margin-vertical-4"
                             >
                                 <SvgIcon
                                     color="#545659"
-                                    className={classNames({ [styles.selected]: (!transformDisabled && transformMode === 'rotate') })}
+                                    className={classNames(
+                                        { [styles.selected]: (!transformDisabled && transformMode === 'rotate') },
+                                        'padding-horizontal-4'
+                                    )}
                                     type={['hoverSpecial', 'pressSpecial']}
                                     name="ToolbarRotate"
                                     size={48}
@@ -311,11 +321,14 @@ class VisualizerLeftBar extends PureComponent {
                                 />
                             </li>
                             <li
-                                className="padding-vertical-4"
+                                className="margin-vertical-4"
                             >
                                 <SvgIcon
                                     color="#545659"
-                                    className={classNames({ [styles.selected]: (!transformDisabled && transformMode === 'mirror') })}
+                                    className={classNames(
+                                        { [styles.selected]: (!transformDisabled && transformMode === 'mirror') },
+                                        'padding-horizontal-4'
+                                    )}
                                     type={['hoverSpecial', 'pressSpecial']}
                                     name="ToolbarMirror"
                                     size={48}
@@ -326,15 +339,16 @@ class VisualizerLeftBar extends PureComponent {
                                 />
                             </li>
                         </ul>
-                        <ul className={styles.nav}>
+                        <ul className={classNames(styles.nav, 'border-bottom-normal')}>
                             <li
-                                className="padding-vertical-4"
+                                className="margin-vertical-4"
                             >
                                 <SvgIcon
                                     color="#545659"
                                     type={['hoverSpecial', 'pressSpecial']}
                                     name="ToolbarAutoLayout"
                                     size={48}
+                                    className="padding-horizontal-4"
                                     onClick={() => {
                                         actions.arrangeAllModels();
                                     }}
@@ -344,11 +358,14 @@ class VisualizerLeftBar extends PureComponent {
                         </ul>
                         <ul className={styles.nav}>
                             <li
-                                className="padding-vertical-4"
+                                className="margin-vertical-4"
                             >
                                 <SvgIcon
                                     color="#545659"
-                                    className={classNames({ [styles.selected]: (!transformDisabled && transformMode === 'support') })}
+                                    className={classNames(
+                                        { [styles.selected]: (!transformDisabled && transformMode === 'support') },
+                                        'padding-horizontal-4'
+                                    )}
                                     type={['hoverSpecial', 'pressSpecial']}
                                     name="ToolbarSupport"
                                     size={48}
@@ -666,7 +683,8 @@ class VisualizerLeftBar extends PureComponent {
                                     width="100%"
                                     onClick={() => actions.mirrorSelectedModel('X')}
                                 >
-                                    <span>{i18n._('X axis')}</span>
+                                    <span className="color-red-1">{i18n._('X ')}</span>
+                                    <span>{i18n._('axis')}</span>
                                 </Button>
                                 <Button
                                     className="margin-horizontal-8"
@@ -675,7 +693,8 @@ class VisualizerLeftBar extends PureComponent {
                                     width="100%"
                                     onClick={() => actions.mirrorSelectedModel('Y')}
                                 >
-                                    <span>{i18n._('Y axis')}</span>
+                                    <span className="color-green-1">{i18n._('Y ')}</span>
+                                    <span>{i18n._('axis')}</span>
                                 </Button>
                                 <Button
                                     className="margin-left-8"
@@ -684,7 +703,8 @@ class VisualizerLeftBar extends PureComponent {
                                     width="100%"
                                     onClick={() => actions.mirrorSelectedModel('Z')}
                                 >
-                                    <span>{i18n._('Z axis')}</span>
+                                    <span className="color-blue-2">{i18n._('Z ')}</span>
+                                    <span>{i18n._('axis')}</span>
                                 </Button>
                             </div>
                         </div>
@@ -703,7 +723,7 @@ class VisualizerLeftBar extends PureComponent {
                         </div>
                         <div className="padding-vertical-16 padding-horizontal-16">
                             <div className="sm-flex">{i18n._('Support Size')}</div>
-                            <div className="sm-flex height-32 margin-bottom-8">
+                            <div className="sm-flex height-32 margin-bottom-8 margin-top-16">
                                 <span className="sm-flex-auto width-16 color-red-1">X</span>
                                 <div className="position-ab sm-flex-auto margin-horizontal-24">
                                     <Input
@@ -718,7 +738,7 @@ class VisualizerLeftBar extends PureComponent {
                                     <span className="sm-flex__input-unit-8 color-black-5">mm</span>
                                 </div>
                             </div>
-                            <div className="sm-flex height-32 margin-bottom-8">
+                            <div className="sm-flex height-32">
                                 <span className="sm-flex-auto width-16 color-green-1">Y</span>
                                 <div className="position-ab sm-flex-auto margin-horizontal-24">
                                     <Input
@@ -733,9 +753,8 @@ class VisualizerLeftBar extends PureComponent {
                                     <span className="sm-flex__input-unit-8 color-black-5">mm</span>
                                 </div>
                             </div>
-                            <div className="sm-flex">
+                            <div className="sm-flex margin-top-32">
                                 <Button
-                                    className="margin-top-32 margin-right-8"
                                     type="primary"
                                     priority="level-three"
                                     width="100%"
@@ -745,7 +764,7 @@ class VisualizerLeftBar extends PureComponent {
                                     <span>{i18n._('Add Support')}</span>
                                 </Button>
                                 <Button
-                                    className="margin-top-32 margin-left-8"
+                                    className="margin-left-8"
                                     type="primary"
                                     priority="level-three"
                                     width="100%"
@@ -755,7 +774,7 @@ class VisualizerLeftBar extends PureComponent {
                                 </Button>
                             </div>
                             <Button
-                                className="margin-top-32"
+                                className="margin-top-16"
                                 type="primary"
                                 priority="level-three"
                                 width="100%"

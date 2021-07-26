@@ -59,7 +59,7 @@ import JobType from '../widgets/JobType';
 import ToolPathListBox from '../widgets/CncLaserList/ToolPathList';
 import PrintingVisualizer from '../widgets/PrintingVisualizer';
 import HomePage from './HomePage';
-import Anchor from '../components/Anchor';
+// import Anchor from '../components/Anchor';
 import Workspace from './Workspace';
 
 const allWidgets = {
@@ -343,40 +343,6 @@ function Cnc({ location }) {
             {
                 type: 'separator'
             },
-            // {
-            //     title: i18n._('Open'),
-            //     type: 'button',
-            //     name: 'Copy',
-            //     inputInfo: {
-            //         accept: '.snapcnc',
-            //         fileInput: fileInput,
-            //         onChange: async (e) => {
-            //             const file = e.target.files[0];
-            //             const recentFile = {
-            //                 name: file.name,
-            //                 path: file.path || ''
-            //             };
-            //             try {
-            //                 await dispatch(projectActions.openProject(file, history));
-            //                 // Todo: Add to recent file, but not use isElectron()
-            //                 // if (isElectron()) {
-            //                 //     const ipc = window.require('electron').ipcRenderer;
-            //                 //     ipc.send('add-recent-file', recentFile);
-            //                 // }
-            //                 await dispatch(projectActions.updateRecentFile([recentFile], 'update'));
-            //             } catch (error) {
-            //                 modal({
-            //                     title: i18n._('Failed to upload model'),
-            //                     body: error.message
-            //                 });
-            //             }
-            //         }
-            //     },
-            //     action: () => {
-            //         fileInput.current.value = null;
-            //         fileInput.current.click();
-            //     }
-            // },
             {
                 title: i18n._('Save'),
                 type: 'button',
@@ -415,45 +381,19 @@ function Cnc({ location }) {
                 type: 'separator'
             },
             {
-                type: 'render',
-                customRender: function () {
-                    return (
-                        <Anchor
-                            onClick={() => dispatch(editorActions.bringSelectedModelToFront(HEAD_CNC))}
-                            className="width-64 display-inline align-c padding-vertical-2 padding-horizontal-2 font-size-0"
-                        >
-                            <i
-                                style={{
-                                    backgroundImage: `url(${require('../../resources/images/laser-image/Set-top-normal.svg')})`
-                                }}
-                                className="width-24 height-24 display-inline "
-                            />
-                            <div className="font-size-base">
-                                {i18n._('Top')}
-                            </div>
-                        </Anchor>
-                    );
+                title: i18n._('Top'),
+                type: 'button',
+                name: 'MainToolbarTop',
+                action: () => {
+                    dispatch(editorActions.bringSelectedModelToFront(HEAD_CNC));
                 }
             },
             {
-                type: 'render',
-                customRender: function () {
-                    return (
-                        <Anchor
-                            onClick={() => dispatch(editorActions.sendSelectedModelToBack(HEAD_CNC))}
-                            className="width-64 display-inline align-c padding-vertical-2 padding-horizontal-2 font-size-0"
-                        >
-                            <i
-                                style={{
-                                    backgroundImage: `url(${require('../../resources/images/laser-image/Set-bottom-normal.svg')})`
-                                }}
-                                className="width-24 height-24 display-inline "
-                            />
-                            <div className="font-size-base">
-                                {i18n._('Bottom')}
-                            </div>
-                        </Anchor>
-                    );
+                title: i18n._('Bottom'),
+                type: 'button',
+                name: 'MainToolbarBottom',
+                action: () => {
+                    dispatch(editorActions.sendSelectedModelToBack(HEAD_CNC));
                 }
             }
         ];

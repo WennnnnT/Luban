@@ -101,6 +101,7 @@ function useRenderMainToolBar(setShowHomePage, setShowJobType, setShowWorkspace)
                 <div className="align-l width-168">
                     <SvgIcon
                         type="static"
+                        disabled={series === MACHINE_SERIES.ORIGINAL?.value ? false : !isConnected}
                         name="MainToolbarAddBackground"
                     />
                     <span
