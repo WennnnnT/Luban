@@ -610,7 +610,9 @@ class SVGActionsFactory {
         this.modelGroup.clipboard.forEach((clonedSVGModel) => {
             clonedSVGModel.transformation.positionX += 5;
             clonedSVGModel.transformation.positionY -= 5;
+            clonedSVGModel.setParent(this.svgContentGroup.group);
             const svgModel = clonedSVGModel.clone(this.modelGroup);
+            clonedSVGModel.elem.remove();
 
             const INDEXMARGIN = 0.02;
             svgModel.elem.id = svgModel.modelID;
@@ -633,7 +635,9 @@ class SVGActionsFactory {
         selectedModels.forEach((clonedSVGModel) => {
             clonedSVGModel.transformation.positionX += 5;
             clonedSVGModel.transformation.positionY -= 5;
+            clonedSVGModel.setParent(this.svgContentGroup.group);
             const svgModel = clonedSVGModel.clone(this.modelGroup);
+            clonedSVGModel.elem.remove();
 
             const INDEXMARGIN = 0.02;
             svgModel.elem.id = svgModel.modelID;

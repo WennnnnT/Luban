@@ -1132,7 +1132,8 @@ class SvgModel extends BaseModel {
         this.meshObject.updateMatrixWorld();
 
         // clone.setMatrix(this.meshObject.matrixWorld);
-        clone.elem = this.elem.cloneNode();
+        clone.meshObject.parent = this.meshObject.parent;
+        clone.elem = this.elem.cloneNode(true); // <text> element has a text child node
 
         return clone;
     }
