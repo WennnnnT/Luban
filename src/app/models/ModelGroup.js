@@ -701,6 +701,7 @@ class ModelGroup extends EventEmitter {
             model.meshObject.position.x = point.x;
             model.meshObject.position.y = point.y;
             model.meshObject.updateMatrix();
+            model.computeBoundingBox();
 
             arrangedModels.push(model);
             this.object.add(model.meshObject);
