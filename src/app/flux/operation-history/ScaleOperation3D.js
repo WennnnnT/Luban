@@ -21,7 +21,8 @@ export default class ScaleOperation3D extends Operation {
             model.meshObject.parent.updateMatrix();
             modelGroup.unselectAllModels();
             model.computeBoundingBox();
-            model.stickToPlate();
+            model.target.stickToPlate();
+            model.target.computeBoundingBox();
         } else {
             model.meshObject.position.set(this.state.to.positionX, this.state.to.positionY, this.state.to.positionZ);
             model.meshObject.rotation.set(this.state.to.rotationX, this.state.to.rotationY, this.state.to.rotationZ);
@@ -44,7 +45,8 @@ export default class ScaleOperation3D extends Operation {
             model.meshObject.parent.updateMatrix();
             modelGroup.unselectAllModels();
             model.computeBoundingBox();
-            model.stickToPlate();
+            model.target.stickToPlate();
+            model.target.computeBoundingBox();
         } else {
             model.meshObject.position.set(this.state.from.positionX, this.state.from.positionY, this.state.from.positionZ);
             model.meshObject.rotation.set(this.state.from.rotationX, this.state.from.rotationY, this.state.from.rotationZ);

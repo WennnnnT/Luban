@@ -219,9 +219,6 @@ class VisualizerLeftBar extends PureComponent {
         const supportDisabled = inProgress || !(selectedModelArray.length === 1 && selectedModelArray.every((model) => {
             return model.visible === true && !model.supportTag;
         }));
-        const rotateDisabled = inProgress || (selectedModelArray.length > 0 && selectedModelArray.some((model) => {
-            return model.supportTag;
-        }));
 
         if (selectedModelArray.length >= 1) {
             moveX = Number(toFixed(transformation.positionX, 1));
@@ -303,7 +300,7 @@ class VisualizerLeftBar extends PureComponent {
                                     onClick={() => {
                                         actions.setTransformMode('rotate');
                                     }}
-                                    disabled={transformDisabled || rotateDisabled}
+                                    disabled={transformDisabled || isSupportSelected}
                                 />
                             </li>
                             <li
@@ -317,7 +314,7 @@ class VisualizerLeftBar extends PureComponent {
                                     onClick={() => {
                                         actions.setTransformMode('mirror');
                                     }}
-                                    disabled={transformDisabled}
+                                    disabled={transformDisabled || isSupportSelected}
                                 />
                             </li>
                         </ul>
@@ -332,7 +329,7 @@ class VisualizerLeftBar extends PureComponent {
                                     onClick={() => {
                                         actions.arrangeAllModels();
                                     }}
-                                    disabled={inProgress}
+                                    disabled={inProgress || isSupportSelected}
                                 />
                             </li>
                         </ul>
@@ -397,15 +394,17 @@ class VisualizerLeftBar extends PureComponent {
                                     <span className="sm-flex__input-unit-8 color-black-5">mm</span>
                                 </div>
                             </div>
-                            <Button
-                                className="margin-top-32"
-                                type="primary"
-                                priority="level-three"
-                                width="100%"
-                                onClick={actions.resetPosition}
-                            >
-                                <span>{i18n._('Reset')}</span>
-                            </Button>
+                            {!isSupportSelected ? (
+                                <Button
+                                    className="margin-top-32"
+                                    type="primary"
+                                    priority="level-three"
+                                    width="100%"
+                                    onClick={actions.resetPosition}
+                                >
+                                    <span>{i18n._('Reset')}</span>
+                                </Button>
+                            ) : null}
                         </div>
                     </div>
                 )}

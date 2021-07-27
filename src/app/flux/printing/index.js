@@ -1211,7 +1211,6 @@ export const actions = {
             if (model.supportTag) {
                 dispatch(actions.onModelTransform());
             }
-            console.log(model.transformation);
             dispatch(operationHistoryActions.updateTargetTmpState(INITIAL_STATE.name, model.modelID, {
                 from: { ...model.transformation }
             }));
@@ -1225,7 +1224,7 @@ export const actions = {
 
         function stateEqual(stateFrom, stateTo) {
             for (const key of Object.keys(stateFrom)) {
-                if (Math.abs(stateFrom[key] - stateTo[key]) > EPSILON) {
+                if (key !== 'positionZ' && Math.abs(stateFrom[key] - stateTo[key]) > EPSILON) {
                     return false;
                 }
             }
@@ -1272,7 +1271,6 @@ export const actions = {
 
     onModelTransform: () => (dispatch, getState) => {
         const { modelGroup } = getState().printing;
-        // console.log(modelGroup);
         modelGroup.onModelTransform();
         // dispatch(actions.updateTransformation(modelState.transformation));
         // dispatch(actions.displayModel());

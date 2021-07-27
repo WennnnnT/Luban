@@ -568,7 +568,6 @@ class ModelGroup extends EventEmitter {
 
     // use for canvas
     selectMultiModel(intersect, selectEvent) {
-        console.log(intersect, selectEvent);
         let model;
         switch (selectEvent) {
             case SELECTEVENT.UNSELECT:
@@ -627,7 +626,6 @@ class ModelGroup extends EventEmitter {
             parent = model.target.meshObject;
         }
         ThreeUtils.setObjectParent(model.meshObject, parent);
-        console.log('removeModelFromSelectedGroup', model);
         this.selectedModelArray = [];
         this.selectedGroup.children.forEach((meshObject) => {
             const selectedModel = this.models.find(d => d.meshObject === meshObject);
