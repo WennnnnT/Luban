@@ -732,6 +732,8 @@ class ModelGroup extends EventEmitter {
                 const point = this._computeAvailableXY(newModel);
                 newModel.meshObject.position.x = point.x;
                 newModel.meshObject.position.y = point.y;
+                newModel.transformation.positionX = point.x;
+                newModel.transformation.positionY = point.y;
                 newModel.meshObject.updateMatrix();
                 newModel.computeBoundingBox();
 
@@ -785,6 +787,8 @@ class ModelGroup extends EventEmitter {
                 const point = this._computeAvailableXY(newModel);
                 newModel.meshObject.position.x = point.x;
                 newModel.meshObject.position.y = point.y;
+                newModel.transformation.positionX = point.x;
+                newModel.transformation.positionY = point.y;
                 // Once the position of selectedGroup is changed, updateMatrix must be called
                 newModel.meshObject.updateMatrix();
                 newModel.computeBoundingBox();
