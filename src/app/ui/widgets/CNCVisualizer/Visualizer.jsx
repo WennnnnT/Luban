@@ -429,7 +429,7 @@ class Visualizer extends Component {
                 }}
                 >
                     <SVGEditor
-                        isActive={this.props.pathname.indexOf('cnc') > 0}
+                        isActive={!this.props.currentModalPath && this.props.pathname.indexOf('cnc') > 0}
                         ref={this.svgCanvas}
                         editable={!this.props.inProgress}
                         size={this.props.size}
@@ -637,6 +637,7 @@ class Visualizer extends Component {
 const mapStateToProps = (state, ownProps) => {
     // call canvas.updateTransformControl2D() when transformation changed or model selected changed
     const { size } = state.machine;
+    const { currentModalPath } = state.appbarMenu;
     const { page, materials, modelGroup, toolPathGroup, displayedType, hasModel, isChangedAfterGcodeGenerating,
         renderingTimestamp, stage, progress, SVGActions, scale, target, coordinateMode, coordinateSize, inProgress } = state.cnc;
     const selectedModelArray = modelGroup.getSelectedModelArray();
@@ -644,6 +645,7 @@ const mapStateToProps = (state, ownProps) => {
     const selectedToolPathModels = modelGroup.getSelectedToolPathModels();
 
     return {
+        currentModalPath,
         // switch pages trigger pathname change
         pathname: ownProps.location.pathname,
         page,

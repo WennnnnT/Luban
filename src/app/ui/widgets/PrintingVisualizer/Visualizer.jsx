@@ -615,12 +615,13 @@ class Visualizer extends PureComponent {
 
 const mapStateToProps = (state, ownProps) => {
     const machine = state.machine;
+    const { currentModalPath } = state.appbarMenu;
     const printing = state.printing;
     const { size } = machine;
     // TODO: be to organized
     const { stage, modelGroup, hasModel, gcodeLineGroup, transformMode, progress, displayedType, renderingTimestamp, inProgress } = printing;
     return {
-        isActive: ownProps.location.pathname.indexOf('3dp') > 0,
+        isActive: currentModalPath || ownProps.location.pathname.indexOf('3dp') > 0,
         stage,
         size,
         allModel: modelGroup.models,

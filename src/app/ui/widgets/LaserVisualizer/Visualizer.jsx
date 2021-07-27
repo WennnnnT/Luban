@@ -382,7 +382,7 @@ class Visualizer extends Component {
                 }}
                 >
                     <SVGEditor
-                        isActive={this.props.pathname.indexOf('laser') > 0}
+                        isActive={!this.props.currentModalPath && this.props.pathname.indexOf('laser') > 0}
                         ref={this.svgCanvas}
                         editable={!this.props.inProgress}
                         size={this.props.size}
@@ -590,7 +590,7 @@ class Visualizer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     const { size } = state.machine;
-
+    const { currentModalPath } = state.appbarMenu;
     const { background } = state.laser;
 
     const { SVGActions, scale, target, materials, page, selectedModelID, modelGroup, svgModelGroup, toolPathGroup, displayedType,
@@ -599,6 +599,7 @@ const mapStateToProps = (state, ownProps) => {
     const selectedToolPathModelArray = modelGroup.getSelectedToolPathModels();
 
     return {
+        currentModalPath,
         // switch pages trigger pathname change
         pathname: ownProps.location.pathname,
         page,

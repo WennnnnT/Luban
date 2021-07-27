@@ -33,9 +33,12 @@ import { actions as editorActions } from '../../flux/editor';
 import { actions as projectActions } from '../../flux/project';
 import { actions as operationHistoryActions } from '../../flux/operation-history';
 import styles from './styles/appbar.styl';
+import HomePage from '../pages/HomePage';
+import Workspace from '../pages/Workspace';
 
 class AppLayout extends PureComponent {
     static propTypes = {
+        updateCurrentModalPath: PropTypes.func.isRequired,
         clearOperationHistory: PropTypes.func.isRequired,
         updateMaterials: PropTypes.func.isRequired,
         initRecoverService: PropTypes.func.isRequired,
@@ -169,8 +172,9 @@ class AppLayout extends PureComponent {
         },
         openProject: async (file) => {
             if (!file) {
-                this.fileInput.current.value = null;
-                this.fileInput.current.click();
+                // this.fileInput.current.value = null;
+                // this.fileInput.current.click();
+                UniApi.Event.emit('appbar-menu:open-file-in-browser');
             } else {
                 try {
                     await this.props.openProject(file, this.props.history);
@@ -426,6 +430,18 @@ class AppLayout extends PureComponent {
             this.props.history.listen(() => {
                 this.props.updateMenu();
             });
+            UniApi.Event.on('tile-modal:show', ({ component }) => {
+                if (component.type === HomePage) {
+                    this.props.updateCurrentModalPath('#/');
+                } else if (component.type === Workspace) {
+                    this.props.updateCurrentModalPath('#/workspace');
+                }
+                this.props.enableMenu();
+            });
+            UniApi.Event.on('tile-modal:hide', () => {
+                this.props.updateCurrentModalPath(null);
+                this.props.enableMenu();
+            });
             UniApi.Event.on('appbar-menu:disable', () => {
                 this.props.disableMenu();
             });
@@ -498,6 +514,7 @@ const mapDispatchToProps = (dispatch) => {
         updateMaterials: (headType, newMaterials) => dispatch(editorActions.updateMaterials(headType, newMaterials)),
         // openProject: (file, history) => dispatch(projectActions.open(file, history)),
         loadCase: (pathConfig, history) => dispatch(projectActions.openProject(pathConfig, history)),
+        updateCurrentModalPath: (path) => dispatch(menuActions.updateCurrentModalPath(path)),
         updateMenu: () => dispatch(menuActions.updateMenu()),
         initMenuLanguage: () => dispatch(menuActions.initMenuLanguage()),
         enableMenu: () => dispatch(menuActions.enableMenu()),

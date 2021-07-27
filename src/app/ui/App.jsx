@@ -42,7 +42,9 @@ class App extends PureComponent {
         priority: priorities.APP,
         shortcuts: {
             // TODO: implement file menu actions
-            // [shortcutActions.OPEN]: () => { console.log('app.open'); },
+            [shortcutActions.OPEN]: () => {
+                UniApi.Event.emit('appbar-menu:open-file');
+            },
             [shortcutActions.SAVE]: () => {
                 UniApi.Event.emit('save');
             },
