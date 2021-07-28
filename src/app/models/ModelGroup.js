@@ -609,7 +609,7 @@ class ModelGroup extends EventEmitter {
 
         model.setSelected(true);
         ThreeUtils.applyObjectMatrix(this.selectedGroup, new Matrix4().getInverse(this.selectedGroup.matrix));
-        this.selectedModelArray.push(model);
+        this.selectedModelArray = [...this.selectedModelArray, model];
 
         ThreeUtils.setObjectParent(model.meshObject, this.selectedGroup);
         this.prepareSelectedGroup();
