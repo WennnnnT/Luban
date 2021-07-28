@@ -410,11 +410,17 @@ class AppLayout extends PureComponent {
             });
             UniApi.Event.on('appbar-menu:import', async () => {
                 let fileObj;
+                const pathname = this.props.currentModalPath || this.props.history.location.pathname;
+                if (pathname === '/') {
+                    return;
+                }
                 if (isElectron()) {
-                    const file = await UniApi.Dialog.showOpenFileDialog(this.props.history.location.pathname.slice(1));
+                    const file = await UniApi.Dialog.showOpenFileDialog(pathname);
+                    if (!file) {
+                        return;
+                    }
                     fileObj = UniApi.File.constructFileObj(file.path, file.name.split('\\').pop());
                 }
-                const pathname = this.props.currentModalPath || this.props.history.location.pathname;
                 switch (pathname) {
                     case '/3dp': UniApi.Event.emit('appbar-menu:printing.import', fileObj); break;
                     case '/laser': UniApi.Event.emit('appbar-menu:laser.import', fileObj); break;
