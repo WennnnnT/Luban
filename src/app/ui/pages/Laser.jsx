@@ -388,6 +388,7 @@ function Laser({ location }) {
                         jobTypeState.coordinateMode, jobTypeState.coordinateSize));
                     dispatch(editorActions.updateMaterials(HEAD_LASER, jobTypeState.materials));
                     setShowJobType(false);
+                    dispatch(laserActions.removeBackgroundImage());
                 }
             }
         ],

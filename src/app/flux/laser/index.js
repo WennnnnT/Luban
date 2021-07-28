@@ -133,7 +133,7 @@ export const actions = {
 
     setBackgroundImage: (filename, width, height, dx, dy) => (dispatch, getState) => {
         const state = getState().laser;
-        const { SVGActions } = state;
+        const { SVGActions, coordinateMode } = state;
 
         SVGActions.addImageBackgroundToSVG({
             modelID: 'image-background',
@@ -141,8 +141,8 @@ export const actions = {
             transformation: {
                 width: width,
                 height: height,
-                positionX: dx + width / 2,
-                positionY: dy + height / 2
+                positionX: (dx + width / 2) * coordinateMode.setting.sizeMultiplyFactor.x,
+                positionY: (dy + height / 2) * coordinateMode.setting.sizeMultiplyFactor.y
             }
         });
 
