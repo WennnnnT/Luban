@@ -621,7 +621,7 @@ const mapStateToProps = (state, ownProps) => {
     // TODO: be to organized
     const { stage, modelGroup, hasModel, gcodeLineGroup, transformMode, progress, displayedType, renderingTimestamp, inProgress } = printing;
     return {
-        isActive: currentModalPath || ownProps.location.pathname.indexOf('3dp') > 0,
+        isActive: !currentModalPath && ownProps.location.pathname.indexOf('3dp') > 0,
         stage,
         size,
         allModel: modelGroup.models,
