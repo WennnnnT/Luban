@@ -734,6 +734,7 @@ export const actions = {
         if (!modelState.hasModel) {
             dispatch(baseActions.updateState(headType, {
                 displayedType: DISPLAYED_TYPE_MODEL,
+                needToPreview: true,
                 stage: CNC_LASER_STAGE.EMPTY,
                 inProgress: false,
                 progress: 0
@@ -1018,7 +1019,8 @@ export const actions = {
      */
     resetProcessState: (headType) => (dispatch) => {
         dispatch(baseActions.updateState(headType, {
-            displayedType: DISPLAYED_TYPE_MODEL
+            displayedType: DISPLAYED_TYPE_MODEL,
+            needToPreview: true
         }));
         // const { isAllModelsPreviewed } = getState()[headType];
         // if (isAllModelsPreviewed) {

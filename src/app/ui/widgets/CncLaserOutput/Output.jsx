@@ -31,6 +31,7 @@ class Output extends PureComponent {
         // page: PropTypes.string.isRequired,
         inProgress: PropTypes.bool.isRequired,
         disablePreview: PropTypes.bool.isRequired,
+        needToPreview: PropTypes.bool.isRequired,
 
         modelGroup: PropTypes.object.isRequired,
         toolPathGroup: PropTypes.object.isRequired,
@@ -99,9 +100,13 @@ class Output extends PureComponent {
             this.props.showToolPathGroupObject();
         },
         preview: async () => {
-            await this.props.preview();
-            if (this.props.canGenerateGcode) {
-                this.actions.onGenerateGcode();
+            if (this.props.needToPreview) {
+                await this.props.preview();
+                if (this.props.canGenerateGcode) {
+                    this.actions.onGenerateGcode();
+                }
+            } else {
+                this.props.showToolPathGroupObject();
             }
         },
         setAutoPreview: (enable) => {
@@ -257,7 +262,7 @@ const mapStateToProps = (state, ownProps) => {
     const { workflowState } = state.machine;
     const { widgets } = state.widget;
     const { headType } = ownProps;
-    const { isGcodeGenerating, autoPreviewEnabled,
+    const { isGcodeGenerating, autoPreviewEnabled, needToPreview,
         previewFailed, modelGroup, toolPathGroup, displayedType, gcodeFile, inProgress, page } = state[headType];
 
     const canGenerateGcode = toolPathGroup.canGenerateGcode();
@@ -280,7 +285,8 @@ const mapStateToProps = (state, ownProps) => {
         gcodeFile,
         autoPreview: widgets[`${headType}-output`].autoPreview, // Todo
         autoPreviewEnabled,
-        inProgress
+        inProgress,
+        needToPreview
     };
 };
 
