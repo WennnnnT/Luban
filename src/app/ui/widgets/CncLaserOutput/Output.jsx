@@ -160,7 +160,7 @@ class Output extends PureComponent {
     render() {
         const actions = this.actions;
         const { workflowState, isGcodeGenerating, gcodeFile, hasModel, page,
-            disablePreview, hasToolPathModel, inProgress, displayedType } = this.props;
+            disablePreview, hasToolPathModel, inProgress, displayedType, needToPreview } = this.props;
         const menu = (
             <Menu>
                 <Menu.Item
@@ -184,14 +184,14 @@ class Output extends PureComponent {
         return (
             <div className={classNames('position-fixed', 'border-radius-bottom-8', 'bottom-8', 'background-color-white', styles['output-wrapper'])}>
                 <div className={classNames('position-re', 'margin-horizontal-16', 'margin-vertical-16',)}>
-                    {(displayedType !== DISPLAYED_TYPE_TOOLPATH && page !== PAGE_EDITOR) && (
+                    {(needToPreview && page !== PAGE_EDITOR) && (
                         <Button
                             type="primary"
                             priority="level-one"
                             onClick={this.actions.preview}
                             disabled={inProgress || (!hasToolPathModel ?? false) || disablePreview}
                         >
-                            {i18n._('Preview')}
+                            {i18n._('Generate G-code and Preview')}
                         </Button>
                     )}
                     {(displayedType !== DISPLAYED_TYPE_TOOLPATH && page === PAGE_EDITOR) && (
@@ -204,7 +204,7 @@ class Output extends PureComponent {
                             {i18n._('Next')}
                         </Button>
                     )}
-                    {displayedType === DISPLAYED_TYPE_TOOLPATH && !this.state.showExportOptions && (
+                    {!needToPreview && displayedType === DISPLAYED_TYPE_TOOLPATH && !this.state.showExportOptions && (
                         <Button
                             type="default"
                             priority="level-one"
@@ -217,7 +217,19 @@ class Output extends PureComponent {
                             {i18n._('Back to Object View')}
                         </Button>
                     )}
-                    {displayedType === DISPLAYED_TYPE_TOOLPATH && (
+                    {!needToPreview && displayedType !== DISPLAYED_TYPE_TOOLPATH && !this.state.showExportOptions && (
+                        <Button
+                            type="default"
+                            priority="level-one"
+                            onClick={() => {
+                                this.props.showToolPathGroupObject();
+                            }}
+                            className={classNames('position-re', 'bottom-0', 'left-0')}
+                        >
+                            {i18n._('Preview')}
+                        </Button>
+                    )}
+                    {!needToPreview && (
                         <div
                             onKeyDown={noop}
                             role="button"
