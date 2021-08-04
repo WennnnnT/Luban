@@ -52,6 +52,10 @@ class ToolPathGroup {
         return this.toolPaths.length + 1;
     }
 
+    get singleToolPath() {
+        return this.toolPaths && this.selectedToolPathArray.length === 1 && this.toolPaths.find(v => v.id === this.selectedToolPathArray[0]);
+    }
+
     /**
      * Used to show model group objects in process canvas before preview models
      */
@@ -349,6 +353,7 @@ class ToolPathGroup {
 
     updateToolPath(toolPathId, newState, options) {
         const toolPath = this._getToolPath(toolPathId);
+        console.log('update saveToolPath', toolPath, newState, options);
         if (toolPath) {
             toolPath.updateState({ ...newState, ...options });
             // toolPath.commitGenerateToolPath();

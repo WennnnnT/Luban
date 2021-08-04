@@ -192,6 +192,7 @@ export const processActions = {
     saveToolPath: (headType, toolPath) => (dispatch, getState) => {
         const { toolPathGroup, materials, autoPreviewEnabled } = getState()[headType];
         if (toolPathGroup.getToolPath(toolPath.id)) {
+            console.log('flux saveToolPath update');
             toolPathGroup.updateToolPath(toolPath.id, toolPath, { materials });
         } else {
             toolPathGroup.saveToolPath(toolPath, { materials }, false);
@@ -206,6 +207,7 @@ export const processActions = {
             updatingToolPath: null,
             isChangedAfterGcodeGenerating: true
         }));
+        console.trace('flux saveToolPath', toolPath?.gcodeConfig);
     },
 
     updateToolPath: (headType, toolPathId, newState) => (dispatch, getState) => {
