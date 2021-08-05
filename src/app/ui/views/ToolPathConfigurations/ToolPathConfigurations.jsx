@@ -106,7 +106,9 @@ function ToolPathConfigurations(props) {
             if (props.headType === HEAD_CNC) {
                 await dispatch(cncActions.changeActiveToolListDefinition(currentToolDefinition?.definitionId, currentToolDefinition?.name));
             }
-            console.log('ToolPathConfigurations saveToolPath', props.headType, newToolPath);
+            await dispatch(editorActions.selectToolPathById(props.headType));
+            await dispatch(editorActions.selectToolPathById(props.headType, toolpath?.id));
+
             props.onClose && props.onClose();
         },
         updateToolPath(option) {

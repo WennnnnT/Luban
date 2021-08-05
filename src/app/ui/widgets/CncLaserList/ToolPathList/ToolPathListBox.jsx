@@ -27,20 +27,18 @@ const ToolpathItem = ({ toolPath, selectedToolPathIDArray, selectToolPathId, sel
     if (!toolPath) {
         return null;
     }
-    // function handleOnDoubleClick() {
-    //
-    // }
+    function handleOnDoubleClick() {
+        setEditingToolpath(toolPath);
+        selectToolPathById(toolPath.id);
+    }
     function handleOnClick(e) {
-        console.log('handleOnClick', e.detail);
         if (e.detail > 1) { // Check difference to double click
-            setEditingToolpath(toolPath);
-            selectToolPathById(toolPath.id);
+            return;
+        }
+        if (e.shiftKey) {
+            selectToolPathId(toolPath.id);
         } else {
-            if (e.shiftKey) {
-                selectToolPathId(toolPath.id);
-            } else {
-                selectOneToolPathId(toolPath.id);
-            }
+            selectOneToolPathId(toolPath.id);
         }
     }
     const suffixLength = 6;
@@ -67,7 +65,8 @@ const ToolpathItem = ({ toolPath, selectedToolPathIDArray, selectToolPathId, sel
                         'sm-flex',
                         'sm-flex-width'
                     )}
-                    onDoubleClick={handleOnClick}
+                    onDoubleClick={handleOnDoubleClick}
+                    onClick={handleOnClick}
                 >
                     <span>
                         {prefixName}
@@ -130,7 +129,7 @@ const ToolPathListBox = (props) => {
     const selectedToolPath = useSelector(state => state[props.headType]?.toolPathGroup?.singleToolPath, shallowEqual);
     const dispatch = useDispatch();
 
-    console.log('selectedToolPath', selectedToolPath);
+    // console.log('selectedToolPath', selectedToolPath);
     const selectedToolPathId = selectedToolPath.id;
     const [editingToolpath, setEditingToolpath] = useState(null);
 
@@ -174,43 +173,6 @@ const ToolPathListBox = (props) => {
                 }
             });
         }
-        // updateToolConfig: async (settingName, value) => {
-        //     if (props.headType === HEAD_CNC) {
-        //         await dispatch(cncActions.changeActiveToolListDefinition(currentToolDefinition.definitionId, currentToolDefinition.name));
-        //     }
-        //     const toolPath = selectedToolPath;
-        //     const option = {};
-        //     option[toHump(settingName)] = value;
-        //     const newToolPath = {
-        //         ...toolPath,
-        //         gcodeConfig: {
-        //             ...toolPath.gcodeConfig,
-        //             ...option
-        //         }
-        //     };
-        //     dispatch(editorActions.saveToolPath(props.headType, newToolPath));
-        // },
-        // updateGcodeConfig: (option) => {
-        //     const toolPath = selectedToolPath;
-        //     if (props.headType === HEAD_LASER) {
-        //         if (!option.fixedPower) {
-        //             if (option.movementMode === 'greyscale-line') {
-        //                 option.fixedPower = 50;
-        //             }
-        //             if (option.movementMode === 'greyscale-dot') {
-        //                 option.fixedPower = 30;
-        //             }
-        //         }
-        //     }
-        //     const newToolPath = {
-        //         ...toolPath,
-        //         gcodeConfig: {
-        //             ...toolPath.gcodeConfig,
-        //             ...option
-        //         }
-        //     };
-        //     dispatch(editorActions.saveToolPath(props.headType, newToolPath));
-        // }
     };
     useEffect(() => {
         props.widgetActions.setTitle(i18n._('Toolpath List'));
@@ -335,6 +297,7 @@ const ToolPathListBox = (props) => {
             {selectedToolPath && (
                 <ToolPathFastConfigurations
                     headType={props.headType}
+                    setEditingToolpath={setEditingToolpath}
                     toolpath={selectedToolPath}
                 />
             )}

@@ -9,10 +9,9 @@ import styles from '../styles.styl';
 import CncToolManager from '../../CncToolManager';
 import SvgIcon from '../../../components/SvgIcon';
 
-function ToolSelector(props) {
+function ToolSelector({ toolDefinitions, setCurrentToolDefinition, setCurrentValueAsProfile, toolDefinition, isModifiedDefinition, shouldSaveToolpath = false, saveToolPath }) {
     const [showManager, setShowManager] = useState(false);
     // const dispatch = useDispatch();
-    const { toolDefinitions, toolDefinition, isModifiedDefinition, shouldDisabedSelect = false } = props;
 
     const toolDefinitionOptions = [];
     const toolDefinitionOptionsObj = {};
@@ -25,21 +24,30 @@ function ToolSelector(props) {
         function onclose() {
             setShowManager(false);
         }
+        let saveToolPathFunc;
+        if (shouldSaveToolpath) {
+            saveToolPathFunc = saveToolPath;
+        }
         return (
-            showManager && (<CncToolManager closeToolManager={onclose} />)
+            showManager && (
+                <CncToolManager
+                    shouldSaveToolpath
+                    setCurrentToolDefinition={setCurrentToolDefinition}
+                    saveToolPath={saveToolPathFunc}
+                    closeToolManager={onclose}
+                />
+            )
         );
     }
 
     async function onChangeActiveToolListValue(option) {
         if (option.definitionId === 'new') {
             await onShowCncToolManager();
-            props.setCurrentValueAsProfile();
+            setCurrentValueAsProfile();
         } else {
             const definitionId = option.definitionId;
             const newDefinition = toolDefinitions.find(d => d.definitionId === definitionId);
-            console.log('newDefinition', newDefinition);
-            props.setCurrentToolDefinition(newDefinition);
-            // await dispatch(cncActions.changeActiveToolListDefinition(definitionId, name));
+            setCurrentToolDefinition(newDefinition);
         }
     }
 
@@ -115,7 +123,6 @@ function ToolSelector(props) {
                             className="sm-flex align-r"
                             clearable={false}
                             isGroup
-                            disabled={shouldDisabedSelect}
                             size="large"
                             valueObj={valueObj}
                             options={toolDefinitionOptions}
@@ -145,7 +152,8 @@ ToolSelector.propTypes = {
     toolDefinition: PropTypes.object.isRequired,
     setCurrentToolDefinition: PropTypes.func,
     isModifiedDefinition: PropTypes.bool.isRequired,
-    shouldDisabedSelect: PropTypes.bool,
+    shouldSaveToolpath: PropTypes.bool,
+    saveToolPath: PropTypes.func,
     setCurrentValueAsProfile: PropTypes.func.isRequired
 };
 

@@ -353,7 +353,6 @@ class ToolPathGroup {
 
     updateToolPath(toolPathId, newState, options) {
         const toolPath = this._getToolPath(toolPathId);
-        console.log('update saveToolPath', toolPath, newState, options);
         if (toolPath) {
             toolPath.updateState({ ...newState, ...options });
             // toolPath.commitGenerateToolPath();

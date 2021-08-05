@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -26,22 +27,22 @@ function getFastEditSettingsKeys(toolPath) {
     if (headType === HEAD_CNC) {
         if (toolPathType === 'vector') {
             return [
-                'pathType', 'targetDepth', 'work_speed', 'plunge_speed', 'step_down', 'step_over'
+                'pathType', 'targetDepth', 'workSpeed', 'plungeSpeed', 'stepDown', 'stepOver'
             ];
         }
         if (toolPathType === 'image') {
             return [
-                'targetDepth', 'work_speed', 'plunge_speed', 'step_down', 'step_over'
+                'targetDepth', 'workSpeed', 'plungeSpeed', 'stepDown', 'stepOver'
             ];
         }
         if (toolPathType === 'sculpt') {
             if (toolPath.materials.isRotate) {
                 return [
-                    'sliceMode', 'work_speed', 'plunge_speed', 'step_down', 'step_over'
+                    'sliceMode', 'workSpeed', 'plungeSpeed', 'stepDown', 'stepOver'
                 ];
             } else {
                 return [
-                    'targetDepth', 'work_speed', 'plunge_speed', 'step_down', 'step_over'
+                    'targetDepth', 'workSpeed', 'plungeSpeed', 'stepDown', 'stepOver'
                 ];
             }
         }
@@ -92,20 +93,12 @@ function ToolPathFastConfigurations(props) {
     const dispatch = useDispatch();
     const [toolPath, setToolPath] = useState(toolpath);
     const [currentToolDefinition, setCurrentToolDefinition] = useState(activeToolListDefinition);
-    const [fastSettings, setFastSettings] = useState({});
-
-    async function handleToolSelectorChange(value) {
-        setCurrentToolDefinition(value);
-        if (props.headType === HEAD_CNC && value?.definitionId !== activeToolListDefinition?.definitionId) {
-            await dispatch(cncActions.changeActiveToolListDefinition(value?.definitionId, value?.name, true));
-        }
-    }
-    const saveToolPath = async () => {
+    const saveToolPath = async (toolDefinition) => {
         const toolParams = {};
         const gcodeConfig = {
             ...toolPath.gcodeConfig
         };
-        const definition = currentToolDefinition;
+        const definition = toolDefinition;
         if (definition) {
             toolParams.definitionId = definition.definitionId;
             toolParams.definitionName = definition.name;
@@ -120,63 +113,26 @@ function ToolPathFastConfigurations(props) {
                 gcodeConfig[toHump(key)] = definition.settings[key].default_value;
             }
         }
-        console.log('saveToolPath dddddddd', currentToolDefinition.settings, toolPath?.gcodeConfig);
 
         const newToolPath = {
             ...toolPath,
             gcodeConfig,
             toolParams
         };
+        setToolPath(newToolPath);
         await dispatch(editorActions.saveToolPath(props.headType, newToolPath));
     };
-
-
-    useLayoutEffect(() => {
-        const newDefinition = _.cloneDeep(activeToolListDefinition);
-        setCurrentToolDefinition(newDefinition);
-        const fastEditSettings = {};
-        if (toolPath && newDefinition) {
-            const cncGcodeDefinition = CNC_DEFAULT_GCODE_PARAMETERS_DEFINITION;
-            const { gcodeConfig } = toolPath;
-            let allDefinition = {};
-            if (props.headType === HEAD_CNC) {
-                Object.keys(cncGcodeDefinition).forEach((key) => {
-                    cncGcodeDefinition[key].default_value = gcodeConfig[key];
-                    // isGcodeConfig is true means to use updateGcodeConfig, false means to use updateToolConfig
-                    cncGcodeDefinition[key].isGcodeConfig = true;
-                });
-                if (newDefinition?.shouldSaveToolpath) {
-                    allDefinition = {
-                        ...cncGcodeDefinition,
-                        ...newDefinition?.settings
-                    };
-                } else {
-                    allDefinition = {
-                        ...cncGcodeDefinition
-                    };
-                }
-            }
-            if (props.headType === HEAD_LASER) {
-                allDefinition = LASER_DEFAULT_GCODE_PARAMETERS_DEFINITION;
-                Object.keys(allDefinition).forEach((key) => {
-                    allDefinition[key].default_value = gcodeConfig[toHump(key)];
-                    allDefinition[key].isGcodeConfig = true;
-                });
-            }
-            const fastEditSettingsKeys = getFastEditSettingsKeys(toolPath);
-            fastEditSettingsKeys.forEach((key) => {
-                if (allDefinition[key]) {
-                    fastEditSettings[key] = allDefinition[key];
-                }
-            });
-            console.log('fastEditSettings', gcodeConfig, fastEditSettings);
-            setFastSettings(fastEditSettings);
-            if (activeToolListDefinition?.shouldSaveToolpath === true) {
-                saveToolPath();
-            }
+    async function handleToolSelectorChange(value) {
+        setCurrentToolDefinition(value);
+        if (props.headType === HEAD_CNC && value?.definitionId !== activeToolListDefinition?.definitionId) {
+            await dispatch(cncActions.changeActiveToolListDefinition(value?.definitionId, value?.name, true));
         }
-    }, [activeToolListDefinition]);
-
+        saveToolPath(value);
+    }
+    function handleSetEditingToolpath() {
+        console.log('handleSetEditingToolpath', props, props.setEditingToolpath, toolPath);
+        props.setEditingToolpath(toolPath);
+    }
     const updateCncActiveToolDefinition = async (currentToolPath) => {
         const { toolParams, gcodeConfig } = currentToolPath;
         const activeToolDefinition = _.cloneDeep(activeToolListDefinition);
@@ -199,14 +155,12 @@ function ToolPathFastConfigurations(props) {
         if (currentToolDefinition?.definitionId !== activeToolDefinition?.definitionId) {
             await dispatch(cncActions.changeActiveToolListDefinition(activeToolDefinition?.definitionId, activeToolDefinition?.name));
         }
-        await dispatch(cncActions.changeActiveToolListDefinition(activeToolDefinition.definitionId, activeToolDefinition.name));
         setCurrentToolDefinition(activeToolDefinition);
     };
 
     useEffect(() => {
         const newToolPath = _.cloneDeep(toolpath);
         setToolPath(newToolPath);
-        console.log('saveToolPath cccccccc', newToolPath);
         if (!_.isNull(toolpath) && props.headType === HEAD_CNC) {
             updateCncActiveToolDefinition(newToolPath);
         }
@@ -225,15 +179,16 @@ function ToolPathFastConfigurations(props) {
             };
             dispatch(editorActions.saveToolPath(props.headType, newToolPath));
         },
-        checkIfDefinitionModified() {
-            if (props.headType === HEAD_CNC) {
-                return !Object.entries(activeToolListDefinition.settings).every(([key, setting]) => {
-                    return currentToolDefinition && currentToolDefinition.settings[key].default_value === setting.default_value;
-                });
-            } else {
-                return false;
-            }
-        },
+        // checkIfDefinitionModified() {
+        //     if (props.headType === HEAD_CNC) {
+        //         console.log('activeToolListDefinition.settings', activeToolListDefinition?.settings, toolPath.gcodeConfig);
+        //         return !Object.entries(activeToolListDefinition.settings).every(([key, setting]) => {
+        //             return currentToolDefinition && currentToolDefinition.settings[key].default_value === setting.default_value;
+        //         });
+        //     } else {
+        //         return false;
+        //     }
+        // },
         cancelUpdateToolPath() {
             props.onClose && props.onClose();
         },
@@ -300,15 +255,43 @@ function ToolPathFastConfigurations(props) {
                     ...option
                 }
             };
-            console.log('updateGcodeConfig', newToolPath);
             dispatch(editorActions.saveToolPath(props.headType, newToolPath));
         }
     };
     if (!toolPath) {
         return null;
     }
+
+    const fastEditSettings = {};
+    if (toolPath && activeToolListDefinition) {
+        const cncGcodeDefinition = CNC_DEFAULT_GCODE_PARAMETERS_DEFINITION;
+        const { gcodeConfig } = toolPath;
+        let allDefinition = {};
+        if (props.headType === HEAD_CNC) {
+            Object.keys(cncGcodeDefinition).forEach((key) => {
+                cncGcodeDefinition[key].default_value = gcodeConfig[key];
+                // isGcodeConfig is true means to use updateGcodeConfig, false means to use updateToolConfig
+                cncGcodeDefinition[key].isGcodeConfig = true;
+            });
+            allDefinition = {
+                ...cncGcodeDefinition
+            };
+        }
+        if (props.headType === HEAD_LASER) {
+            allDefinition = LASER_DEFAULT_GCODE_PARAMETERS_DEFINITION;
+            Object.keys(allDefinition).forEach((key) => {
+                allDefinition[key].default_value = gcodeConfig[toHump(key)];
+                allDefinition[key].isGcodeConfig = true;
+            });
+        }
+        const fastEditSettingsKeys = getFastEditSettingsKeys(toolPath);
+        fastEditSettingsKeys.forEach((key) => {
+            if (allDefinition[key]) {
+                fastEditSettings[key] = allDefinition[key];
+            }
+        });
+    }
     // const isModifiedDefinition = actions.checkIfDefinitionModified();
-    // console.log('isModifiedDefinition', isModifiedDefinition);
     return (
         <React.Fragment>
             <div className={classNames(
@@ -327,17 +310,15 @@ function ToolPathFastConfigurations(props) {
                             toolDefinition={currentToolDefinition}
                             setCurrentToolDefinition={handleToolSelectorChange}
                             toolDefinitions={toolDefinitions}
-                            isModifiedDefinition={() => {
-                                return !Object.entries(currentToolDefinition.settings).every(([key, setting]) => {
-                                    return fastSettings && fastSettings[key].default_value === setting.default_value;
-                                });
-                            }}
+                            isModifiedDefinition={false}
+                            shouldSaveToolpath
+                            saveToolPath={saveToolPath}
                             setCurrentValueAsProfile={() => {}}
                         />
                     )}
                     <ToolParameters
                         styleSize="middle"
-                        settings={fastSettings}
+                        settings={fastEditSettings}
                         updateToolConfig={actions.updateToolConfig}
                         updateGcodeConfig={actions.updateGcodeConfig}
                         toolPath={toolPath}
@@ -348,6 +329,7 @@ function ToolPathFastConfigurations(props) {
                             'link-text',
                             'margin-bottom-16'
                         )}
+                        onClick={handleSetEditingToolpath}
                     >
                         {i18n._('More')}
                     </Anchor>
@@ -358,6 +340,7 @@ function ToolPathFastConfigurations(props) {
 }
 ToolPathFastConfigurations.propTypes = {
     onClose: PropTypes.func,
+    setEditingToolpath: PropTypes.func,
     headType: PropTypes.string,
     toolpath: PropTypes.object.isRequired
 };
