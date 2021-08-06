@@ -404,8 +404,8 @@ export const processActions = {
     },
 
     onGenerateViewPath: (headType, taskResult) => async (dispatch, getState) => {
-        const { size } = getState().machine;
-        const { toolPathGroup, materials } = getState()[headType];
+        const size = getState()[headType]?.coordinateSize;
+        const { toolPathGroup, materials, coordinateMode } = getState()[headType];
         const { isRotate } = materials;
 
         if (taskResult.taskStatus === 'failed') {
@@ -416,7 +416,17 @@ export const processActions = {
             return;
         }
         const { viewPathFile } = taskResult;
-        await toolPathGroup.onGenerateViewPath(viewPathFile, isRotate ? materials : size);
+        const coorDelta = {
+            dx: size.x / 2 * coordinateMode.setting.sizeMultiplyFactor.x,
+            dy: size.y / 2 * coordinateMode.setting.sizeMultiplyFactor.y
+        };
+        const boundarySize = {
+            minX: -size.x / 2 + coorDelta?.dx,
+            maxX: size.x / 2 + coorDelta?.dx,
+            minY: -size.y / 2 + coorDelta?.dy,
+            maxY: size.y / 2 + coorDelta?.dy
+        };
+        await toolPathGroup.onGenerateViewPath(viewPathFile, isRotate ? materials : boundarySize);
         dispatch(baseActions.updateState(headType, {
             showSimulation: true
         }));

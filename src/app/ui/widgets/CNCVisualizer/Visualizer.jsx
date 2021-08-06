@@ -41,6 +41,7 @@ class Visualizer extends Component {
         stage: PropTypes.number.isRequired,
         progress: PropTypes.number.isRequired,
         inProgress: PropTypes.bool.isRequired,
+        showSimulation: PropTypes.bool.isRequired,
 
         coordinateMode: PropTypes.object.isRequired,
         coordinateSize: PropTypes.object.isRequired,
@@ -319,6 +320,7 @@ class Visualizer extends Component {
         if (nextProps.coordinateSize !== this.props.coordinateSize) {
             this.printableArea = new PrintablePlate(nextProps.coordinateSize, nextProps.materials, nextProps.coordinateMode);
         }
+        this.printableArea.changeCoordinateVisibility(!nextProps.showSimulation);
     }
 
     componentWillUnmount() {
@@ -621,13 +623,14 @@ const mapStateToProps = (state, ownProps) => {
     const { size } = state.machine;
     const { currentModalPath } = state.appbarMenu;
     const { page, materials, modelGroup, toolPathGroup, displayedType, hasModel, isChangedAfterGcodeGenerating,
-        renderingTimestamp, stage, progress, SVGActions, scale, target, coordinateMode, coordinateSize, inProgress } = state.cnc;
+        renderingTimestamp, stage, progress, SVGActions, scale, target, coordinateMode, coordinateSize, inProgress, showSimulation } = state.cnc;
     const selectedModelArray = modelGroup.getSelectedModelArray();
     const selectedModelID = modelGroup.getSelectedModel().modelID;
     const selectedToolPathModels = modelGroup.getSelectedToolPathModels();
 
     return {
         currentModalPath,
+        showSimulation,
         // switch pages trigger pathname change
         pathname: ownProps.location.pathname,
         page,
