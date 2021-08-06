@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classNames from 'classnames';
@@ -25,9 +25,13 @@ import {
 import ToolParameters from '../../../views/ToolPathConfigurations/cnc/ToolParameters';
 import { actions as cncActions } from '../../../../flux/cnc';
 import ToolSelector from '../../../views/ToolPathConfigurations/cnc/ToolSelector';
+import ContextMenu from '../../../components/ContextMenu';
 
 
-const ToolpathItem = ({ toolPath, selectedToolPathIDArray, selectToolPathId, selectOneToolPathId, selectToolPathById, onClickVisible, setEditingToolpath, disabled }) => {
+const ToolpathItem = ({
+    toolPath, selectedToolPathIDArray, selectToolPathId, selectOneToolPathId, selectToolPathById,
+    onClickVisible, setEditingToolpath, disabled, showContextMenu
+}) => {
     if (!toolPath) {
         return null;
     }
@@ -62,6 +66,13 @@ const ToolpathItem = ({ toolPath, selectedToolPathIDArray, selectToolPathId, sel
                     'justify-space-between',
                     selectedToolPathIDArray.includes(toolPath.id) ? styles.selected : null
                 )}
+                role="button"
+                tabIndex="0"
+                onMouseUp={(e) => {
+                    if (e.button === 2) { // right click
+                        showContextMenu(e);
+                    }
+                }}
             >
                 <Anchor
                     className={classNames(
@@ -118,6 +129,7 @@ ToolpathItem.propTypes = {
     selectOneToolPathId: PropTypes.func.isRequired,
     selectToolPathById: PropTypes.func.isRequired,
     onClickVisible: PropTypes.func.isRequired,
+    showContextMenu: PropTypes.func.isRequired,
 
     setEditingToolpath: PropTypes.func.isRequired,
     disabled: PropTypes.bool.isRequired
@@ -240,6 +252,9 @@ const ToolPathListBox = (props) => {
 
     const [editingToolpath, setEditingToolpath] = useState(null);
     const [currentToolpath, setCurrentToolpath] = useState(null);
+    const contextMenuRef = useRef(null);
+    const contextMenuDisabled = (selectedToolPathIDArray.length !== 1);
+    const contextMenuArrangementDisabled = (toolPaths.length === 1);
     const actions = {
         selectOneToolPathId: (id) => {
             dispatch(editorActions.selectOneToolPathId(props.headType, id));
@@ -267,6 +282,16 @@ const ToolPathListBox = (props) => {
         toolPathToDown: () => {
             if (selectedToolPathIDArray.length === 1) {
                 dispatch(editorActions.toolPathToDown(props.headType, selectedToolPathIDArray[0]));
+            }
+        },
+        toolPathToTop: () => {
+            if (selectedToolPathIDArray.length === 1) {
+                dispatch(editorActions.toolPathToTop(props.headType, selectedToolPathIDArray[0]));
+            }
+        },
+        toolPathToBottom: () => {
+            if (selectedToolPathIDArray.length === 1) {
+                dispatch(editorActions.toolPathToBottom(props.headType, selectedToolPathIDArray[0]));
             }
         },
         createToolPath: () => {
@@ -316,6 +341,12 @@ const ToolPathListBox = (props) => {
                 }
             };
             dispatch(editorActions.saveToolPath(props.headType, newToolPath));
+        },
+        showContextMenu: (event) => {
+            if (selectedToolPathIDArray.length > 1) {
+                return;
+            }
+            contextMenuRef.current.show(event);
         }
     };
     useEffect(() => {
@@ -370,10 +401,63 @@ const ToolPathListBox = (props) => {
                                     selectToolPathById={actions.selectToolPathById}
                                     onClickVisible={actions.onClickVisible}
                                     setEditingToolpath={setEditingToolpath}
+                                    showContextMenu={actions.showContextMenu}
                                     disabled={inProgress}
                                 />
                             );
                         })}
+                        <ContextMenu
+                            ref={contextMenuRef}
+                            menuItems={
+                                [
+                                    {
+                                        type: 'item',
+                                        label: i18n._('Edit'),
+                                        disabled: contextMenuDisabled,
+                                        onClick: () => {
+                                            setEditingToolpath(selectedToolPath);
+                                        }
+                                    },
+                                    {
+                                        type: 'item',
+                                        label: i18n._('Delete'),
+                                        disabled: contextMenuDisabled,
+                                        onClick: () => actions.deleteToolPath(selectedToolPathId)
+                                    },
+                                    {
+                                        type: 'subMenu',
+                                        label: i18n._('Arrangement'),
+                                        disabled: contextMenuDisabled || contextMenuArrangementDisabled,
+                                        items: [
+                                            {
+                                                type: 'item',
+                                                label: i18n._('Up'),
+                                                disabled: contextMenuDisabled,
+                                                onClick: () => actions.toolPathToUp(selectedToolPathIDArray)
+                                            },
+                                            {
+                                                type: 'item',
+                                                label: i18n._('Down'),
+                                                disabled: contextMenuDisabled,
+                                                onClick: () => actions.toolPathToDown(selectedToolPathIDArray)
+                                            },
+                                            {
+                                                type: 'item',
+                                                label: i18n._('Bottom'),
+                                                disabled: contextMenuDisabled,
+                                                onClick: () => actions.toolPathToBottom(selectedToolPathIDArray)
+                                            },
+                                            {
+                                                type: 'item',
+                                                label: i18n._('Top'),
+                                                disabled: contextMenuDisabled,
+                                                onClick: () => actions.toolPathToTop(selectedToolPathIDArray)
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        />
                     </div>
                 </div>
                 <div className={classNames(

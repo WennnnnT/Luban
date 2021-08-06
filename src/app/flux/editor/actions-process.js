@@ -234,6 +234,22 @@ export const processActions = {
         }));
     },
 
+    toolPathToTop: (headType, toolPathId) => (dispatch, getState) => {
+        const { toolPathGroup } = getState()[headType];
+        toolPathGroup.toolPathToTop(toolPathId);
+        dispatch(baseActions.updateState(headType, {
+            isChangedAfterGcodeGenerating: true
+        }));
+    },
+
+    toolPathToBottom: (headType, toolPathId) => (dispatch, getState) => {
+        const { toolPathGroup } = getState()[headType];
+        toolPathGroup.toolPathToBottom(toolPathId);
+        dispatch(baseActions.updateState(headType, {
+            isChangedAfterGcodeGenerating: true
+        }));
+    },
+
     deleteToolPath: (headType, selectedToolPathIDArray) => (dispatch, getState) => {
         const { toolPathGroup } = getState()[headType];
 
