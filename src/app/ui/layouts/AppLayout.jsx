@@ -63,7 +63,7 @@ class AppLayout extends PureComponent {
         updateAutoupdateMessage: PropTypes.func.isRequired,
         updateShouldCheckForUpdate: PropTypes.func.isRequired,
         children: PropTypes.array.isRequired,
-        startProject: PropTypes.func.isRequired
+        restartGuidestartProject: PropTypes.func.isRequired
     };
 
     state = {
@@ -505,7 +505,7 @@ class AppLayout extends PureComponent {
             UniApi.Event.on('appbar-menu:guided-tours-begin', () => {
                 const pathname = this.props.history.location?.pathname;
                 if (!(pathname === '/workspace' || pathname === '/' || pathname === 'undefined')) {
-                    this.props.startProject(pathname, this.props.history);
+                    this.props.restartGuidestartProject(pathname, this.props.history);
                 }
             });
         }
@@ -580,7 +580,7 @@ const mapDispatchToProps = (dispatch) => {
         updateShouldCheckForUpdate: (shouldAutoUpdate) => dispatch(machineActions.updateShouldCheckForUpdate(shouldAutoUpdate)),
         updateAutoupdateMessage: (message) => dispatch(machineActions.updateAutoupdateMessage(message)),
         updateIsDownloading: (isDownloading) => dispatch(machineActions.updateIsDownloading(isDownloading)),
-        startProject: (pathname, history) => dispatch(projectActions.startProject(pathname, pathname, history, true))
+        restartGuidestartProject: (pathname, history) => dispatch(projectActions.startProject(pathname, pathname, history, true))
     };
 };
 
