@@ -372,13 +372,17 @@ export const actions = {
             width,
             height
         };
-        if (!materials.isRotate) {
+        if (sourceType !== SOURCE_TYPE_IMAGE3D) {
             const coorDelta = {
                 dx: coordinateSize.x / 2 * coordinateMode.setting.sizeMultiplyFactor.x,
                 dy: coordinateSize.y / 2 * coordinateMode.setting.sizeMultiplyFactor.y
             };
             defaultTransformation.positionX = coorDelta.dx;
-            defaultTransformation.positionY = coorDelta.dy;
+            if (materials.isRotate) {
+                defaultTransformation.positionY = height / 2;
+            } else {
+                defaultTransformation.positionY = coorDelta.dy;
+            }
         }
 
         config = {
