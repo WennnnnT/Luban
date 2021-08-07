@@ -340,7 +340,7 @@ export const actions = {
      */
     generateModel: (headType, originalName, uploadName, sourceWidth, sourceHeight, mode, sourceType, config, gcodeConfig, transformation, modelID, zIndex) => (dispatch, getState) => {
         const { size } = getState().machine;
-        const { materials, modelGroup, SVGActions, contentGroup, toolPathGroup } = getState()[headType];
+        const { materials, modelGroup, SVGActions, contentGroup, toolPathGroup, coordinateMode, coordinateSize } = getState()[headType];
 
         sourceType = sourceType || getSourceType(originalName);
 
@@ -357,7 +357,7 @@ export const actions = {
 
         // Limit image size by machine size
         const newModelSize = sourceType !== SOURCE_TYPE_IMAGE3D
-            ? limitModelSizeByMachineSize(size, sourceWidth, sourceHeight)
+            ? limitModelSizeByMachineSize(coordinateSize, sourceWidth, sourceHeight)
             : sizeModel(size, materials, sourceWidth, sourceHeight);
 
         let { width, height } = newModelSize;
@@ -372,6 +372,14 @@ export const actions = {
             width,
             height
         };
+        if (!materials.isRotate) {
+            const coorDelta = {
+                dx: coordinateSize.x / 2 * coordinateMode.setting.sizeMultiplyFactor.x,
+                dy: coordinateSize.y / 2 * coordinateMode.setting.sizeMultiplyFactor.y
+            };
+            defaultTransformation.positionX = coorDelta.dx;
+            defaultTransformation.positionY = coorDelta.dy;
+        }
 
         config = {
             ...defaultConfig,
