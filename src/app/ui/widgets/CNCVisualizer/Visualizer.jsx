@@ -563,7 +563,7 @@ class Visualizer extends Component {
                             },
                             {
                                 type: 'subMenu',
-                                label: i18n._('Arrangement'),
+                                label: i18n._('Arrange'),
                                 disabled: contextMenuDisabled,
                                 items: [
                                     {
@@ -580,7 +580,7 @@ class Visualizer extends Component {
                             },
                             {
                                 type: 'subMenu',
-                                label: i18n._('Transformation'),
+                                label: i18n._('Transform'),
                                 disabled: contextMenuDisabled,
                                 items: [
                                     {
@@ -590,22 +590,22 @@ class Visualizer extends Component {
                                     },
                                     {
                                         type: 'item',
-                                        label: i18n._('Rotate Clockwise 90°'),
+                                        label: i18n._('Rotate 90° Clockwise'),
                                         onClick: () => this.actions.rotateModel(90)
                                     },
                                     {
                                         type: 'item',
-                                        label: i18n._('Rotate Anti-Clockwise 90°'),
+                                        label: i18n._('Rotate 90° Counter Clockwise'),
                                         onClick: () => this.actions.rotateModel(-90)
                                     },
                                     {
                                         type: 'item',
-                                        label: i18n._('Horizontal Flip'),
+                                        label: i18n._('Flip Horizontal'),
                                         onClick: () => this.props.onFlipSelectedModel('Horizontal')
                                     },
                                     {
                                         type: 'item',
-                                        label: i18n._('Vertical Flip'),
+                                        label: i18n._('Flip Vertical'),
                                         onClick: () => this.props.onFlipSelectedModel('Vertical')
                                     }
                                 ]

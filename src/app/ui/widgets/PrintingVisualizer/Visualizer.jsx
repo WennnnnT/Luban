@@ -35,6 +35,7 @@ class Visualizer extends PureComponent {
         progress: PropTypes.number.isRequired,
         renderingTimestamp: PropTypes.number.isRequired,
         inProgress: PropTypes.bool.isRequired,
+        hasModel: PropTypes.bool.isRequired,
 
         hideSelectedModel: PropTypes.func.isRequired,
         recordAddOperation: PropTypes.func.isRequired,
@@ -436,7 +437,7 @@ class Visualizer extends PureComponent {
     };
 
     render() {
-        const { size, selectedModelArray, modelGroup, gcodeLineGroup, progress, inProgress } = this.props;
+        const { size, selectedModelArray, modelGroup, gcodeLineGroup, progress, inProgress, hasModel } = this.props;
 
         const isModelSelected = (selectedModelArray.length > 0);
         const isSupportSelected = modelGroup.selectedModelArray.length > 0 && modelGroup.selectedModelArray[0].supportTag === true;
@@ -540,7 +541,7 @@ class Visualizer extends PureComponent {
                             },
                             {
                                 type: 'item',
-                                label: i18n._('Center Model'),
+                                label: i18n._('Center Models'),
                                 disabled: inProgress || !isModelSelected || isSupportSelected,
                                 onClick: this.actions.centerSelectedModel
                             },
@@ -549,6 +550,12 @@ class Visualizer extends PureComponent {
                                 label: i18n._('Auto Rotate'),
                                 disabled: inProgress || !isModelSelected || isSupportSelected,
                                 onClick: this.actions.autoRotateSelectedModel
+                            },
+                            {
+                                type: 'item',
+                                label: i18n._('Auto Arrange'),
+                                disabled: inProgress || !hasModel || isSupportSelected,
+                                onClick: this.actions.arrangeAllModels
                             }
                         ]
                     }

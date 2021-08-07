@@ -427,32 +427,32 @@ const ToolPathListBox = (props) => {
                                     },
                                     {
                                         type: 'subMenu',
-                                        label: i18n._('Arrangement'),
+                                        label: i18n._('Sort'),
                                         disabled: contextMenuDisabled || contextMenuArrangementDisabled,
                                         items: [
                                             {
                                                 type: 'item',
-                                                label: i18n._('Up'),
+                                                label: i18n._('Prioritize'),
                                                 disabled: contextMenuDisabled,
                                                 onClick: () => actions.toolPathToUp(selectedToolPathIDArray)
                                             },
                                             {
                                                 type: 'item',
-                                                label: i18n._('Down'),
+                                                label: i18n._('Deprioritize'),
                                                 disabled: contextMenuDisabled,
                                                 onClick: () => actions.toolPathToDown(selectedToolPathIDArray)
-                                            },
-                                            {
-                                                type: 'item',
-                                                label: i18n._('Bottom'),
-                                                disabled: contextMenuDisabled,
-                                                onClick: () => actions.toolPathToBottom(selectedToolPathIDArray)
                                             },
                                             {
                                                 type: 'item',
                                                 label: i18n._('Top'),
                                                 disabled: contextMenuDisabled,
                                                 onClick: () => actions.toolPathToTop(selectedToolPathIDArray)
+                                            },
+                                            {
+                                                type: 'item',
+                                                label: i18n._('Bottom'),
+                                                disabled: contextMenuDisabled,
+                                                onClick: () => actions.toolPathToBottom(selectedToolPathIDArray)
                                             }
                                         ]
                                     }
