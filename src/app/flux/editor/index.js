@@ -1214,6 +1214,7 @@ export const actions = {
         dispatch(actions.resetProcessState(headType));
         dispatch(operationHistoryActions.setOperations(headType, operations));
         dispatch(baseActions.render(headType));
+        dispatch(actions._checkModelsInChunkArea(headType));
     },
 
     /**
@@ -1249,6 +1250,7 @@ export const actions = {
         dispatch(actions.resetProcessState(headType));
 
         dispatch(baseActions.render(headType));
+        dispatch(actions._checkModelsInChunkArea(headType));
     },
 
     /**
@@ -1327,6 +1329,7 @@ export const actions = {
         }
 
         dispatch(baseActions.render(headType));
+        dispatch(actions._checkModelsInChunkArea(headType));
     },
 
     /**
@@ -1361,6 +1364,7 @@ export const actions = {
         dispatch(actions.resetProcessState(headType));
 
         dispatch(baseActions.render(headType));
+        dispatch(actions._checkModelsInChunkArea(headType));
     },
 
     /**
@@ -1543,6 +1547,7 @@ export const actions = {
         dispatch(actions.resetProcessState(headType));
         dispatch(operationHistoryActions.setOperations(headType, operations));
         dispatch(baseActions.render(headType));
+        dispatch(actions._checkModelsInChunkArea(headType));
     },
 
     /**
@@ -1578,6 +1583,7 @@ export const actions = {
         dispatch(actions.resetProcessState(headType));
 
         dispatch(baseActions.render(headType));
+        dispatch(actions._checkModelsInChunkArea(headType));
     },
 
     /**

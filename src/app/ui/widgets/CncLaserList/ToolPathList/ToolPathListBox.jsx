@@ -407,6 +407,7 @@ const ToolPathListBox = (props) => {
                             );
                         })}
                         <ContextMenu
+                            id="toolPathListBoxContextmenu"
                             ref={contextMenuRef}
                             menuItems={
                                 [

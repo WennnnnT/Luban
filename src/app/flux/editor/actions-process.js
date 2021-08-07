@@ -438,5 +438,25 @@ export const processActions = {
             gcodeFile: null
         }));
         dispatch(baseActions.render(headType));
+    },
+
+    _checkModelsInChunkArea: (headType) => (dispatch, getState) => {
+        const { materials, SVGActions } = getState()[headType];
+        if (materials.isRotate) {
+            const { size } = getState().machine;
+            const { y = 0, fixtureLength = 0 } = materials;
+
+            const height = Math.min(fixtureLength, y);
+            const posY = size.y - y;
+            const ChunkAreaY = height + posY;
+
+            const svgDataGroupBoundingBox = SVGActions.svgContentGroup.group.getBBox();
+            if (svgDataGroupBoundingBox.y < ChunkAreaY) {
+                if (!toastId || !toast.isActive(toastId)) {
+                    toastId = toast(i18n._('Moving objects to this area may cause a machine collision.'));
+                }
+            }
+        }
+        return null;
     }
 };
