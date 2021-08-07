@@ -51,6 +51,7 @@ class Output extends PureComponent {
         switchToPage: PropTypes.func.isRequired,
         showToolPathGroupObject: PropTypes.func.isRequired,
         showModelGroupObject: PropTypes.func.isRequired,
+        clearGcodeFile: PropTypes.func.isRequired,
         setAutoPreview: PropTypes.func.isRequired,
         preview: PropTypes.func.isRequired
     };
@@ -63,6 +64,7 @@ class Output extends PureComponent {
         switchToEditPage: () => {
             if (this.props.displayedType === DISPLAYED_TYPE_TOOLPATH) {
                 this.props.showModelGroupObject();
+                this.props.clearGcodeFile();
             } else {
                 this.props.showToolPathGroupObject();
             }
@@ -160,7 +162,7 @@ class Output extends PureComponent {
     render() {
         const actions = this.actions;
         const { workflowState, isGcodeGenerating, gcodeFile, hasModel, page,
-            disablePreview, hasToolPathModel, inProgress, displayedType, needToPreview } = this.props;
+            disablePreview, hasToolPathModel, inProgress, displayedType, needToPreview, headType } = this.props;
         const menu = (
             <Menu>
                 <Menu.Item
@@ -183,8 +185,8 @@ class Output extends PureComponent {
         );
         const isEditor = page === PAGE_EDITOR;
         return (
-            <div className={classNames('position-fixed', 'border-radius-bottom-8', 'bottom-8', 'background-color-white', styles['output-wrapper'])}>
-                <div className={classNames('position-re', 'margin-horizontal-16', 'margin-vertical-16',)}>
+            <div className={classNames('position-fixed', 'border-radius-bottom-8', 'bottom-8', 'background-color-white', styles['output-wrapper'], `${headType}-preview-export-intro-part`)}>
+                <div className={classNames('position-re', 'margin-horizontal-16', 'margin-vertical-16')}>
                     {isEditor && (
                         <Button
                             type="primary"
@@ -235,7 +237,7 @@ class Output extends PureComponent {
                             onKeyDown={noop}
                             role="button"
                             tabIndex={0}
-                            className={classNames('position-re', 'height-40',)}
+                            className={classNames('position-re', 'height-40', 'margin-top-10')}
                             onMouseEnter={actions.handleMouseOver}
                             onMouseLeave={actions.handleMouseOut}
                         >
@@ -248,8 +250,8 @@ class Output extends PureComponent {
                                     disabled={inProgress || !hasModel || workflowState === 'running' || isGcodeGenerating || gcodeFile === null}
                                     className={classNames(
                                         'position-ab',
-                                        'bottom-ne-8',
-                                        'margin-top-10',
+                                        // 'bottom-ne-8',
+                                        // 'margin-top-10',
                                         displayedType === DISPLAYED_TYPE_TOOLPATH ? 'display-block' : 'display-none'
                                     )}
                                 >
@@ -309,6 +311,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         switchToPage: (page) => dispatch(editorActions.switchToPage(headType, page)),
         showToolPathGroupObject: () => dispatch(editorActions.showToolPathGroupObject(headType)),
         showModelGroupObject: () => dispatch(editorActions.showModelGroupObject(headType)),
+        clearGcodeFile: () => dispatch(editorActions.clearGcodeFile(headType)),
         // togglePage: (page) => dispatch(editorActions.togglePage(headType, page)),
         commitGenerateGcode: (thumbnail) => dispatch(editorActions.commitGenerateGcode(headType, thumbnail)),
         renderGcodeFile: (fileName) => dispatch(workspaceActions.renderGcodeFile(fileName)),
