@@ -1464,12 +1464,12 @@ class SVGActionsFactory {
      *
      * @param {string} content
      */
-    createText(content) {
+    createText(content, position) {
         return this.svgContentGroup.addSVGElement({
             element: 'text',
             attr: {
-                x: this.size.x - 30,
-                y: this.size.y,
+                x: this.size.x - 30 + position.x,
+                y: this.size.y + position.y,
                 fill: '#000000',
                 'fill-opacity': 1,
                 'font-size': 12,

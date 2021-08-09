@@ -1590,9 +1590,12 @@ export const actions = {
      * Create text element (but not its corresponding model).
      */
     createText: (headType, content) => async (dispatch, getState) => {
-        const { SVGActions } = getState()[headType];
-
-        return SVGActions.createText(content);
+        const { SVGActions, coordinateMode, coordinateSize } = getState()[headType];
+        const position = {
+            x: coordinateSize.x / 2 * coordinateMode.setting.sizeMultiplyFactor.x,
+            y: -coordinateSize.y / 2 * coordinateMode.setting.sizeMultiplyFactor.y
+        };
+        return SVGActions.createText(content, position);
     },
 
     /**
