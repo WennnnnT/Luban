@@ -70,6 +70,11 @@ const ToolpathItem = ({
                 tabIndex="0"
                 onMouseUp={(e) => {
                     if (e.button === 2) { // right click
+                        console.log(selectedToolPathIDArray, toolPath.id);
+                        // item is selected, do not select again
+                        if (!(selectedToolPathIDArray.length === 1 && selectedToolPathIDArray[0] === toolPath.id)) {
+                            selectOneToolPathId(toolPath.id);
+                        }
                         showContextMenu(e);
                     }
                 }}
@@ -343,9 +348,6 @@ const ToolPathListBox = (props) => {
             dispatch(editorActions.saveToolPath(props.headType, newToolPath));
         },
         showContextMenu: (event) => {
-            if (selectedToolPathIDArray.length > 1) {
-                return;
-            }
             contextMenuRef.current.show(event);
         }
     };

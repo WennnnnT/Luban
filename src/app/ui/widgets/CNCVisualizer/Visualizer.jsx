@@ -371,8 +371,13 @@ class Visualizer extends Component {
     }
 
     showContextMenu = (event) => {
-        if (this.props.modelGroup.selectedModelArray.length > 1) {
+        const model = this.props.SVGActions.getSVGModelByElement(event.target);
+        if (this.props.modelGroup.selectedModelArray.length > 1 && this.props.modelGroup.selectedModelArray.includes(model)) {
             return;
+        }
+        if (model) {
+            this.props.onClearSelection();
+            this.props.onSelectElements([event.target]);
         }
         this.contextMenuRef.current.show(event);
     };
