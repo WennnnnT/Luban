@@ -750,6 +750,14 @@ class SVGActionsFactory {
     }
 
     /**
+     * Get <g id='svg-data'> SVGElement boundingBox, which contains all the visible children SVGElements
+     * @returns {SVGRect} {x, y, width, height}
+     */
+    getContentGroupBoundingBox() {
+        return this.svgContentGroup.group.getBBox();
+    }
+
+    /**
      * Get selected elements.
      *
      * @returns {SVGElement[]} - returns list of selected elements.
