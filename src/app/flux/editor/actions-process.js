@@ -450,8 +450,8 @@ export const processActions = {
             const posY = size.y - y;
             const ChunkAreaY = height + posY;
 
-            const svgDataGroupBoundingBox = SVGActions.getContentGroupBoundingBox();
-            if (svgDataGroupBoundingBox.y < ChunkAreaY) {
+            const svgSelectedGroupBoundingBox = SVGActions.getSelectedElementsBoundingBox();
+            if (svgSelectedGroupBoundingBox.y < ChunkAreaY) {
                 if (!toastId || !toast.isActive(toastId)) {
                     toastId = toast(i18n._('Moving objects to this area may cause a machine collision.'));
                 }

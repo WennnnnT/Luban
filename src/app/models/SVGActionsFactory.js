@@ -750,11 +750,11 @@ class SVGActionsFactory {
     }
 
     /**
-     * Get <g id='svg-data'> SVGElement boundingBox, which contains all the visible children SVGElements
+     * Get <path id='selected-elements-box'></path> SVGElement boundingBox, which contains all the selected visible children SVGElements
      * @returns {SVGRect} {x, y, width, height}
      */
-    getContentGroupBoundingBox() {
-        return this.svgContentGroup.group.getBBox();
+    getSelectedElementsBoundingBox() {
+        return document.querySelector('#selected-elements-box').getBBox();
     }
 
     /**
