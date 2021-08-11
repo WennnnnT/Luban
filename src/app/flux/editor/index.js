@@ -908,9 +908,11 @@ export const actions = {
             return;
         }
 
-        const processImageName = taskResult.filename;
+        let processImageName = taskResult.filename;
         if (!processImageName) {
             return;
+        } else if (/\.svg$/.test(processImageName) && !(/parsed\.svg$/.test(processImageName))) {
+            processImageName = processImageName.replace(/\.svg$/, 'parsed.svg');
         }
 
         if (model.sourceType === SOURCE_TYPE_IMAGE3D) {
