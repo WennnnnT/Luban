@@ -224,6 +224,7 @@ export const actions = {
         }
         if (toolpaths && toolpaths.length) {
             for (let k = 0; k < toolpaths.length; k++) {
+                console.log('toolpaths[k]', toolpaths[k]);
                 toolPathGroup.saveToolPath(toolpaths[k], { materials }, false);
             }
             toolPathGroup.selectToolPathById(null);
