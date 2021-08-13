@@ -99,7 +99,7 @@ class App extends PureComponent {
         ShortcutManager.register(this.shortcutHandler);
         setTimeout(() => {
             UniApi.Window.showMainWindow();
-        }, 0);
+        }, 100);
     }
 
     logPageView() {
