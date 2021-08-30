@@ -22,7 +22,6 @@ const Button = (props) => {
                 block
                 ref={ref}
                 type={type} // default, primary, link, Text
-                autoInsertSpaceInButton={false}
                 className={classNames(
                     styles[priority],
                     styles['button-lb']

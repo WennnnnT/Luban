@@ -9,7 +9,7 @@ import { timestamp } from '../../../shared/lib/random-utils';
 
 
 import i18n from '../../lib/i18n';
-import definitionManager from './DefinitionManager';
+import definitionManager from '../manager/DefinitionManager';
 import api from '../../api';
 import ModelGroup from '../../models/ModelGroup';
 import gcodeBufferGeometryToObj3d from '../../workers/GcodeToBufferGeometry/gcodeBufferGeometryToObj3d';
@@ -45,6 +45,7 @@ const defaultDefinitionKeys = {
         id: 'defaultQualityId'
     }
 };
+const CONFIG_HEADTYPE = 'printing';
 // eslint-disable-next-line no-unused-vars
 /*
 const customCompareTransformation = (tran1, tran2) => {
@@ -231,12 +232,13 @@ export const actions = {
         const printingState = getState().printing;
         const { modelGroup, gcodeLineGroup } = printingState;
         const { series, size } = getState().machine;
-        await definitionManager.init(series);
+        await definitionManager.init(CONFIG_HEADTYPE, series);
         dispatch(actions.updateState({
             activeDefinition: definitionManager.activeDefinition
         }));
         dispatch(actions.updateState({
-            qualityDefinitions: definitionManager.qualityDefinitions
+            materialDefinitions: await definitionManager.getDefinitionsByPrefixName(CONFIG_HEADTYPE, 'material'),
+            qualityDefinitions: await definitionManager.getDefinitionsByPrefixName(CONFIG_HEADTYPE, 'quality')
         }));
         // model group
         modelGroup.updateBoundingBox(new THREE.Box3(
@@ -258,22 +260,21 @@ export const actions = {
         });
 
         const { series } = getState().machine;
-        await definitionManager.init(series);
+        await definitionManager.init(CONFIG_HEADTYPE, series);
 
         dispatch(actions.updateState({
             activeDefinition: definitionManager.activeDefinition
         }));
-
-        dispatch(actions.updateActiveDefinition(definitionManager.snapmakerDefinition));
+        // todo：init 'activeDefinition' by localStorage
+        // dispatch(actions.updateActiveDefinition(definitionManager.snapmakerDefinition));
 
         // Update machine size after active definition is loaded
         const { size } = getState().machine;
         dispatch(actions.updateActiveDefinitionMachineSize(size));
-
         dispatch(actions.updateState({
-            defaultDefinitions: definitionManager.defaultDefinitions,
-            materialDefinitions: definitionManager.materialDefinitions,
-            qualityDefinitions: definitionManager.qualityDefinitions
+            defaultDefinitions: definitionManager?.defaultDefinitions,
+            materialDefinitions: await definitionManager.getDefinitionsByPrefixName(CONFIG_HEADTYPE, 'material'),
+            qualityDefinitions: await definitionManager.getDefinitionsByPrefixName(CONFIG_HEADTYPE, 'quality')
         }));
 
         // model group
@@ -430,7 +431,7 @@ export const actions = {
     resetDefinitionById: (definitionId) => (dispatch, getState) => {
         const { defaultDefinitions, qualityDefinitions, materialDefinitions } = getState().printing;
         const newDef = cloneDeep(defaultDefinitions.find(d => d.definitionId === definitionId));
-        definitionManager.updateDefinition(newDef);
+        definitionManager.updateDefinition(CONFIG_HEADTYPE, newDef);
         dispatch(actions.updateActiveDefinition(newDef));
         // const definition =
         if (definitionId.indexOf('quality') !== -1
@@ -464,7 +465,7 @@ export const actions = {
     updateDefinitionSettings: (definition, settings) => (dispatch, getState) => {
         const { modelGroup } = getState().printing;
         settings = definitionManager.calculateDependencies(definition, settings, modelGroup && modelGroup.hasSupportModel());
-        return definitionManager.updateDefinition({
+        return definitionManager.updateDefinition(CONFIG_HEADTYPE, {
             definitionId: definition.definitionId,
             settings
         });
@@ -531,7 +532,7 @@ export const actions = {
 
     updateDefinitionsForManager: (definitionId, type) => async (dispatch, getState) => {
         const state = getState().printing;
-        const savedDefinition = await definitionManager.getDefinition(definitionId);
+        const savedDefinition = await definitionManager.getDefinition(CONFIG_HEADTYPE, definitionId);
         if (!savedDefinition) {
             return;
         }
@@ -555,7 +556,7 @@ export const actions = {
             .then(async (res) => {
                 const response = res.body;
                 const definitionId = `${type}.${timestamp()}`;
-                const definition = await definitionManager.uploadDefinition(definitionId, response.uploadName);
+                const definition = await definitionManager.uploadDefinition(CONFIG_HEADTYPE, definitionId, response.uploadName);
                 let name = definition.name;
                 const definitionsKey = defaultDefinitionKeys[type].definitions;
                 const defaultId = defaultDefinitionKeys[type].id;
@@ -564,7 +565,7 @@ export const actions = {
                     name = `#${name}`;
                 }
                 definition.name = name;
-                await definitionManager.updateDefinition({
+                await definitionManager.updateDefinition(CONFIG_HEADTYPE, {
                     definitionId: definition.definitionId,
                     name
                 });
@@ -591,7 +592,7 @@ export const actions = {
             return Promise.reject(i18n._('Failed to rename. "{{name}}" already exists.', { name }));
         }
 
-        await definitionManager.updateDefinition({
+        await definitionManager.updateDefinition(CONFIG_HEADTYPE, {
             definitionId: definition.definitionId,
             name
         });
@@ -647,7 +648,7 @@ export const actions = {
             };
         }
 
-        const createdDefinition = await definitionManager.createDefinition(newDefinition);
+        const createdDefinition = await definitionManager.createDefinition(CONFIG_HEADTYPE, newDefinition);
 
 
         dispatch(actions.updateState({
@@ -661,7 +662,7 @@ export const actions = {
     removeDefinitionByType: (type, definition) => async (dispatch, getState) => {
         const state = getState().printing;
 
-        await definitionManager.removeDefinition(definition);
+        await definitionManager.removeDefinition(CONFIG_HEADTYPE, definition);
         const definitionsKey = defaultDefinitionKeys[type].definitions;
 
         dispatch(actions.updateState({
@@ -681,7 +682,7 @@ export const actions = {
                 newMaterialDefinitions.push(definition);
                 continue;
             }
-            definitionManager.removeDefinition(definition);
+            definitionManager.removeDefinition(CONFIG_HEADTYPE, definition);
         }
 
         dispatch(actions.updateState({
@@ -700,7 +701,7 @@ export const actions = {
                 newQualityDefinitions.push(definition);
                 continue;
             }
-            definitionManager.removeDefinition(definition);
+            definitionManager.removeDefinition(CONFIG_HEADTYPE, definition);
         }
 
         dispatch(actions.updateState({
