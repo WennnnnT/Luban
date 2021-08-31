@@ -182,7 +182,9 @@ class Configurations extends PureComponent {
 
             if (!definition) {
                 // definition no found, select first official definition
-                this.actions.onSelectOfficialDefinition(qualityDefinitions[0]);
+                if (qualityDefinitions[0]) {
+                    this.actions.onSelectOfficialDefinition(qualityDefinitions[0]);
+                }
             } else {
                 this.actions.onSelectCustomDefinition(definition);
             }
