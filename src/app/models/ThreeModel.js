@@ -60,6 +60,7 @@ class ThreeModel extends BaseModel {
         this.convexGeometry = null;
         this.showOrigin = (this.sourceType !== 'raster' && this.sourceType !== 'image3d');
         this.modelGroup = modelGroup;
+        this.extruderNr = 0;
 
         this.lastToolPathStr = null;
         this.isToolPath = false;

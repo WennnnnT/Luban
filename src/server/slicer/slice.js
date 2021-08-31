@@ -29,13 +29,19 @@ const enginePath = getPath();
      */
 function callCuraEngine(modelConfig, supportConfig, outputPath) {
     const args = ['slice', '-v', '-p', '-o', outputPath];
+    args.push('-j', modelConfig.configFilePath);
+    args.push('-e0', '-j', modelConfig.configFilePath);
+    if (fs.existsSync(modelConfig.configFilePath2)) {
+        args.push('-e1', '-j', modelConfig.configFilePath2);
+    }
 
     if (modelConfig && modelConfig.path.length) {
-        args.push('-j', modelConfig.configFilePath);
-        for (const filePath of modelConfig.path) {
-            args.push('-l', filePath);
+        for (const pathElement of modelConfig.path) {
+            args.push('-l', pathElement.l);
+            args.push('-j', pathElement.j);
         }
     }
+
     if (supportConfig && supportConfig.path.length) {
         for (const filePath of supportConfig.path) {
             args.push('-l', filePath);
@@ -43,6 +49,8 @@ function callCuraEngine(modelConfig, supportConfig, outputPath) {
             args.push('-j', supportConfig.configFilePath);
         }
     }
+
+    console.log(args);
 
     // console.log(args);
     return childProcess.spawn(
@@ -101,17 +109,23 @@ function slice(params, onProgress, onSucceed, onError) {
     const { originalName, model, support, boundingBox, thumbnail } = params;
     const modelConfig = {
         configFilePath: `${DataStorage.configDir}/active_final.def.json`,
+        configFilePath2: `${DataStorage.configDir}/active_final2.def.json`,
+        '0': `${DataStorage.configDir}/active_final.def.json`,
+        '1': `${DataStorage.configDir}/active_final2.def.json`,
         path: []
     };
-    for (const modelName of model) {
-        const uploadPath = `${DataStorage.tmpDir}/${modelName}`;
+    for (const m of model) {
+        const uploadPath = `${DataStorage.tmpDir}/${m.name}`;
 
         if (!fs.existsSync(uploadPath)) {
             log.error(`Slice Error: 3d model file does not exist -> ${uploadPath}`);
             onError(`Slice Error: 3d model file does not exist -> ${uploadPath}`);
             return;
         }
-        modelConfig.path.push(uploadPath);
+        modelConfig.path.push({
+            'l': uploadPath,
+            'j': modelConfig[m.extruderNr]
+        });
     }
 
     const supportConfig = {
@@ -137,6 +151,8 @@ function slice(params, onProgress, onSucceed, onError) {
     process.stderr.on('data', (data) => {
         const array = data.toString().split('\n');
 
+        console.log(data.toString());
+
         array.map((item) => {
             if (item.length < 10) {
                 return null;
@@ -158,7 +174,7 @@ function slice(params, onProgress, onSucceed, onError) {
     });
 
     process.on('close', (code) => {
-        if (filamentLength && filamentWeight && printTime) {
+        if (code === 0) {
             sliceProgress = 1;
             onProgress(sliceProgress);
             const gcodeFileLength = processGcodeHeaderAfterCuraEngine(gcodeFilePath, boundingBox, thumbnail);
@@ -171,6 +187,8 @@ function slice(params, onProgress, onSucceed, onError) {
                 filamentWeight: filamentWeight,
                 gcodeFilePath: gcodeFilePath
             });
+        } else {
+            onError(`slice Error: closed with code ${code}`);
         }
         log.info(`slice progress closed with code ${code}`);
     });

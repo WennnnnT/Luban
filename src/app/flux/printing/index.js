@@ -806,6 +806,16 @@ export const actions = {
         }
     },
 
+    generateExtruder2ActiveDefinition: () => async (dispatch, getState) => {
+        const { activeDefinition } = getState().printing;
+        const { size } = getState().machine;
+
+        await dispatch(actions.updateActiveDefinitionMachineSize(size));
+
+        const finalDefinition = definitionManager.finalizeActiveExtruder2Definition(activeDefinition);
+        await api.printingConfigs.createDefinition(finalDefinition);
+    },
+
     generateGcode: (thumbnail, isGuideTours = false) => async (dispatch, getState) => {
         const { hasModel, activeDefinition, modelGroup } = getState().printing;
 
@@ -899,7 +909,10 @@ export const actions = {
                     if (item.supportTag === true) {
                         ret.support.push(uploadResult.body.uploadName);
                     } else {
-                        ret.model.push(uploadResult.body.uploadName);
+                        ret.model.push({
+                            name: uploadResult.body.uploadName,
+                            extruderNr: item.extruderNr
+                        });
                         if (!ret.originalName) {
                             ret.originalName = uploadResult.body.originalName;
                         }

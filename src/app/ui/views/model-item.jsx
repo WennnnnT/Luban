@@ -7,8 +7,10 @@ import TipTrigger from '../components/TipTrigger';
 import Anchor from '../components/Anchor';
 import SvgIcon from '../components/SvgIcon';
 import { normalizeNameDisplay } from '../../lib/normalize-range';
+import Select from '../components/Select';
 
-function ModelItem({ model, visible, isSelected, styles, onSelect, onToggleVisible, inProgress, placment }) {
+// eslint-disable-next-line no-unused-vars
+function ModelItem({ model, visible, extruderNr, isSelected, styles, onSelect, onToggleVisible, onSelectModelExtruderNr, inProgress, placment }) {
     if (!model) {
         return null;
     }
@@ -71,6 +73,27 @@ function ModelItem({ model, visible, isSelected, styles, onSelect, onToggleVisib
                         {suffixName}
                     </span>
                 </Anchor>
+                <Select
+                    className="sm-flex-width align-r"
+                    backspaceRemoves={false}
+                    clearable={false}
+                    name="extruderNr"
+                    // disabled={!isDefinitionEditable()}
+                    options={[
+                        {
+                            label: 'extruder 1',
+                            value: 0
+                        },
+                        {
+                            label: 'extruder 2',
+                            value: 1
+                        }
+                    ]}
+                    value={extruderNr}
+                    onChange={(option) => {
+                        onSelectModelExtruderNr(model, option.value);
+                    }}
+                />
                 <SvgIcon
                     name={visible ? 'ShowNormal' : 'HideNormal'}
                     title={visible ? i18n._('Hide') : i18n._('Show')}
@@ -88,9 +111,11 @@ ModelItem.propTypes = {
     model: PropTypes.object.isRequired,
     styles: PropTypes.object.isRequired,
     visible: PropTypes.bool.isRequired,
+    extruderNr: PropTypes.number.isRequired,
     isSelected: PropTypes.bool.isRequired,
     onSelect: PropTypes.func.isRequired,
     onToggleVisible: PropTypes.func.isRequired,
+    onSelectModelExtruderNr: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     placment: PropTypes.string
 };

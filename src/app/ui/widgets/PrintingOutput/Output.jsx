@@ -42,6 +42,7 @@ class Output extends PureComponent {
         isAnyModelOverstepped: PropTypes.bool.isRequired,
         inProgress: PropTypes.bool.isRequired,
         generateGcode: PropTypes.func.isRequired,
+        generateGcode2: PropTypes.func.isRequired,
         exportFile: PropTypes.func.isRequired,
         renderGcodeFile: PropTypes.func.isRequired,
         thumbnail: PropTypes.string
@@ -75,6 +76,10 @@ class Output extends PureComponent {
         onClickGenerateGcode: () => {
             const thumbnail = this.thumbnail.current.getThumbnail();
             this.props.generateGcode(thumbnail);
+        },
+        onClickGenerateGcode2: () => {
+            const thumbnail = this.thumbnail.current.getThumbnail();
+            this.props.generateGcode2(thumbnail);
         },
         onClickLoadGcode: () => {
             if (this.props.isGcodeOverstepped) {
@@ -180,6 +185,16 @@ class Output extends PureComponent {
                             {i18n._('Generate G-code')}
                         </Button>
                     )}
+                    {!gcodeLine && (
+                        <Button
+                            type="primary"
+                            priority="level-one"
+                            onClick={actions.onClickGenerateGcode2}
+                            disabled={!hasModel || !hasAnyModelVisible || isSlicing || isAnyModelOverstepped || inProgress}
+                        >
+                            {i18n._('Generate G-code 2')}
+                        </Button>
+                    )}
                     {gcodeLine && !this.state.showExportOptions && (
                         <Button
                             type="default"
@@ -262,6 +277,7 @@ const mapDispatchToProps = (dispatch) => {
         enableMenu: () => dispatch(menuActions.enableMenu()),
         disableMenu: () => dispatch(menuActions.disableMenu()),
         generateGcode: (thumbnail) => dispatch(printingActions.generateGcode(thumbnail)),
+        generateGcode2: (thumbnail) => dispatch(printingActions.generateGcode2(thumbnail)),
         renderGcodeFile: (file) => dispatch(workspaceActions.renderGcodeFile(file)),
         displayGcode: () => dispatch(printingActions.displayGcode()),
         displayModel: () => dispatch(printingActions.displayModel()),

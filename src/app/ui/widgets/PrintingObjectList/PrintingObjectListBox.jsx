@@ -24,6 +24,10 @@ function PrintingObjectListBox() {
             } else {
                 dispatch(printingActions.showSelectedModel(targetModel));
             }
+        },
+        onSelectModelExtruderNr(targetModel, extruderNr) {
+            targetModel.extruderNr = extruderNr;
+            dispatch(printingActions.selectTargetModel(targetModel, false));
         }
     };
     const allModels = (models) && models.filter(model => !model.supportTag);
@@ -42,10 +46,12 @@ function PrintingObjectListBox() {
                         model={model}
                         key={model.modelID}
                         visible={model.visible}
+                        extruderNr={model.extruderNr}
                         styles={styles}
                         isSelected={selectedModelArray && selectedModelArray.includes(model)}
                         onSelect={actions.onClickModelNameBox}
                         onToggleVisible={actions.onClickModelHideBox}
+                        onSelectModelExtruderNr={actions.onSelectModelExtruderNr}
                         inProgress={inProgress}
                         placment="right"
                     />

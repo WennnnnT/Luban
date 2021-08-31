@@ -107,6 +107,9 @@ function PrintingManager() {
         },
         resetDefinitionById: (id) => {
             dispatch(printingActions.resetDefinitionById(id));
+        },
+        generateExtruder2ActiveDefinition: () => {
+            dispatch(printingActions.generateExtruder2ActiveDefinition());
         }
     };
 

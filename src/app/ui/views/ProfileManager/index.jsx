@@ -241,6 +241,10 @@ function ProfileManager({ optionConfigGroup, disableCategory = true, managerTitl
                 isCreate: false
             });
         },
+        setExtruder2: () => {
+            outsideActions.onUpdateDefaultDefinition(definitionState.definitionForManager);
+            outsideActions.generateExtruder2ActiveDefinition();
+        },
         showInputModal: ({ isCreate }) => {
             const definitionForManager = definitionState?.definitionForManager;
             const isCategorySelected = definitionState?.isCategorySelected;
@@ -605,6 +609,15 @@ function ProfileManager({ optionConfigGroup, disableCategory = true, managerTitl
                                             className={classNames(styles['manager-file'], 'sm-tab', 'align-c')}
                                             onClick={() => { actions.showDuplicateModal(); }}
                                             spanText={i18n._('Copy')}
+                                            spanClassName={classNames(styles['action-title'])}
+                                        />
+                                        <SvgIcon
+                                            name="SetNormal"
+                                            size={24}
+                                            type={['static']}
+                                            className={classNames(styles['manager-file'], 'sm-tab', 'align-c')}
+                                            onClick={() => { actions.setExtruder2(); }}
+                                            spanText={i18n._('Extruder2')}
                                             spanClassName={classNames(styles['action-title'])}
                                         />
                                     </div>

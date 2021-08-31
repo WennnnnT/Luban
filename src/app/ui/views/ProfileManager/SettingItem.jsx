@@ -168,6 +168,17 @@ function SettingItem({ definitionKey, settings, isDefaultDefinition = () => true
                             }}
                         />
                     )}
+                    {(type === 'optional_extruder' || type === 'extruder') && (
+                        <Input
+                            size={styleSize}
+                            className="sm-flex-width align-r"
+                            value={settingDefaultValue}
+                            // disabled={!isDefinitionEditable()}
+                            onChange={(value) => {
+                                onChangeDefinition(definitionKey, value);
+                            }}
+                        />
+                    )}
                     {type === undefined && (
                         <Input
                             size={styleSize}

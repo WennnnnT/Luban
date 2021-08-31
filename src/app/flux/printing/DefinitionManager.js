@@ -204,6 +204,41 @@ class DefinitionManager {
         return settings;
     }
 
+    finalizeActiveExtruder2Definition(activeDefinition) {
+        const definition = {
+            definitionId: 'active_final2',
+            name: 'Active Profile',
+            inherits: 'fdmprinter',
+            metadata: {
+                machine_extruder_trains: {
+                    1: 'snapmaker_extruder_1'
+                }
+            },
+            settings: {},
+            ownKeys: []
+        };
+
+        Object.keys(activeDefinition.settings)
+            .forEach(key => {
+                const setting = activeDefinition.settings[key];
+
+                if (setting.from !== 'fdmprinter') {
+                    definition.settings[key] = {
+                        label: setting.label,
+                        default_value: setting.default_value
+                    };
+                    definition.ownKeys.push(key);
+                }
+            });
+
+        definition.ownKeys.push('machine_start_gcode');
+        definition.ownKeys.push('machine_end_gcode');
+        this.addMachineStartGcode(definition);
+        this.addMachineEndGcode(definition);
+
+        return definition;
+    }
+
     finalizeActiveDefinition(activeDefinition) {
         const definition = {
             definitionId: 'active_final',
