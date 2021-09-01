@@ -27,7 +27,7 @@ class DefinitionManager {
         //
         // res = await api.profileDefinitions.getDefinition(headType, definitionId, this.series);
         // this.snapmakerDefinition = res.body.definition;
-        // End TODO useless?
+        // End TODO useless
 
         // active definition
         res = await this.getDefinition(headType, 'active', false);
@@ -72,19 +72,12 @@ class DefinitionManager {
 
     async getConfigDefinitions(headType) {
         const res = await api.profileDefinitions.getConfigDefinitions(headType, this.series);
+        console.log('res', res.body.definitions);
         return res.body.definitions;
     }
 
     async getDefinitionsByPrefixName(headType, prefix) {
-        let series = this.series;
-        if (
-            this.series === MACHINE_SERIES.ORIGINAL.value
-            || this.series === MACHINE_SERIES.ORIGINAL_LZ.value
-            || this.series === MACHINE_SERIES.CUSTOM.value
-        ) {
-            series = MACHINE_SERIES.ORIGINAL.value;
-        }
-        const res = await api.profileDefinitions.getDefinitionsByPrefixName(headType, prefix, series);
+        const res = await api.profileDefinitions.getDefinitionsByPrefixName(headType, prefix, this.series);
         return res.body.definitions;
     }
 
@@ -112,15 +105,7 @@ class DefinitionManager {
     // Update definition
     // Only name & settings are configurable
     async updateDefinition(headType, definition) {
-        let series = this.series;
-        if (
-            this.series === MACHINE_SERIES.ORIGINAL.value
-            || this.series === MACHINE_SERIES.ORIGINAL_LZ.value
-            || this.series === MACHINE_SERIES.CUSTOM.value
-        ) {
-            series = MACHINE_SERIES.ORIGINAL.value;
-        }
-        await api.profileDefinitions.updateDefinition(headType, definition.definitionId, definition, series);
+        await api.profileDefinitions.updateDefinition(headType, definition.definitionId, definition, this.series);
     }
 
     // Start Notice: only used for printing config
