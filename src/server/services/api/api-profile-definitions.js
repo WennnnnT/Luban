@@ -31,7 +31,7 @@ export const getRawDefinition = (req, res) => {
 
 export const getDefinition = (req, res) => {
     const { definitionId, headType } = req.params;
-    const series = req.params.series;
+    const series = req.query.series;
     if (!definitionId) {
         res.status(ERR_BAD_REQUEST).send({
             err: 'Parameter "definitionId" is required.'
@@ -70,10 +70,11 @@ export const getConfigDefinitions = (req, res) => {
 
 export const createDefinition = (req, res) => {
     const { headType } = req.params;
-    const { definition, series } = req.body;
+    const { definition } = req.body;
 
     const definitionLoader = new DefinitionLoader();
     definitionLoader.fromObject(definition);
+    const series = req.body.series ?? '';
 
     const filePath = path.join(`${DataStorage.configDir}/${headType}/${series}`, `${definitionLoader.definitionId}.def.json`);
     fs.writeFile(filePath, JSON.stringify(definitionLoader.toJSON(), null, 2), 'utf8', (err) => {
@@ -123,6 +124,7 @@ export const updateDefinition = (req, res) => {
     }
 
     const filePath = path.join(`${DataStorage.configDir}/${headType}/${series}`, `${definitionId}.def.json`);
+    console.log('definitionLoader.toJSON()', definitionLoader.toJSON().settings);
     fs.writeFile(filePath, JSON.stringify(definitionLoader.toJSON(), null, 2), 'utf8', (err) => {
         if (err) {
             res.status(ERR_INTERNAL_SERVER_ERROR).send({ err });
