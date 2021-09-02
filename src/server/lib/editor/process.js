@@ -7,12 +7,21 @@ import {
     SOURCE_TYPE_SVG,
     SOURCE_TYPE_IMAGE3D,
     SOURCE_TYPE_RASTER
+
 } from '../../constants';
 import { MeshProcess } from '../MeshProcess/MeshProcess';
 
-const processImage3d = (modelInfo) => {
+const processCNCImage3d = (modelInfo) => {
     const mesh = new MeshProcess(modelInfo);
     return mesh.convertToImage();
+};
+
+const processLaserImage3d = (modelInfo) => {
+    const mesh = new MeshProcess({
+        ...modelInfo,
+        isRotate: false
+    });
+    return mesh.convertToStackFiles(modelInfo.modelCuttingSettings);
 };
 
 export const editorProcess = (modelInfo) => {
@@ -36,7 +45,11 @@ export const editorProcess = (modelInfo) => {
             });
         }
     } else if (sourceType === SOURCE_TYPE_IMAGE3D) {
-        return processImage3d(modelInfo);
+        if (headType === 'laser') {
+            return processLaserImage3d(modelInfo);
+        } else {
+            return processCNCImage3d(modelInfo);
+        }
     } else {
         return Promise.resolve({
             filename: ''

@@ -11,6 +11,7 @@ import DataStorage from '../../DataStorage';
 import { round } from '../../../shared/lib/utils';
 import { Line } from '../../../shared/lib/math/Line';
 import { Slicer } from './Slicer';
+import { svgToString } from '../../../shared/lib/SVGParser/SvgToString';
 
 /**
  * Calculate whether a point is inside the triangle
@@ -33,7 +34,10 @@ function getPlane(v0, v1, v2) {
     const C = ((v1.x - v0.x) * (v2.y - v0.y) - (v1.y - v0.y) * (v2.x - v0.x));
     const D = (0 - (A * v0.x + B * v0.y + C * v0.z));
     return {
-        A, B, C, D
+        A,
+        B,
+        C,
+        D
     };
 }
 
@@ -106,32 +110,96 @@ const writeSvg = (width, height, paths, outputFile, p = '') => {
 };
 
 export const DIRECTION_FACE_OPTIONS = {
-    [FRONT]: { x: 'x', y: 'y', z: 'z' },
-    [BACK]: { x: '-x', y: '-y', z: 'z' },
-    [LEFT]: { x: '-y', y: 'x', z: 'z' },
-    [RIGHT]: { x: 'y', y: '-x', z: 'z' },
-    [TOP]: { x: 'x', y: '-z', z: 'y' },
-    [BOTTOM]: { x: 'x', y: 'z', z: '-y' }
+    [FRONT]: {
+        x: 'x',
+        y: 'y',
+        z: 'z'
+    },
+    [BACK]: {
+        x: '-x',
+        y: '-y',
+        z: 'z'
+    },
+    [LEFT]: {
+        x: '-y',
+        y: 'x',
+        z: 'z'
+    },
+    [RIGHT]: {
+        x: 'y',
+        y: '-x',
+        z: 'z'
+    },
+    [TOP]: {
+        x: 'x',
+        y: '-z',
+        z: 'y'
+    },
+    [BOTTOM]: {
+        x: 'x',
+        y: 'z',
+        z: '-y'
+    }
 };
 
 const PLACEMENT_FACE_OPTIONS = {
-    [FRONT]: { x: '-x', y: '-z', z: '-y' },
-    [BACK]: { x: '-x', y: 'z', z: 'y' },
-    [LEFT]: { x: 'z', y: 'y', z: '-x' },
-    [RIGHT]: { x: '-z', y: 'y', z: 'x' },
-    [TOP]: { x: 'x', y: 'y', z: 'z' },
-    [BOTTOM]: { x: '-x', y: 'y', z: '-z' }
+    [FRONT]: {
+        x: '-x',
+        y: '-z',
+        z: '-y'
+    },
+    [BACK]: {
+        x: '-x',
+        y: 'z',
+        z: 'y'
+    },
+    [LEFT]: {
+        x: 'z',
+        y: 'y',
+        z: '-x'
+    },
+    [RIGHT]: {
+        x: '-z',
+        y: 'y',
+        z: 'x'
+    },
+    [TOP]: {
+        x: 'x',
+        y: 'y',
+        z: 'z'
+    },
+    [BOTTOM]: {
+        x: '-x',
+        y: 'y',
+        z: '-z'
+    }
 };
 
 
 export class MeshProcess {
     constructor(modelInfo) {
-        const { uploadName, scale = 1, config = {}, transformation = {}, materials = {} } = modelInfo;
+        const {
+            uploadName,
+            scale = 1,
+            config = {},
+            transformation = {},
+            materials = {}
+        } = modelInfo;
 
-        const { isRotate, diameter } = materials;
+        const {
+            isRotate,
+            diameter
+        } = materials;
 
-        const { direction = FRONT, placement = BOTTOM, minGray = 0, maxGray = 255,
-            sliceDensity = 5, extensionX = 0, extensionY = 0 } = config;
+        const {
+            direction = FRONT,
+            placement = BOTTOM,
+            minGray = 0,
+            maxGray = 255,
+            sliceDensity = 5,
+            extensionX = 0,
+            extensionY = 0
+        } = config;
 
         this.uploadName = uploadName;
         this.direction = direction;
@@ -163,7 +231,10 @@ export class MeshProcess {
     }
 
     convertTo3AxisData(density) {
-        const { width, height } = this.getWidthAndHeight();
+        const {
+            width,
+            height
+        } = this.getWidthAndHeight();
 
         const layerThickness = 1 / density;
         const initialLayerThickness = layerThickness / 2;
@@ -184,7 +255,9 @@ export class MeshProcess {
         for (let j = 0; j < this.slicer.slicerLayers.length; j++) {
             const slicerLayer = this.slicer.slicerLayers[j];
 
-            const polygons = [].concat(slicerLayer.polygons.data).concat(slicerLayer.polygonsPart.data).concat(slicerLayer.openPolygons.data);
+            const polygons = [].concat(slicerLayer.polygons.data)
+                .concat(slicerLayer.polygonsPart.data)
+                .concat(slicerLayer.openPolygons.data);
 
             for (const polygon of polygons) {
                 const size = polygon.size();
@@ -226,7 +299,10 @@ export class MeshProcess {
     }
 
     convertTo4AxisDate(density) {
-        const { width, height } = this.getWidthAndHeight();
+        const {
+            width,
+            height
+        } = this.getWidthAndHeight();
 
         const r = width / (Math.PI * 2);
 
@@ -251,7 +327,8 @@ export class MeshProcess {
         for (let j = 0; j < slicer.slicerLayers.length; j++) {
             const slicerLayer = slicer.slicerLayers[j];
 
-            const polygons = [].concat(slicerLayer.polygonsPart.data).concat(slicerLayer.openPolygons.data);
+            const polygons = [].concat(slicerLayer.polygonsPart.data)
+                .concat(slicerLayer.openPolygons.data);
 
             for (const polygon of polygons) {
                 const ppath = polygon.path;
@@ -320,7 +397,14 @@ export class MeshProcess {
             result = this.convertTo3AxisData(density);
         }
 
-        const { maxZ, data, imageWidth, imageHeight, width, height } = result;
+        const {
+            maxZ,
+            data,
+            imageWidth,
+            imageHeight,
+            width,
+            height
+        } = result;
 
         const grayRange = this.maxGray - this.minGray;
 
@@ -341,8 +425,119 @@ export class MeshProcess {
         };
     }
 
+    convertToStackFiles(modelCuttingSettings) {
+        this.mesh.addCoordinateSystem({ y: '-y' });
+        this.mesh.offset({
+            x: -this.mesh.aabb.min.x,
+            y: -this.mesh.aabb.min.y,
+            z: -this.mesh.aabb.min.z
+        });
+
+        // eslint-disable-next-line no-unused-vars
+        const aabb = this.mesh.aabb;
+
+        const layerThickness = modelCuttingSettings.materialThickness;
+        const initialLayerThickness = layerThickness / 2;
+        const imageHeight = Math.floor((aabb.length.z - initialLayerThickness) / layerThickness) + 1;
+
+        this.slicer = new Slicer(this.mesh, layerThickness, imageHeight, initialLayerThickness);
+
+        this.outputFilename = `${pathWithRandomSuffix(this.uploadName)
+            .replace('.stl', '')}`;
+
+        fs.mkdirSync(`${DataStorage.tmpDir}/${this.outputFilename}`);
+
+        let { width, height } = modelCuttingSettings;
+        const { extend } = modelCuttingSettings;
+
+        const boundingBoxX = aabb.length.x + extend * 2;
+        const boundingBoxY = aabb.length.y + extend * 2;
+
+        if (boundingBoxX > width) {
+            width = aabb.length.x + extend * 2 + 0.1;
+        }
+        if (boundingBoxY > height) {
+            height = aabb.length.y + extend * 2 + 0.1;
+        }
+
+        console.log(boundingBoxX, boundingBoxY);
+
+        const svgFileState = {
+            index: 0,
+            startX: 0,
+            startY: 0,
+            svg: {
+                shapes: [{
+                    visibility: true,
+                    stroke: '#000000',
+                    paths: []
+                }],
+                width: width,
+                height: height,
+                viewBox: `0 0 ${width} ${height}`
+            }
+        };
+
+        const svgFileStateWrite = () => {
+            const svgStr = svgToString(svgFileState.svg);
+            if (svgFileState.index === 0) {
+                fs.writeFileSync(`${DataStorage.tmpDir}/${this.outputFilename}.svg`, svgStr, 'utf8');
+            }
+            fs.writeFileSync(`${DataStorage.tmpDir}/${this.outputFilename}/${svgFileState.index}.svg`, svgStr, 'utf8');
+
+            svgFileState.startX += boundingBoxX;
+
+            if (svgFileState.startX + boundingBoxX > width) {
+                if (svgFileState.startY + 2 * boundingBoxY > height) {
+                    svgFileState.index++;
+                    svgFileState.startX = 0;
+                    svgFileState.startY = 0;
+                    svgFileState.svg = {
+                        shapes: [{
+                            visibility: true,
+                            stroke: '#000000',
+                            paths: []
+                        }],
+                        width: width,
+                        height: height,
+                        viewBox: `0 0 ${width} ${height}`
+                    };
+                } else {
+                    svgFileState.startX = 0;
+                    svgFileState.startY += boundingBoxY;
+                }
+            }
+        };
+
+        for (let i = 0; i < this.slicer.slicerLayers.length; i++) {
+            const slicerLayer = this.slicer.slicerLayers[i];
+            const polygonsPart = slicerLayer.polygonsPart;
+
+            svgFileState.svg.shapes[0].paths.push({
+                points: [[svgFileState.startX, svgFileState.startY], [svgFileState.startX + boundingBoxX, svgFileState.startY],
+                    [svgFileState.startX + boundingBoxX, svgFileState.startY + boundingBoxY],
+                    [svgFileState.startX, svgFileState.startY + boundingBoxY], [svgFileState.startX, svgFileState.startY]]
+            });
+
+            polygonsPart.forEach(polygon => {
+                svgFileState.svg.shapes[0].paths.push({
+                    points: polygon.path.map(v => [v.x + svgFileState.startX + extend, v.y + svgFileState.startY + extend])
+                });
+            });
+
+            svgFileStateWrite();
+        }
+
+        return {
+            width: width,
+            height: height,
+            filename: `${this.outputFilename}.svg`
+        };
+    }
+
     convertToImage() {
-        this.outputFilename = `${pathWithRandomSuffix(this.uploadName).replace('.stl', '')}.png`;
+        this.outputFilename = `${pathWithRandomSuffix(this.uploadName)
+            .replace('.stl', '')}.png`;
 
         this.mesh.resize({
             x: this.scale,

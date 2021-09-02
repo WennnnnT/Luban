@@ -113,7 +113,14 @@ const INITIAL_STATE = {
     // check not to duplicated create event
     initEventFlag: false,
     // used to manually control the gcode ganeration including thumbnails
-    shouldGenerateGcodeCounter: 0
+    shouldGenerateGcodeCounter: 0,
+
+    modelCuttingSettings: {
+        materialThickness: 1,
+        extend: 2,
+        width: 100,
+        height: 100
+    }
 };
 
 const ACTION_SET_BACKGROUND_ENABLED = 'laser/ACTION_SET_BACKGROUND_ENABLED';
