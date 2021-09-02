@@ -416,13 +416,9 @@ export class Polygons {
 
     union(polygons) {
         const polyPaths = [];
-        for (const polygon of this.data) {
-            polyPaths.push([polygon.path]);
-        }
+        polyPaths.push(this.data.map(polygon => polygon.path));
         if (polygons && polygons.size() > 0) {
-            for (const polygon of polygons.data) {
-                polyPaths.push([polygon.path]);
-            }
+            polyPaths.push(polygons.data.map(polygon => polygon.path));
         }
 
         const result = recursivePolyUnion(polyPaths);

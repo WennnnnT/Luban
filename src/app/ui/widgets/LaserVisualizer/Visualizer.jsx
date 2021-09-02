@@ -155,6 +155,8 @@ class Visualizer extends Component {
                 uploadMode = PROCESS_MODE_VECTOR;
             } else if (extname === '.dxf') {
                 uploadMode = PROCESS_MODE_VECTOR;
+            } else if (extname === '.stl') {
+                uploadMode = PROCESS_MODE_VECTOR;
             } else {
                 uploadMode = PROCESS_MODE_GREYSCALE;
             }
@@ -440,7 +442,7 @@ class Visualizer extends Component {
                         onChangeFile={this.actions.onChangeFile}
                         onClickToUpload={this.actions.onClickToUpload}
                         fileInput={this.fileInput}
-                        allowedFiles=".svg, .png, .jpg, .jpeg, .bmp, .dxf"
+                        allowedFiles=".svg, .png, .jpg, .jpeg, .bmp, .dxf, .stl"
                         headType={HEAD_LASER}
                     />
                 </div>
