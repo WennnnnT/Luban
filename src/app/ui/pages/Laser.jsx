@@ -86,7 +86,7 @@ const allWidgets = {
     'toolpath-list': ToolPathListBox
 };
 
-const ACCEPT = '.svg, .png, .jpg, .jpeg, .bmp, .dxf';
+const ACCEPT = '.svg, .png, .jpg, .jpeg, .bmp, .dxf, .stl';
 const pageHeadType = HEAD_LASER;
 
 function useRenderMainToolBar(setShowHomePage, setShowJobType, setShowWorkspace, isRotate) {

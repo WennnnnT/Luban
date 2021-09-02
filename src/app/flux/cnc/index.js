@@ -116,7 +116,14 @@ const INITIAL_STATE = {
     // check not to duplicated create event
     initEventFlag: false,
     // used to manually control the gcode ganeration including thumbnails
-    shouldGenerateGcodeCounter: 0
+    shouldGenerateGcodeCounter: 0,
+
+    modelCuttingSettings: {
+        materialThickness: 1,
+        length: 100,
+        width: 100,
+        height: 100
+    }
 };
 
 export const actions = {

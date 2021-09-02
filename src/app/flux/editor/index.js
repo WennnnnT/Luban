@@ -676,7 +676,7 @@ export const actions = {
 
     // TODO: temporary workaround for model image processing
     processSelectedModel: (headType) => async (dispatch, getState) => {
-        const { materials, modelGroup, toolParams = {} } = getState()[headType];
+        const { materials, modelGroup, toolParams = {}, modelCuttingSettings } = getState()[headType];
 
         const selectedModels = modelGroup.getSelectedModelArray();
         if (selectedModels.length !== 1) {
@@ -700,6 +700,7 @@ export const actions = {
 
         options.materials = materials;
         options.toolParams = toolParams;
+        options.modelCuttingSettings = modelCuttingSettings;
 
         dispatch(baseActions.updateState(headType, {
             stage: CNC_LASER_STAGE.PROCESSING_IMAGE,

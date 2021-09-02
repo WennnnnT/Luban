@@ -47,6 +47,14 @@ class TransformationSection extends PureComponent {
             rotateElementsImmediately: PropTypes.func.isRequired
         }),
 
+        modelCuttingSettings: PropTypes.shape({
+            materialThickness: PropTypes.number,
+            width: PropTypes.number,
+            height: PropTypes.number,
+            extend: PropTypes.number
+        }),
+        updateState: PropTypes.func.isRequired,
+
         selectedModelArray: PropTypes.array,
         sourceType: PropTypes.string,
         transformation: PropTypes.shape({
@@ -158,6 +166,8 @@ class TransformationSection extends PureComponent {
 
         const selectedNotHide = (selectedModelArray.length === 1) && selectedModelArray[0].visible || selectedModelArray.length > 1;
         const actions = this.actions;
+
+        const modelCuttingSettings = this.props.modelCuttingSettings;
 
         return (
             <div className="margin-vertical-8">
@@ -319,6 +329,108 @@ class TransformationSection extends PureComponent {
                             </div>
                         </div>
                     </TipTrigger>
+                    <div className="sm-flex height-32 margin-vertical-8 ">
+                        <span className="sm-flex-auto sm-flex-order-negative width-64">{i18n._('Move')}</span>
+                        <span className="sm-flex-width sm-flex justify-space-between">
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c">
+                                            Material Thickness
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        className="margin-horizontal-2"
+                                        value={modelCuttingSettings.materialThickness}
+                                        size="small"
+                                        min={-size.x}
+                                        max={size.x}
+                                        onChange={(value) => {
+                                            this.props.updateState({
+                                                modelCuttingSettings: {
+                                                    ...modelCuttingSettings,
+                                                    materialThickness: value
+                                                }
+                                            });
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c">
+                                            Extend
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        className="margin-horizontal-2"
+                                        value={modelCuttingSettings.extend}
+                                        size="small"
+                                        min={-size.y}
+                                        max={size.y}
+                                        onChange={(value) => {
+                                            this.props.updateState({
+                                                modelCuttingSettings: {
+                                                    ...modelCuttingSettings,
+                                                    extend: value
+                                                }
+                                            });
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                        </span>
+                    </div>
+                    <div className="sm-flex height-32 margin-vertical-8 ">
+                        <span className="sm-flex-auto sm-flex-order-negative width-64">{i18n._('Move')}</span>
+                        <span className="sm-flex-width sm-flex justify-space-between">
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c">
+                                            Width
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        className="margin-horizontal-2"
+                                        value={modelCuttingSettings.width}
+                                        size="small"
+                                        min={-size.x}
+                                        max={size.x}
+                                        onChange={(value) => {
+                                            this.props.updateState({
+                                                modelCuttingSettings: {
+                                                    ...modelCuttingSettings,
+                                                    width: value
+                                                }
+                                            });
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c">
+                                            Height
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        className="margin-horizontal-2"
+                                        value={modelCuttingSettings.height}
+                                        size="small"
+                                        min={-size.y}
+                                        max={size.y}
+                                        onChange={(value) => {
+                                            this.props.updateState({
+                                                modelCuttingSettings: {
+                                                    ...modelCuttingSettings,
+                                                    height: value
+                                                }
+                                            });
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                        </span>
+                    </div>
                 </React.Fragment>
             </div>
         );
@@ -329,7 +441,7 @@ const mapStateToProps = (state, ownProps) => {
     const { headType } = ownProps;
 
     const machine = state.machine;
-    const { modelGroup, SVGActions } = state[headType];
+    const { modelGroup, SVGActions, modelCuttingSettings } = state[headType];
 
     const selectedElements = SVGActions.getSelectedElements();
     const selectedElementsTransformation = selectedElements.length === 0 ? {
@@ -356,7 +468,8 @@ const mapStateToProps = (state, ownProps) => {
         sourceType,
         visible,
         transformation,
-        modelGroup
+        modelGroup,
+        modelCuttingSettings
     };
 };
 
@@ -370,7 +483,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             flipElementsHorizontally: (elements, options) => dispatch(editorActions.flipElementsHorizontally(headType, elements, options)),
             flipElementsVertically: (elements, options) => dispatch(editorActions.flipElementsVertically(headType, elements, options)),
             rotateElementsImmediately: (elements, options) => dispatch(editorActions.rotateElementsImmediately(headType, elements, options))
-        }
+        },
+        updateState: (state) => dispatch(editorActions.updateState(headType, state))
     };
 };
 
