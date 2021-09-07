@@ -9,7 +9,7 @@ import { actions as editorActions } from '../../../flux/editor';
 import { actions as cncActions } from '../../../flux/cnc';
 import Anchor from '../../components/Anchor';
 // import CncParameters from './cnc/CncParameters';
-import { toHump } from '../../../../shared/lib/utils';
+import { toHump, toLine } from '../../../../shared/lib/utils';
 import ToolParameters from './cnc/ToolParameters';
 import ToolSelector from './cnc/ToolSelector';
 
@@ -19,6 +19,12 @@ import {
     HEAD_CNC,
     HEAD_LASER
 } from '../../../constants';
+
+function ifDefinitionModified(activeToolListDefinition, currentToolDefinition) {
+    return !Object.entries(activeToolListDefinition.settings).every(([key, setting]) => {
+        return currentToolDefinition && currentToolDefinition.settings[key].default_value === setting.default_value;
+    });
+}
 
 function getFastEditSettingsKeys(toolPath) {
     const { headType, type: toolPathType, gcodeConfig } = toolPath;
@@ -175,19 +181,17 @@ function ToolPathFastConfigurations(props) {
                     ...option
                 }
             };
+            // setCurrentToolDefinition(newToolPath);
             dispatch(editorActions.saveToolPath(props.headType, newToolPath));
             dispatch(editorActions.refreshToolPathPreview(props.headType));
         },
-        // checkIfDefinitionModified() {
-        //     if (props.headType === HEAD_CNC) {
-        //         console.log('activeToolListDefinition.settings', activeToolListDefinition?.settings, toolPath.gcodeConfig);
-        //         return !Object.entries(activeToolListDefinition.settings).every(([key, setting]) => {
-        //             return currentToolDefinition && currentToolDefinition.settings[key].default_value === setting.default_value;
-        //         });
-        //     } else {
-        //         return false;
-        //     }
-        // },
+        checkIfDefinitionModified() {
+            if (props.headType === HEAD_CNC) {
+                return ifDefinitionModified(activeToolListDefinition, currentToolDefinition);
+            } else {
+                return false;
+            }
+        },
         onDuplicateToolNameDefinition: async (inputValue) => {
             const newToolDefinition = {
                 ...currentToolDefinition,
@@ -243,6 +247,15 @@ function ToolPathFastConfigurations(props) {
                     ...option
                 }
             };
+            // todo merge 'updateGcodeConfig' and 'updateToolConfig' function
+            if (currentToolDefinition.settings) {
+                Object.entries(option).forEach(([itemKey, itemValue]) => {
+                    const newKey = toLine(itemKey);
+                    currentToolDefinition.settings[newKey].default_value = itemValue;
+                });
+                setCurrentToolDefinition(currentToolDefinition);
+            }
+
             dispatch(editorActions.saveToolPath(props.headType, newToolPath));
             dispatch(editorActions.refreshToolPathPreview(props.headType));
         }
@@ -280,7 +293,7 @@ function ToolPathFastConfigurations(props) {
             }
         });
     }
-    // const isModifiedDefinition = actions.checkIfDefinitionModified();
+    const isModifiedDefinition = actions.checkIfDefinitionModified();
     return (
         <React.Fragment>
             <div className={classNames(
@@ -299,7 +312,7 @@ function ToolPathFastConfigurations(props) {
                             toolDefinition={currentToolDefinition}
                             setCurrentToolDefinition={handleToolSelectorChange}
                             toolDefinitions={toolDefinitions}
-                            isModifiedDefinition={false}
+                            isModifiedDefinition={isModifiedDefinition}
                             shouldSaveToolpath
                             saveToolPath={saveToolPath}
                             setCurrentValueAsProfile={() => {}}
