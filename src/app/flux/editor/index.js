@@ -802,8 +802,17 @@ export const actions = {
         }
     },
 
+    removeSelectedModelsByCallback: (headType) => (dispatch) => {
+        dispatch(actions.updateState(headType, {
+            removingModelsWarningCallback: () => {
+                dispatch(actions.removeSelectedModel(headType));
+            }
+        }));
+        dispatch(actions.checkToRemoveSelectedModels(headType));
+    },
+
     checkToRemoveSelectedModels: (headType) => (dispatch, getState) => {
-        const { modelGroup, toolPathGroup } = getState()[headType];
+        const { modelGroup, toolPathGroup, removingModelsWarningCallback } = getState()[headType];
         const { selectedModelIDArray, allModelIDs } = modelGroup.getState();
         const toolPaths = toolPathGroup.getToolPaths();
         const emptyToolPaths = [];
@@ -816,7 +825,7 @@ export const actions = {
             emptyToolPaths.push(item);
         });
         if (emptyToolPaths.length === 0) {
-            dispatch(actions.removeSelectedModel(headType));
+            removingModelsWarningCallback();
             return;
         }
 
@@ -1193,8 +1202,13 @@ export const actions = {
     },
 
     cut: (headType) => (dispatch) => {
-        dispatch(actions.copy(headType));
-        dispatch(actions.removeSelectedModel(headType));
+        dispatch(actions.updateState(headType, {
+            removingModelsWarningCallback: () => {
+                dispatch(actions.copy(headType));
+                dispatch(actions.removeSelectedModel(headType));
+            }
+        }));
+        dispatch(actions.checkToRemoveSelectedModels(headType));
     },
 
     copy: (headType) => (dispatch, getState) => {
