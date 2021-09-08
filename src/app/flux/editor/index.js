@@ -800,9 +800,6 @@ export const actions = {
                 break;
             default:
         }
-
-        dispatch(actions.processSelectedModel(headType));
-        dispatch(actions.resetProcessState(headType));
     },
 
     checkToRemoveSelectedModels: (headType) => (dispatch, getState) => {
@@ -1485,6 +1482,7 @@ export const actions = {
             }
         }
         dispatch(operationHistoryActions.setOperations(headType, operations));
+        dispatch(actions.processSelectedModel(headType));
         dispatch(actions.resetProcessState(headType));
 
         dispatch(baseActions.render(headType));
@@ -1522,6 +1520,7 @@ export const actions = {
             }
         }
         dispatch(operationHistoryActions.setOperations(headType, operations));
+        dispatch(actions.processSelectedModel(headType));
         dispatch(actions.resetProcessState(headType));
 
         dispatch(baseActions.render(headType));
@@ -1559,6 +1558,8 @@ export const actions = {
             }
         }
         dispatch(operationHistoryActions.setOperations(headType, operations));
+        dispatch(actions.processSelectedModel(headType));
+        dispatch(actions.resetProcessState(headType));
         dispatch(baseActions.render(headType));
     },
 
