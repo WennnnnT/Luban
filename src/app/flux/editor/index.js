@@ -20,7 +20,8 @@ import {
     DATA_PREFIX,
     COORDINATE_MODE_CENTER,
     COORDINATE_MODE_BOTTOM_CENTER, DISPLAYED_TYPE_MODEL,
-    MIN_LASER_CNC_CANVAS_SCALE, MAX_LASER_CNC_CANVAS_SCALE
+    MIN_LASER_CNC_CANVAS_SCALE, MAX_LASER_CNC_CANVAS_SCALE,
+    PROCESS_MODE_VECTOR
 } from '../../constants';
 import { baseActions } from './actions-base';
 import { processActions } from './actions-process';
@@ -166,6 +167,8 @@ export const actions = {
                 }));
             });
 
+            controller.on('taskProgress:cutModel', () => {});
+
             // task completed
             controller.on('taskCompleted:processImage', (taskResult) => {
                 if (headType !== taskResult.headType) {
@@ -213,6 +216,21 @@ export const actions = {
                     progress: progressStatesManager.updateProgress(STEP_STAGE.CNC_LASER_RENDER_VIEWPATH, 0)
                 }));
                 dispatch(processActions.onGenerateViewPath(headType, taskResult));
+            });
+
+            controller.on('taskCompleted:cutModel', (taskResult) => {
+                if (headType !== taskResult.headType) {
+                    return;
+                }
+                const { cutModelInfo } = getState()[headType];
+                dispatch(actions.updateState(headType, {
+                    cutModelInfo: {
+                        ...cutModelInfo,
+                        isProcessing: false,
+                        svgInfo: taskResult.svgInfo,
+                        stlInfo: taskResult.stlInfo
+                    }
+                }));
             });
         };
     },
@@ -394,7 +412,7 @@ export const actions = {
                         shininess: 0
                     });
 
-                    bufferGeometry.addAttribute('position', modelPositionAttribute);
+                    bufferGeometry.setAttribute('position', modelPositionAttribute);
                     bufferGeometry.computeVertexNormals();
                     const mesh = new THREE.Mesh(bufferGeometry, material);
                     model.image3dObj = mesh;
@@ -406,7 +424,7 @@ export const actions = {
 
                     const convexGeometry = new THREE.BufferGeometry();
                     const positionAttribute = new THREE.BufferAttribute(positions, 3);
-                    convexGeometry.addAttribute('position', positionAttribute);
+                    convexGeometry.setAttribute('position', positionAttribute);
                     model.convexGeometry = convexGeometry;
 
                     break;
@@ -1854,6 +1872,112 @@ export const actions = {
                 scale: newScale
             }));
         }
+    },
+
+    importStackedModelSVG: (headType) => (dispatch, getState) => {
+        const {
+            cutModelInfo: {
+                svgInfo
+            }
+        } = getState()[headType];
+        const mode = PROCESS_MODE_VECTOR;
+        svgInfo.forEach((svgFileInfo, index) => {
+            const width = svgFileInfo.width, height = svgFileInfo.height;
+            const uploadName = svgFileInfo.filename, originalName = `${index}.svg`;
+            dispatch(actions.generateModel(headType, originalName, uploadName, width, height, mode, undefined, { svgNodeName: 'image' }));
+        });
+    },
+
+    generateModelStack: (headType, modelWidth, modelHeight, thickness, scale = 1) => (dispatch, getState) => {
+        const {
+            materials,
+            cutModelInfo,
+            coordinateSize
+        } = getState()[headType];
+        const options = {
+            // modelID: 'id56746944-1822-4d80-a566-64614921906a',
+            // modelName: cutModelInfo.originalName,
+            // headType: headType,
+            // sourceType: SOURCE_TYPE_IMAGE3D,
+            // mode: PROCESS_MODE_VECTOR,
+            // visible: true,
+            // isToolPathSelect: false,
+            // sourceHeight: modelHeight,
+            // sourceWidth: modelWidth,
+            scale: scale,
+            originalName: cutModelInfo.originalName,
+            uploadName: cutModelInfo.uploadName,
+            transformation: {
+                width: modelWidth,
+                height: modelHeight
+            },
+            // config: { svgNodeName: 'image' },
+            materials: {
+                ...materials,
+                width: coordinateSize.x,
+                height: coordinateSize.y,
+                thickness: thickness
+            },
+            // toolParams: {},
+            modelCuttingSettings: {
+                materialThickness: thickness,
+                width: coordinateSize.x,
+                height: coordinateSize.y
+            }
+        };
+        dispatch(actions.updateState(headType, {
+            cutModelInfo: {
+                ...cutModelInfo,
+                isProcessing: true
+            }
+        }));
+        controller.commitCutModelTask({
+            taskId: uuid.v4(),
+            headType: headType,
+            data: options
+        });
+    },
+
+    cutModel: (headType, file, onError) => (dispatch, getState) => {
+        const { progressStatesManager } = getState()[headType];
+        progressStatesManager.startProgress(PROCESS_STAGE.PRINTING_LOAD_MODEL);
+        dispatch(actions.updateState(headType, {
+            stage: STEP_STAGE.PRINTING_LOADING_MODEL,
+            progress: progressStatesManager.updateProgress(STEP_STAGE.PRINTING_LOADING_MODEL, 0.25)
+        }));
+        const formData = new FormData();
+        formData.append('file', file);
+
+        api.uploadFile(formData)
+            .then((res) => {
+                dispatch(actions.updateState(headType, {
+                    stage: STEP_STAGE.PRINTING_LOAD_MODEL_SUCCEED,
+                    progress: progressStatesManager.updateProgress(STEP_STAGE.PRINTING_LOADING_MODEL, 1)
+                }));
+                const { originalName, uploadName } = res.body;
+                dispatch(actions.updateState(headType, {
+                    cutModelInfo: {
+                        originalName, uploadName
+                    }
+                }));
+                dispatch(actions.updateState(headType, {
+                    showImportStackedModelModal: true
+                }));
+            })
+            .catch((err) => {
+                onError && onError(err);
+                dispatch(actions.updateState(headType, {
+                    stage: STEP_STAGE.PRINTING_LOAD_MODEL_FAILED,
+                    progress: 1
+                }));
+                progressStatesManager.finishProgress(false);
+            });
+    },
+
+    setShortcutStatus: (headType, enabled) => (dispatch) => {
+        dispatch(actions.updateState(headType, {
+            enableShortcut: enabled
+        }));
     }
 };
 

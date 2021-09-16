@@ -94,10 +94,11 @@ class Settings extends PureComponent {
 
                 if (lang !== i18next.language) {
                     i18next.changeLanguage(lang, () => {
-                        this.props.history.push('/');
+                        // this.props.history.push('/');
                         const uri = new Uri(window.location.search);
-                        uri.replaceQueryParam('lang', lang);
-                        window.location.search = uri.toString();
+                        console.log(uri);
+                        // uri.replaceQueryParam('lang', lang);
+                        // window.location.search = uri.toString();
                     });
                 }
             },

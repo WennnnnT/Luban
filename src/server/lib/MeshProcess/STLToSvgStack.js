@@ -21,6 +21,7 @@ class STLToSvgStack {
                 isRotate: false
             }
         };
+        this.scale = this.modelInfo.scale;
         this.materials = this.modelInfo.materials;
         this.meshProcess = new MeshProcess(this.modelInfo);
     }
@@ -29,6 +30,12 @@ class STLToSvgStack {
         const aabb = this.meshProcess.mesh.aabb;
 
         this.meshProcess.mesh.addCoordinateSystem({ y: '-y' });
+
+        this.meshProcess.mesh.resize({
+            x: this.scale,
+            y: this.scale,
+            z: this.scale
+        });
 
         this.meshProcess.mesh.offset({
             x: -aabb.min.x,
@@ -71,37 +78,41 @@ class STLToSvgStack {
 
         const result = [];
 
-        const svgFileStateWrite = () => {
-            const svgStr = svgToString(svgFileState.svg);
-            fs.writeFileSync(`${DataStorage.tmpDir}/${this.outputFilename}_${svgFileState.index}.svg`, svgStr, 'utf8');
-
-            result.push({
-                width: width,
-                height: height,
-                filename: `${DataStorage.tmpDir}/${this.outputFilename}_${svgFileState.index}.svg`
-            });
-
+        const svgFileStateWrite = (isWirte) => {
             svgFileState.startX += boundingBoxX;
 
             if (svgFileState.startX + boundingBoxX > width) {
                 if (svgFileState.startY + 2 * boundingBoxY > height) {
-                    svgFileState.index++;
-                    svgFileState.startX = 0;
-                    svgFileState.startY = 0;
-                    svgFileState.svg = {
-                        shapes: [{
-                            visibility: true,
-                            stroke: '#000000',
-                            paths: []
-                        }],
-                        width: width,
-                        height: height,
-                        viewBox: `0 0 ${width} ${height}`
-                    };
+                    isWirte = true;
                 } else {
                     svgFileState.startX = 0;
                     svgFileState.startY += boundingBoxY;
                 }
+            }
+
+            if(isWirte) {
+                const svgStr = svgToString(svgFileState.svg);
+                fs.writeFileSync(`${DataStorage.tmpDir}/${this.outputFilename}_${svgFileState.index}.svg`, svgStr, 'utf8');
+    
+                result.push({
+                    width: width,
+                    height: height,
+                    filename: `${this.outputFilename}_${svgFileState.index}.svg`
+                });
+
+                svgFileState.index++;
+                svgFileState.startX = 0;
+                svgFileState.startY = 0;
+                svgFileState.svg = {
+                    shapes: [{
+                        visibility: true,
+                        stroke: '#000000',
+                        paths: []
+                    }],
+                    width: width,
+                    height: height,
+                    viewBox: `0 0 ${width} ${height}`
+                };
             }
         };
 
@@ -127,7 +138,7 @@ class STLToSvgStack {
                 });
             });
 
-            svgFileStateWrite();
+            svgFileStateWrite(i === slicer.slicerLayers.length - 1);
         }
 
         return result;
@@ -137,6 +148,12 @@ class STLToSvgStack {
         const aabb = this.meshProcess.mesh.aabb;
 
         this.meshProcess.mesh.addCoordinateSystem({ y: '-y' });
+
+        this.meshProcess.mesh.resize({
+            x: this.scale,
+            y: this.scale,
+            z: this.scale
+        });
 
         this.meshProcess.mesh.offset({
             x: -aabb.min.x,
@@ -205,15 +222,16 @@ class STLToSvgStack {
 
         const positionAttribute = new THREE.Float32BufferAttribute(positions, 3);
         const bufferGeometry = new THREE.BufferGeometry();
-        bufferGeometry.addAttribute('position', positionAttribute);
+        bufferGeometry.setAttribute('position', positionAttribute);
 
         const mesh = new THREE.Mesh(bufferGeometry, new THREE.MeshBasicMaterial());
 
-        fs.writeFileSync(`${DataStorage.tmpDir}/${this.outputFilename}`, new STLExporter().parse(mesh), 'utf8');
+        fs.writeFileSync(`${DataStorage.tmpDir}/${this.outputFilename}`, new STLExporter().parse(mesh, { binary: true }), 'utf8');
 
         return {
             width: aabb.length.x,
             height: aabb.length.y,
+            layers: slicer.slicerLayers.length,
             filename: this.outputFilename
         };
     }

@@ -58,6 +58,7 @@ import Workspace from './Workspace';
 import Thumbnail from '../widgets/CncLaserShared/Thumbnail';
 import { laserCncIntroStepOne, laserCncIntroStepTwo, laserCncIntroStepFive, laserCncIntroStepSix, laser4AxisStepOne } from './introContent';
 import Steps from '../components/Steps';
+import StackedModel from '../widgets/LaserStackedModel';
 
 const allWidgets = {
     'control': ControlWidget,
@@ -327,6 +328,8 @@ function useRenderRemoveModelsWarning() {
 }
 function Laser({ location }) {
     const widgets = useSelector(state => state?.widget[pageHeadType]?.default?.widgets, shallowEqual);
+    const showImportStackedModelModal = useSelector(state => state[pageHeadType].showImportStackedModelModal, shallowEqual);
+    const [stackedModelModalDsiabled, setStackedModelModalDsiabled] = useState(false);
     const [isDraggingWidget, setIsDraggingWidget] = useState(false);
     const [showHomePage, setShowHomePage] = useState(false);
     const [showWorkspace, setShowWorkspace] = useState(false);
@@ -528,6 +531,33 @@ function Laser({ location }) {
             component: Workspace
         });
     }
+    function renderStackedModelModal() {
+        const onClose = () => {
+            dispatch(editorActions.updateState(pageHeadType, {
+                showImportStackedModelModal: false
+            }));
+        };
+        return showImportStackedModelModal && renderModal({
+            title: i18n._('Import Stacked Model'),
+            onClose,
+            renderBody: () => (<StackedModel setStackedModelModalDsiabled={setStackedModelModalDsiabled} />),
+            actions: [
+                {
+                    name: i18n._('Cancel'),
+                    onClick: () => { onClose(); }
+                },
+                {
+                    name: i18n._('Import'),
+                    isPrimary: true,
+                    disabled: stackedModelModalDsiabled,
+                    onClick: () => {
+                        dispatch(editorActions.importStackedModelSVG(HEAD_LASER));
+                        onClose();
+                    }
+                }
+            ]
+        });
+    }
 
     function handleExit() {
         // machineStore.set(isRotate ? 'guideTours.guideTourslaser4Axis' : 'guideTours.guideTourslaser', true); // mock   ---> true
@@ -714,6 +744,7 @@ function Laser({ location }) {
             {setBackgroundModal}
             {renderHomepage()}
             {renderWorkspace()}
+            {renderStackedModelModal()}
         </div>
     );
 }

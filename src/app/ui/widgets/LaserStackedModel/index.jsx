@@ -1,0 +1,289 @@
+import React, { useEffect, useState } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { Spin } from 'antd';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+import { toFixed } from '../../../lib/numeric-utils';
+import { NumberInput as Input } from '../../components/Input';
+import i18n from '../../../lib/i18n';
+import styles from './styles.styl';
+import { HEAD_LASER, DATA_PREFIX } from '../../../constants';
+import { actions as editorActions } from '../../../flux/editor';
+import { actions as menuActions } from '../../../flux/appbar-menu';
+import ModelViewer from './Canvas';
+
+let modelInitSize = {}, scale = 1, canvasRange = {};
+const MAX_Z = 500, MIN_SIZE = 0.1, MAX_THICKNESS = 50;
+
+function findSuitableScale(curScale, limit) {
+    const scaleX = limit.x / modelInitSize.x;
+    const scaleY = limit.y / modelInitSize.y;
+    const scaleZ = limit.z / modelInitSize.z;
+
+    const maxScale = Math.min(scaleX, scaleY, scaleZ);
+    return Math.min(maxScale, curScale);
+}
+
+const StackedModel = ({ setStackedModelModalDsiabled }) => {
+    const { isProcessing = false, svgInfo, stlInfo, uploadName } = useSelector(state => state[HEAD_LASER].cutModelInfo);
+    const coordinateSize = useSelector(state => state[HEAD_LASER].coordinateSize, shallowEqual);
+    const [disabled, setDisabled] = useState(false);
+    const [size, setSize] = useState({ x: 0, y: 0, z: 0 });
+    const [cuttingModel, setCuttingModel] = useState(false);
+    const [modelGeometry, setModelGeometry] = useState(null);
+    const [thickness, setThickness] = useState(() => {
+        let value = localStorage.getItem('model-cut-thickness');
+        if (value) {
+            return Number(value);
+        }
+        value = 1.5;
+        localStorage.setItem('model-cut-thickness', value);
+        return value;
+    });
+    const dispatch = useDispatch();
+
+    const actions = {
+        loadModel: () => {
+            // load cutted model
+            if (!stlInfo) return;
+            new STLLoader().load(
+                `${DATA_PREFIX}/${stlInfo.filename}`,
+                (geometry) => {
+                    geometry.computeBoundingBox();
+                    const box3 = geometry.boundingBox;
+                    const x = -(box3.max.x + box3.min.x) / 2;
+                    const y = -(box3.max.y + box3.min.y) / 2;
+                    const z = -(box3.max.z + box3.min.z) / 2;
+                    geometry.translate(x, y, z);
+                    setModelGeometry(geometry);
+                    setCuttingModel(false);
+                },
+                () => {},
+                () => {
+                    setCuttingModel(false);
+                }
+            );
+        },
+        generateModelStack: () => {
+            setCuttingModel(true);
+            dispatch(editorActions.generateModelStack(HEAD_LASER, size.x, size.y, thickness, scale));
+        },
+        onChangeLogicalX: (value) => {
+            if (value !== size.x) {
+                scale = value / modelInitSize.x;
+                scale = findSuitableScale(scale, canvasRange);
+                setSize({
+                    x: modelInitSize.x * scale,
+                    y: modelInitSize.y * scale,
+                    z: modelInitSize.z * scale
+                });
+            }
+        },
+        onChangeLogicalY: (value) => {
+            if (value !== size.y) {
+                scale = value / modelInitSize.y;
+                scale = findSuitableScale(scale, canvasRange);
+                setSize({
+                    x: modelInitSize.x * scale,
+                    y: modelInitSize.y * scale,
+                    z: modelInitSize.z * scale
+                });
+            }
+        },
+        onChangeLogicalZ: (value) => {
+            if (value !== size.z) {
+                scale = value / modelInitSize.z;
+                scale = findSuitableScale(scale, canvasRange);
+                setSize({
+                    x: modelInitSize.x * scale,
+                    y: modelInitSize.y * scale,
+                    z: modelInitSize.z * scale
+                });
+            }
+        },
+        onChangeMaterialThick: (value) => {
+            if (value !== thickness) {
+                localStorage.setItem('model-cut-thickness', value);
+                setThickness(value);
+            }
+        }
+    };
+    useEffect(() => {
+        setDisabled(isProcessing);
+        setStackedModelModalDsiabled(isProcessing);
+    }, [isProcessing]);
+    useEffect(() => {
+        if (size.x && size.y && size.z && thickness && !cuttingModel) {
+            console.log(size, thickness, cuttingModel);
+            actions.generateModelStack();
+        }
+    }, [size, thickness]);
+    useEffect(() => {
+        if (stlInfo && stlInfo.filename && cuttingModel) {
+            console.log(stlInfo, stlInfo.filename);
+            actions.loadModel();
+        }
+    }, [stlInfo]);
+    useEffect(() => {
+        modelInitSize = {};
+        canvasRange = {};
+        scale = 1;
+        dispatch(editorActions.setShortcutStatus(HEAD_LASER, false));
+        dispatch(menuActions.disableMenu());
+        canvasRange = { x: coordinateSize.x, y: coordinateSize.y, z: MAX_Z };
+        // actions.generateModelStack();
+        // load original model
+        new STLLoader().load(
+            `${DATA_PREFIX}/${uploadName}`,
+            (geometry) => {
+                geometry.computeBoundingBox();
+                let box3 = geometry.boundingBox;
+                modelInitSize = {
+                    x: box3.max.x - box3.min.x,
+                    y: box3.max.y - box3.min.y,
+                    z: box3.max.z - box3.min.z
+                };
+                if (box3.max.x - box3.min.x > canvasRange.x || box3.max.y - box3.min.y > canvasRange.y) {
+                    const _scale = findSuitableScale(Infinity, canvasRange);
+                    scale = 0.9 * _scale;
+                    geometry.scale(scale, scale, scale);
+                    geometry.computeBoundingBox();
+                    box3 = geometry.boundingBox;
+                    modelInitSize = {
+                        x: box3.max.x - box3.min.x,
+                        y: box3.max.y - box3.min.y,
+                        z: box3.max.z - box3.min.z
+                    };
+                }
+                setSize(modelInitSize);
+            },
+            () => {},
+            () => {}
+        );
+
+        return () => {
+            dispatch(editorActions.setShortcutStatus(HEAD_LASER, true));
+            dispatch(menuActions.enableMenu());
+        };
+    }, []);
+    return (
+        <div style={{ marginBottom: '-10px' }}>
+            <div className="display-inline">
+                <Spin spinning={disabled} className={classNames(styles.spin)} tip={i18n._('Loading...')}>
+                    <div style={{ width: '196px', height: '196px', display: 'inline-block', backgroundColor: '#F5F5F7', borderRadius: '8px', overflow: 'hidden' }}>
+                        <ModelViewer geometry={modelGeometry} coordinateSize={canvasRange} />
+                    </div>
+                </Spin>
+                <div className="margin-top-8 text-center" style={{ color: '#86868B', fontSize: '12px', visibility: disabled ? 'hidden' : 'visible' }}>
+                    <span>{i18n._('Layers')} </span>
+                    <span>{stlInfo?.layers}</span>
+                    <span style={{ display: 'inline-block', padding: '0 1em' }}>|</span>
+                    <span>{i18n._('Sheets')} </span>
+                    <span>{svgInfo?.length}</span>
+                </div>
+            </div>
+            <div style={{ display: 'inline-block', verticalAlign: 'top', width: '280px', paddingLeft: '24px', marginTop: '-2px' }}>
+                <div>
+                    <div style={{ color: '#545659', marginBottom: '16px' }}>{i18n._('Model Size')}</div>
+                    <div className="sm-flex height-32 margin-vertical-8">
+                        <span className="sm-flex-width sm-flex justify-space-between">
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c margin-left-4 margin-right-4">
+                                    X
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        className="margin-horizontal-2"
+                                        disabled={disabled}
+                                        value={toFixed(size.x, 1)}
+                                        size="small"
+                                        min={MIN_SIZE}
+                                        max={coordinateSize.x}
+                                        onChange={(value) => {
+                                            actions.onChangeLogicalX(value);
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c margin-right-4">
+                                    Z
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        disabled={disabled}
+                                        className="margin-horizontal-2"
+                                        value={toFixed(size.z, 1)}
+                                        size="small"
+                                        min={MIN_SIZE}
+                                        max={MAX_Z}
+                                        onChange={(value) => {
+                                            actions.onChangeLogicalZ(value);
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                        </span>
+                    </div>
+                    <div className="sm-flex height-32 margin-vertical-8">
+                        <span className="sm-flex-width sm-flex justify-space-between">
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c margin-left-4 margin-right-4">
+                                    Y
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        disabled={disabled}
+                                        className="margin-horizontal-2"
+                                        value={toFixed(size.y, 1)}
+                                        size="small"
+                                        min={MIN_SIZE}
+                                        max={coordinateSize.y}
+                                        onChange={(value) => {
+                                            actions.onChangeLogicalY(value);
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <div style={{ color: '#545659', marginBottom: '16px', marginTop: '14px' }}>{i18n._('Material Thickness')}</div>
+                    <div className="sm-flex height-32 margin-vertical-8">
+                        <span className="sm-flex-width sm-flex justify-space-between">
+                            <div className="position-re sm-flex align-flex-start">
+                                <span className="width-16 height-32 display-inline unit-text align-c margin-left-4 margin-right-4">
+                                    T
+                                </span>
+                                <span>
+                                    <Input
+                                        suffix="mm"
+                                        disabled={disabled}
+                                        className="margin-horizontal-2"
+                                        value={toFixed(thickness, 1)}
+                                        size="small"
+                                        min={MIN_SIZE}
+                                        max={MAX_THICKNESS}
+                                        onChange={(value) => {
+                                            actions.onChangeMaterialThick(value);
+                                        }}
+                                    />
+                                </span>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+StackedModel.propTypes = {
+    setStackedModelModalDsiabled: PropTypes.func.isRequired
+};
+
+export default StackedModel;

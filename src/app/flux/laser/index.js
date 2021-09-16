@@ -115,7 +115,18 @@ const INITIAL_STATE = {
     shouldGenerateGcodeCounter: 0,
 
     // ProgressStatesManager
-    progressStatesManager: new ProgressStatesManager()
+    progressStatesManager: new ProgressStatesManager(),
+
+    showImportStackedModelModal: false,
+    cutModelInfo: {
+        isProcessing: false,
+        uploadName: '',
+        originalName: '',
+        svgInfo: [],
+        stlInfo: {}
+    },
+
+    enableShortcut: true
 };
 
 const ACTION_SET_BACKGROUND_ENABLED = 'laser/ACTION_SET_BACKGROUND_ENABLED';
