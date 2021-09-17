@@ -11,11 +11,20 @@ import launchServer from './server-cli';
 import DataStorage from './DataStorage';
 import pkg from './package.json';
 
+const { crashReporter } = require('electron');
 
 const config = new Store();
 
 let serverData = null;
 let mainWindow = null;
+
+crashReporter.start({
+    productName: 'YourName',
+    companyName: 'YourCompany',
+    submitURL: 'https://api.snapmaker.com',
+    uploadToServer: true
+});
+
 
 function getBrowserWindowOptions() {
     const defaultOptions = {
@@ -191,6 +200,10 @@ const showMainWindow = async () => {
         window.blur();
         window.setPosition(outsideX, outsideY, false);
     }
+
+    mainWindow.webContents.on('plugin-crashed', (_ev, name, version) => { console.log('_ev, name,', _ev, name, version); });
+    mainWindow.webContents.on('crashed', (ev, killed) => { console.log('ev', ev, killed); });
+
     window.show();
 
     configureWindow(window);
@@ -270,6 +283,8 @@ const createWindow = () => {
                 mainWindow.setPosition(x, y, false);
                 mainWindow.moveTop();
                 mainWindow.setSkipTaskbar(false);
+
+
                 loadingWindow.setSkipTaskbar(true);
                 loadingWindow.setPosition(outsideX, outsideY, false);
                 mainWindow.focus();
@@ -290,6 +305,16 @@ const createWindow = () => {
     } else {
         showMainWindow();
     }
+    try {
+        app.getPath('crashDumps');
+        console.log('crashDumps', app.getPath('crashDumps'));
+    } catch (e) {
+        console.log('e', e);
+    } finally {
+        console.log('crashDumps', app.getPath('temp'));
+    }
+    app.on('gpu-process-crashed', (_event, killed) => { console.log('_event', _event, killed); });
+    app.on('renderer-process-crashed', (_e, _w, killed) => { console.log('_e, _w', _e, _w, killed); });
 };
 
 // Allow max 4G memory usage
