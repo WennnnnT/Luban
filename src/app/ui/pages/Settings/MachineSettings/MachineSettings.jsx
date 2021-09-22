@@ -186,7 +186,7 @@ function MachineSettings() {
                     name="TitleSetting"
                     type={['static']}
                 />
-                <span className="margin-left-4">{i18n._('Machine')}</span>
+                <span className="margin-left-4">{i18n._('key_ui/pages/Settings/MachineSettings/MachineSettings_Machine')}</span>
             </div>
             <Select
                 className="margin-top-16"
@@ -198,7 +198,7 @@ function MachineSettings() {
                 value={state.series}
                 onChange={actions.onChangeMachineSeries}
             />
-            <div className="margin-top-16">{i18n._('X (Width)')}</div>
+            <div className="margin-top-16">{i18n._('key_ui/pages/Settings/MachineSettings/MachineSettings_X (Width)')}</div>
             <div className="position-re sm-flex height-32">
                 <NumberInput
                     suffix="mm"
@@ -208,7 +208,7 @@ function MachineSettings() {
                     onChange={actions.onChangeSizeX}
                 />
             </div>
-            <div className="margin-top-16">{i18n._('Y (Depth)')}</div>
+            <div className="margin-top-16">{i18n._('key_ui/pages/Settings/MachineSettings/MachineSettings_Y (Depth)')}</div>
             <div className="position-re sm-flex height-32">
                 <NumberInput
                     suffix="mm"
@@ -218,7 +218,7 @@ function MachineSettings() {
                     onChange={actions.onChangeSizeY}
                 />
             </div>
-            <div className="margin-top-16">{i18n._('Z (Height)')}</div>
+            <div className="margin-top-16">{i18n._('key_ui/pages/Settings/MachineSettings/MachineSettings_Z (Height)')}</div>
             <div className="position-re sm-flex height-32">
                 <NumberInput
                     suffix="mm"

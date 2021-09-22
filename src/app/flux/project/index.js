@@ -281,8 +281,8 @@ export const actions = {
                 defaultId: 0,
                 cancelId: 1,
                 buttons: [
-                    i18n._('Save'),
-                    i18n._('Cancel'),
+                    i18n._('key_flux/project/index_Save'),
+                    i18n._('key_flux/project/index_Cancel'),
                     i18n._('Don\'t Save')
                 ]
             });
