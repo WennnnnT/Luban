@@ -10,49 +10,19 @@ import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
 import PropType from 'prop-types';
 import SvgIcon from '../../../components/SvgIcon';
 
-const size = { x: 100, y: 100, z: 100 };
-
-function getCameraPositionByRotation(positionStart, target, angleEW, angleNS) {
-    const positionRotateNS = {
-        x: positionStart.x,
-        y: target.y + (positionStart.y - target.y) * Math.cos(angleNS) - (positionStart.z - target.z) * Math.sin(angleNS),
-        z: target.z + (positionStart.y - target.y) * Math.sin(angleNS) + (positionStart.z - target.z) * Math.cos(angleNS)
-    };
-
-    const positionRotateEW = {
-        x: target.x + (positionRotateNS.x - target.x) * Math.cos(angleEW) - (positionRotateNS.y - target.y) * Math.sin(angleEW),
-        y: target.y + (positionRotateNS.x - target.x) * Math.sin(angleEW) + (positionRotateNS.y - target.y) * Math.cos(angleEW),
-        z: positionRotateNS.z
-    };
-
-    return positionRotateEW;
-}
+const size = { x: 230, y: 250, z: 500 };
 
 const Camera = forwardRef((props, ref) => {
     const { camera, gl } = useThree();
     const controlsRef = useRef();
     useImperativeHandle(ref, () => ({
         camera,
-        toTopFrontRight: () => {
+        toTopFrontRight: (longestEdge) => {
             if (camera && controlsRef.current) {
-                const cameraInitialPosition = new Vector3(0, -Math.max(size.x, size.y, size.z) * 2, size.z / 2);
-                const positionStart = cameraInitialPosition;
-                const target = { x: 0, y: 0, z: cameraInitialPosition.z };
-                const position = getCameraPositionByRotation(positionStart, target, Math.PI / 6, -Math.PI / 1.5);
-                // const position = getCameraPositionByRotation(positionStart, target, Math.PI / 6, -Math.PI / 10);
-                console.log(position);
-                camera.position.x = position.x;
-                camera.position.y = position.y;
-                camera.position.z = position.z;
-                // camera.position.copy(new Vector3(100 / 2, 100, 100));
-                // camera.position.copy(new Vector3(30 * 2.5, 30 * 2.5, 50 * 2.5));
-                // camera.position.copy(new Vector3(30 * 2.5 * 31 / 100, 30 * 2.5 * 31 / 100, 50 * 2.5 * 31 / 100));
-                // camera.position.copy(new Vector3(30 * 2.5 * 166 / 100, 30 * 2.5 * 166 / 100, 50 * 2.5 * 166 / 100));
-                // camera.up.copy(new Vector3(0, 1, 0));
-                // camera.position.copy(cameraInitialPosition);
-                // camera.rotateX(Math.PI / 2);
-                // camera.rotateZ(Math.PI / 2);
-                controlsRef.current.target.copy(new Vector3(0, 0, 0 && cameraInitialPosition.z));
+                camera.position.x = 150 * longestEdge / 200;
+                camera.position.y = 150 * longestEdge / 200;
+                camera.position.z = 240 * longestEdge / 200;
+                controlsRef.current.target.copy(new Vector3(0, 0, 0));
                 controlsRef.current.update();
             }
         }
@@ -71,9 +41,13 @@ const ModelViewer = React.memo(({ geometry }) => {
     const lightRef = useRef();
     const actions = {
         toTopFrontRight: () => {
-            if (cameraRef.current) {
+            if (cameraRef.current && geometry) {
                 const cameraInitialPosition = new Vector3(0, -Math.max(size.x, size.y, size.z) * 2, size.z / 2);
-                cameraRef.current.toTopFrontRight();
+                geometry.computeBoundingBox();
+                const boxMax = geometry.boundingBox.max;
+                const boxMin = geometry.boundingBox.min;
+                const longestEdge = Math.max(boxMax.x - boxMin.x, boxMax.y - boxMin.y, boxMax.z - boxMin.z);
+                cameraRef.current.toTopFrontRight(longestEdge);
                 lightRef.current.position.copy(cameraInitialPosition);
             }
         },
@@ -87,7 +61,7 @@ const ModelViewer = React.memo(({ geometry }) => {
                 <group rotation={[-Math.PI / 2, 0, 0]}>
                     <Camera ref={cameraRef} />
                     {/* <gridHelper args={[100, 100]} /> */}
-                    <axesHelper args={[100]} />
+                    {/* <axesHelper args={[100]} /> */}
                     <mesh position={[0, 0, 0]}>
                         {geometry ? <primitive object={geometry} attach="geometry" /> : null}
                         <meshPhongMaterial color={0xa0a0a0} specular={0xb0b0b0} shininess={0} side={DoubleSide} />
