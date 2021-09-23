@@ -44,6 +44,12 @@ const _ = (...args) => {
         text = i18next.t(key, { ...options, lng: 'en' });
     }
 
+    // TEST
+    console.log('lang', i18next.language);
+    if (i18next.language === 'de') {
+        text = key;
+    }
+
     return text;
 };
 
