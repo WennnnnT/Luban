@@ -115,13 +115,11 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
     }, [isProcessing]);
     useEffect(() => {
         if (size.x && size.y && size.z && thickness && !cuttingModel) {
-            console.log(size, thickness, cuttingModel);
             actions.generateModelStack();
         }
     }, [size, thickness]);
     useEffect(() => {
         if (stlInfo && stlInfo.filename && cuttingModel) {
-            console.log(stlInfo, stlInfo.filename);
             actions.loadModel();
         }
     }, [stlInfo]);

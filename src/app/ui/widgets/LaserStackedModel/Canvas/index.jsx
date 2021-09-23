@@ -10,15 +10,13 @@ import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
 import PropType from 'prop-types';
 import SvgIcon from '../../../components/SvgIcon';
 
-const size = { x: 230, y: 250, z: 500 };
-
 const Camera = forwardRef((props, ref) => {
     const { camera, gl } = useThree();
     const controlsRef = useRef();
     useImperativeHandle(ref, () => ({
-        camera,
         toTopFrontRight: (longestEdge) => {
             if (camera && controlsRef.current) {
+                // adjust camera position based on a 200x200x200 BoxGeometry
                 camera.position.x = 150 * longestEdge / 200;
                 camera.position.y = 150 * longestEdge / 200;
                 camera.position.z = 240 * longestEdge / 200;
@@ -35,14 +33,14 @@ const Camera = forwardRef((props, ref) => {
     );
 });
 
-const ModelViewer = React.memo(({ geometry }) => {
+const ModelViewer = React.memo(({ geometry, coordinateSize }) => {
     const cameraRef = useRef();
     const canvasRef = useRef();
     const lightRef = useRef();
     const actions = {
         toTopFrontRight: () => {
             if (cameraRef.current && geometry) {
-                const cameraInitialPosition = new Vector3(0, -Math.max(size.x, size.y, size.z) * 2, size.z / 2);
+                const cameraInitialPosition = new Vector3(0, -Math.max(coordinateSize.x, coordinateSize.y, coordinateSize.z) * 2, coordinateSize.z / 2);
                 geometry.computeBoundingBox();
                 const boxMax = geometry.boundingBox.max;
                 const boxMin = geometry.boundingBox.min;
@@ -67,7 +65,7 @@ const ModelViewer = React.memo(({ geometry }) => {
                         <meshPhongMaterial color={0xa0a0a0} specular={0xb0b0b0} shininess={0} side={DoubleSide} />
                     </mesh>
                     <hemisphereLight color={0xdddddd} groundColor={0x666666} position={[0, 0, 1000]} />
-                    <directionalLight ref={lightRef} color={0x666666} intensity={0.4} position={[0, -Math.max(size.x, size.y, size.z) * 2, size.z / 2]} />
+                    <directionalLight ref={lightRef} color={0x666666} intensity={0.4} position={[0, -Math.max(coordinateSize.x, coordinateSize.y, coordinateSize.z) * 2, coordinateSize.z / 2]} />
                 </group>
             );
             render(node, canvasRef.current, { frameloop: 'demand', onCreated: actions.onCreated });
@@ -94,7 +92,8 @@ const ModelViewer = React.memo(({ geometry }) => {
     );
 });
 ModelViewer.propTypes = {
-    geometry: PropType.object
+    geometry: PropType.object,
+    coordinateSize: PropType.object
 };
 
 export default ModelViewer;
