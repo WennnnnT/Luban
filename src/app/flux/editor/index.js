@@ -530,7 +530,8 @@ export const actions = {
             zIndex,
             isRotate: materials.isRotate,
             elem: contentGroup.addSVGElement({
-                element: config.svgNodeName || 'image',
+                // element: config.svgNodeName || 'image',
+                element: 'image',
                 attr: { id: modelID }
             }),
             size: size
