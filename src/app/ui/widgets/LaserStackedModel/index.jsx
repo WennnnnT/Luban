@@ -70,7 +70,7 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
             dispatch(editorActions.generateModelStack(HEAD_LASER, size.x, size.y, thickness, scale));
         },
         onChangeLogicalX: (value) => {
-            if (value !== size.x) {
+            if (value !== toFixed(size.x, 1)) {
                 const curScale = value / modelInitSize.x;
                 if (Math.abs(scale - curScale) > EPS) {
                     scale = findSuitableScale(curScale, canvasRange);
@@ -83,7 +83,7 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
             }
         },
         onChangeLogicalY: (value) => {
-            if (value !== size.y) {
+            if (value !== toFixed(size.y, 1)) {
                 const curScale = value / modelInitSize.y;
                 if (Math.abs(scale - curScale) > EPS) {
                     scale = findSuitableScale(curScale, canvasRange);
@@ -96,7 +96,7 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
             }
         },
         onChangeLogicalZ: (value) => {
-            if (value !== size.z) {
+            if (value !== toFixed(size.z, 1)) {
                 const curScale = value / modelInitSize.z;
                 if (Math.abs(scale - curScale) > EPS) {
                     scale = findSuitableScale(curScale, canvasRange);
