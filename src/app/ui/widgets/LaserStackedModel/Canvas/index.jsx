@@ -8,6 +8,8 @@ import { render, unmountComponentAtNode, useThree } from '@react-three/fiber';
 import { Vector3, DoubleSide } from 'three';
 import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
 import PropType from 'prop-types';
+import classNames from 'classnames';
+import styles from './styles.styl';
 import SvgIcon from '../../../components/SvgIcon';
 
 const Camera = forwardRef((props, ref) => {
@@ -80,7 +82,7 @@ const ModelViewer = React.memo(({ geometry, coordinateSize }) => {
     return (
         <div>
             <canvas ref={canvasRef} width="196" height="196" />
-            <div style={{ position: 'absolute', bottom: '1px', left: '5px' }}>
+            <div className={classNames(styles['view-controls'])}>
                 <SvgIcon
                     name="ViewIsometric"
                     hoversize={14}

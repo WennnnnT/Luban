@@ -4,7 +4,7 @@ import { Spin } from 'antd';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
-import { toFixed } from '../../../lib/numeric-utils';
+import { EPS, toFixed } from '../../../lib/numeric-utils';
 import { NumberInput as Input } from '../../components/Input';
 import i18n from '../../../lib/i18n';
 import styles from './styles.styl';
@@ -71,35 +71,41 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
         },
         onChangeLogicalX: (value) => {
             if (value !== size.x) {
-                scale = value / modelInitSize.x;
-                scale = findSuitableScale(scale, canvasRange);
-                setSize({
-                    x: modelInitSize.x * scale,
-                    y: modelInitSize.y * scale,
-                    z: modelInitSize.z * scale
-                });
+                const curScale = value / modelInitSize.x;
+                if (Math.abs(scale - curScale) > EPS) {
+                    scale = findSuitableScale(curScale, canvasRange);
+                    setSize({
+                        x: modelInitSize.x * scale,
+                        y: modelInitSize.y * scale,
+                        z: modelInitSize.z * scale
+                    });
+                }
             }
         },
         onChangeLogicalY: (value) => {
             if (value !== size.y) {
-                scale = value / modelInitSize.y;
-                scale = findSuitableScale(scale, canvasRange);
-                setSize({
-                    x: modelInitSize.x * scale,
-                    y: modelInitSize.y * scale,
-                    z: modelInitSize.z * scale
-                });
+                const curScale = value / modelInitSize.y;
+                if (Math.abs(scale - curScale) > EPS) {
+                    scale = findSuitableScale(curScale, canvasRange);
+                    setSize({
+                        x: modelInitSize.x * scale,
+                        y: modelInitSize.y * scale,
+                        z: modelInitSize.z * scale
+                    });
+                }
             }
         },
         onChangeLogicalZ: (value) => {
             if (value !== size.z) {
-                scale = value / modelInitSize.z;
-                scale = findSuitableScale(scale, canvasRange);
-                setSize({
-                    x: modelInitSize.x * scale,
-                    y: modelInitSize.y * scale,
-                    z: modelInitSize.z * scale
-                });
+                const curScale = value / modelInitSize.z;
+                if (Math.abs(scale - curScale) > EPS) {
+                    scale = findSuitableScale(curScale, canvasRange);
+                    setSize({
+                        x: modelInitSize.x * scale,
+                        y: modelInitSize.y * scale,
+                        z: modelInitSize.z * scale
+                    });
+                }
             }
         },
         onChangeMaterialThick: (value) => {
@@ -166,24 +172,24 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
         };
     }, []);
     return (
-        <div style={{ marginBottom: '-10px' }}>
+        <div className={classNames(styles['model-cut-modal'])}>
             <div className="display-inline">
                 <Spin spinning={disabled} className={classNames(styles.spin)} tip={i18n._('Loading...')}>
-                    <div style={{ width: '196px', height: '196px', display: 'inline-block', backgroundColor: '#F5F5F7', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div className={classNames(styles['model-viewer-container'])}>
                         <ModelViewer geometry={modelGeometry} coordinateSize={canvasRange} />
                     </div>
                 </Spin>
-                <div className="margin-top-8 text-center" style={{ color: '#86868B', fontSize: '12px', visibility: disabled ? 'hidden' : 'visible' }}>
+                <div className={classNames('margin-top-8', 'text-center', styles.description)} style={{ visibility: disabled ? 'hidden' : 'visible' }}>
                     <span>{i18n._('Layers')} </span>
                     <span>{stlInfo?.layers}</span>
-                    <span style={{ display: 'inline-block', padding: '0 1em' }}>|</span>
+                    <span className={classNames(styles['desc-split'])}>|</span>
                     <span>{i18n._('Sheets')} </span>
                     <span>{svgInfo?.length}</span>
                 </div>
             </div>
-            <div style={{ display: 'inline-block', verticalAlign: 'top', width: '280px', paddingLeft: '24px', marginTop: '-2px' }}>
+            <div className={classNames(styles['model-size-container'])}>
                 <div>
-                    <div style={{ color: '#545659', marginBottom: '16px' }}>{i18n._('Model Size')}</div>
+                    <div className={classNames(styles.title)}>{i18n._('Model Size')}</div>
                     <div className="sm-flex height-32 margin-vertical-8">
                         <span className="sm-flex-width sm-flex justify-space-between">
                             <div className="position-re sm-flex align-flex-start">
@@ -251,7 +257,7 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
                     </div>
                 </div>
                 <div>
-                    <div style={{ color: '#545659', marginBottom: '16px', marginTop: '14px' }}>{i18n._('Material Thickness')}</div>
+                    <div className={classNames(styles.title, styles.thickness)}>{i18n._('Material Thickness')}</div>
                     <div className="sm-flex height-32 margin-vertical-8">
                         <span className="sm-flex-width sm-flex justify-space-between">
                             <div className="position-re sm-flex align-flex-start">

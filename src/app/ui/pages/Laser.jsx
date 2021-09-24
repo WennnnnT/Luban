@@ -466,16 +466,27 @@ function Laser({ location }) {
     const actions = {
         onDropAccepted: (file) => {
             let mode = PROCESS_MODE_GREYSCALE;
-            if (path.extname(file.name).toLowerCase() === '.svg' || path.extname(file.name).toLowerCase() === '.dxf') {
+            const extname = path.extname(file.name).toLowerCase();
+            if (extname === '.svg' || extname === '.dxf') {
                 mode = PROCESS_MODE_VECTOR;
             }
-            dispatch(editorActions.uploadImage('laser', file, mode, () => {
-                modal({
-                    cancelTitle: i18n._('Close'),
-                    title: i18n._('Import Error'),
-                    body: i18n._('Failed to import this object. \nPlease select a supported file format.')
-                });
-            }));
+            if (extname === '.stl') {
+                dispatch(editorActions.cutModel(HEAD_LASER, file, () => {
+                    modal({
+                        cancelTitle: i18n._('Close'),
+                        title: i18n._('Import Error'),
+                        body: i18n._('Failed to import this object. \nPlease select a supported file format.')
+                    });
+                }));
+            } else {
+                dispatch(editorActions.uploadImage('laser', file, mode, () => {
+                    modal({
+                        cancelTitle: i18n._('Close'),
+                        title: i18n._('Import Error'),
+                        body: i18n._('Failed to import this object. \nPlease select a supported file format.')
+                    });
+                }));
+            }
         },
         onDropRejected: () => {
             modal({
@@ -639,7 +650,7 @@ function Laser({ location }) {
             >
                 <Dropzone
                     disabled={isDraggingWidget}
-                    accept={ACCEPT}
+                    accept={isRotate ? ACCEPT : `${ACCEPT}, .stl`}
                     dragEnterMsg={i18n._('Drop an image file here.')}
                     onDropAccepted={actions.onDropAccepted}
                     onDropRejected={actions.onDropRejected}
