@@ -4,6 +4,9 @@
     "inherits": "snapmaker",
     "category": "Default",
     "overrides": {
+        "color": {
+            "default_value": "#ff0008"
+        },
         "material_flow": {
             "default_value": 100
         },

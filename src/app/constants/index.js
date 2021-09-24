@@ -54,6 +54,9 @@ export const STAGES_3DP = {
 };
 // !important: keys in PRINTING_QUALITY_CONFIG_KEYS, PRINTING_QUALITY_CONFIG_GROUP should change togethor
 export const PRINTING_MATERIAL_CONFIG_KEYS = [
+    // color
+    'color',
+    // temperature
     'material_diameter',
     'material_print_temperature',
     'material_print_temperature_layer_0',
@@ -61,7 +64,7 @@ export const PRINTING_MATERIAL_CONFIG_KEYS = [
     'machine_heated_bed',
     'material_bed_temperature',
     'material_bed_temperature_layer_0',
-    //Extrude
+    // Extrude
     'material_flow',
     'material_flow_layer_0',
     // retraction
@@ -106,7 +109,21 @@ export const PRINTING_QUALITY_CONFIG_KEYS = [
     'support_infill_rate',
     'support_z_distance'
 ];
+
+export const PRINTING_MATERIAL_CONFIG_COLORS = [
+    '#ffffff', '#000000',
+    '#B30006', '#b36100', '#d4cc00', '#35a000', '#00685a', '#006a99', '#003c7c', '#4c2868', '#b3196f', '#86868b',
+    '#ff0008', '#ff8b00', '#fff500', '#7bf93c', '#00bea6', '#0092d3', '#0053aa', '#753fa0', '#f9239b', '#7f7f7f',
+    '#ffd2d3', '#ffca8a', '#fbfb74', '#baff79', '#68d7c9', '#71cdec', '#7eadd8', '#bba4d3', '#ef9fd0', '#cccccc'
+];
+
 export const PRINTING_MATERIAL_CONFIG_GROUP = [
+    {
+        name: 'Color',
+        fields: [
+            'color'
+        ]
+    },
     {
         name: 'Temperature',
         fields: [
