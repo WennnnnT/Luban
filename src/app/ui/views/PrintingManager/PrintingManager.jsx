@@ -81,6 +81,9 @@ function PrintingManager() {
                 if (PRINTING_MATERIAL_CONFIG_KEYS.indexOf(key) > -1) {
                     newDefinitionSettings[key] = { 'default_value': value.default_value };
                 }
+                if (key === 'color') {
+                    dispatch(printingActions.setModelsColor(value.default_value));
+                }
             }
             await dispatch(printingActions.updateDefinitionSettings(newDefinition, newDefinitionSettings));
             dispatch(printingActions.updateDefinitionsForManager(newDefinition.definitionId, type));

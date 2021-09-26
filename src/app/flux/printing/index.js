@@ -1523,7 +1523,7 @@ export const actions = {
 
         const { size } = getState().machine;
         const uploadPath = `${DATA_PREFIX}/${uploadName}`;
-        const { modelGroup } = getState().printing;
+        const { modelGroup, activeDefinition } = getState().printing;
         // const sourceType = '3d';
 
 
@@ -1559,7 +1559,8 @@ export const actions = {
                         geometry: bufferGeometry,
                         material: material,
                         transformation,
-                        modelID
+                        modelID,
+                        color: activeDefinition.settings.color.default_value
                     });
                     dispatch(actions.updateState(modelState));
                     dispatch(actions.displayModel());
@@ -1697,6 +1698,14 @@ export const actions = {
         dispatch(actions.updateState({
             leftBarOverlayVisible: visible
         }));
+    },
+
+    setModelsColor: (color) => (dispatch, getState) => {
+        const { modelGroup } = getState().printing;
+        const models = modelGroup.getModels();
+        models.forEach((model) => {
+            model.updateMaterialColor(color);
+        });
     }
 };
 

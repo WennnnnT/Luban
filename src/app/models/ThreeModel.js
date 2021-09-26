@@ -12,17 +12,6 @@ const materialOverstepped = new THREE.MeshPhongMaterial({
     transparent: true,
     opacity: 0.6
 });
-const materialSelected = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    side: THREE.DoubleSide,
-    shininess: 10
-});
-
-const materialNormal = new THREE.MeshPhongMaterial({
-    color: 0xcecece,
-    side: THREE.DoubleSide
-});
-
 class ThreeModel extends BaseModel {
     isThreeModel = true;
 
@@ -78,6 +67,8 @@ class ThreeModel extends BaseModel {
             this.transformation.positionX = point.x;
             this.transformation.positionY = point.y;
         }
+
+        this.updateMaterialColor(modelInfo.color ?? '#cecece');
     }
 
     get visible() {
@@ -91,6 +82,18 @@ class ThreeModel extends BaseModel {
 
     updateModelName(newName) {
         this.modelName = newName;
+    }
+
+    updateMaterialColor(color) {
+        this._materialNormal = new THREE.MeshPhongMaterial({
+            color: color,
+            side: THREE.DoubleSide
+        });
+        this._materialSelected = new THREE.MeshPhysicalMaterial({
+            color: color,
+            side: THREE.DoubleSide
+        });
+        this.setSelected();
     }
 
     onTransform() {
@@ -280,9 +283,9 @@ class ThreeModel extends BaseModel {
         if (this.overstepped === true) {
             this.meshObject.material = materialOverstepped.clone();
         } else if (this.isSelected === true) {
-            this.meshObject.material = materialSelected.clone();
+            this.meshObject.material = this._materialSelected.clone();
         } else {
-            this.meshObject.material = materialNormal.clone();
+            this.meshObject.material = this._materialNormal.clone();
         }
         // for indexed geometry
         if (isSelected && this.meshObject.geometry.getAttribute('color')) {
