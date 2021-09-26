@@ -3,7 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Spin } from 'antd';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+import STLLoader from '../../../three-extensions/STLLoader';
 import { EPS, toFixed } from '../../../lib/numeric-utils';
 import { NumberInput as Input } from '../../components/Input';
 import i18n from '../../../lib/i18n';
@@ -12,6 +12,7 @@ import { HEAD_LASER, DATA_PREFIX } from '../../../constants';
 import { actions as editorActions } from '../../../flux/editor';
 import { actions as menuActions } from '../../../flux/appbar-menu';
 import ModelViewer from './Canvas';
+import { machineStore } from '../../../store/local-storage';
 
 let modelInitSize = {}, scale = 1, canvasRange = {};
 const MAX_Z = 500, MIN_SIZE = 0.1, MAX_THICKNESS = 50;
@@ -33,12 +34,12 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
     const [cuttingModel, setCuttingModel] = useState(false);
     const [modelGeometry, setModelGeometry] = useState(null);
     const [thickness, setThickness] = useState(() => {
-        let value = localStorage.getItem('model-cut-thickness');
-        if (value) {
-            return Number(value);
+        const obj = machineStore.get('model-cut');
+        if (obj && obj.thickness) {
+            return Number(obj.thickness);
         }
-        value = 1.5;
-        localStorage.setItem('model-cut-thickness', value);
+        const value = 1.5;
+        machineStore.set('model-cut', { thickness: value });
         return value;
     });
     const dispatch = useDispatch();
@@ -110,7 +111,7 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
         },
         onChangeMaterialThick: (value) => {
             if (value !== thickness) {
-                localStorage.setItem('model-cut-thickness', value);
+                machineStore.set('model-cut', { thickness: value });
                 setThickness(value);
             }
         }
