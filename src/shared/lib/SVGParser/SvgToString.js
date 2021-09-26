@@ -13,8 +13,7 @@ function getPath(shape) {
 
     return `<path d="${pathExpression}" stroke="${shape.stroke ? shape.stroke : 'none'}"
                 fill="${shape.fill ? shape.fill : 'none'}"
-                fill-rule="${shape['fill-rule'] ? shape['fill-rule'] : 'nonzero'}"
-                stroke-width="${shape.strokeWidth}"/>`;
+                stroke-width="${1}"/>`;
 }
 
 export const svgInverse = (svg, flip = 1) => {
@@ -32,6 +31,9 @@ export const svgInverse = (svg, flip = 1) => {
 
 export const svgToString = (svg) => {
     return `<svg xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        stroke="#000000"
+        stroke-width="1" 
         width="${svg.width}"
         height="${svg.height}"
         viewBox="${svg.viewBox}"
