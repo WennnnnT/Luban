@@ -149,12 +149,6 @@ class STLToSvgStack {
 
         this.meshProcess.mesh.addCoordinateSystem({ y: '-y' });
 
-        this.meshProcess.mesh.resize({
-            x: this.scale,
-            y: this.scale,
-            z: this.scale
-        });
-
         this.meshProcess.mesh.offset({
             x: -aabb.min.x,
             y: -aabb.min.y,
