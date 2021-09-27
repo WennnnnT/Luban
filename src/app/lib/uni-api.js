@@ -287,7 +287,7 @@ const Dialog = {
             case 'laser':
                 extensions = ['svg', 'png', 'jpg', 'jpeg', 'bmp', 'dxf'];
                 if (isRotate === false) {
-                    extensions.push('.stl');
+                    extensions.push('stl');
                 }
                 break;
             case 'cnc':
