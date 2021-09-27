@@ -1963,6 +1963,7 @@ export const actions = {
                 dispatch(actions.updateState(headType, {
                     showImportStackedModelModal: true
                 }));
+                progressStatesManager.finishProgress(true);
             })
             .catch((err) => {
                 onError && onError(err);
@@ -1970,7 +1971,7 @@ export const actions = {
                     stage: STEP_STAGE.PRINTING_LOAD_MODEL_FAILED,
                     progress: 1
                 }));
-                progressStatesManager.finishProgress(false);
+                progressStatesManager.finishProgress(true);
             });
     },
 
