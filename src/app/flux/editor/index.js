@@ -40,6 +40,9 @@ import Operations from '../operation-history/Operations';
 import MoveOperation2D from '../operation-history/MoveOperation2D';
 import ScaleOperation2D from '../operation-history/ScaleOperation2D';
 import RotateOperation2D from '../operation-history/RotateOperation2D';
+import STLLoader from '../../three-extensions/STLLoader';
+import modal from '../../lib/modal';
+import i18n from '../../lib/i18n';
 
 const getSourceType = (fileName) => {
     let sourceType;
@@ -1939,7 +1942,7 @@ export const actions = {
     },
 
     cutModel: (headType, file, onError) => (dispatch, getState) => {
-        const { progressStatesManager } = getState()[headType];
+        const { progressStatesManager, coordinateSize } = getState()[headType];
         progressStatesManager.startProgress(PROCESS_STAGE.PRINTING_LOAD_MODEL);
         dispatch(actions.updateState(headType, {
             stage: STEP_STAGE.PRINTING_LOADING_MODEL,
@@ -1955,15 +1958,57 @@ export const actions = {
                     progress: progressStatesManager.updateProgress(STEP_STAGE.PRINTING_LOADING_MODEL, 1)
                 }));
                 const { originalName, uploadName } = res.body;
-                dispatch(actions.updateState(headType, {
-                    cutModelInfo: {
-                        originalName, uploadName
+                new STLLoader().load(
+                    `${DATA_PREFIX}/${uploadName}`,
+                    (geometry) => {
+                        geometry.computeBoundingBox();
+                        let box3 = geometry.boundingBox;
+                        let modelInitSize = {
+                            x: box3.max.x - box3.min.x,
+                            y: box3.max.y - box3.min.y,
+                            z: box3.max.z - box3.min.z
+                        };
+
+                        function findSuitableScale(curScale, limit) {
+                            const scaleX = limit.x / modelInitSize.x;
+                            const scaleY = limit.y / modelInitSize.y;
+                            const scaleZ = limit.z / modelInitSize.z;
+                            const maxScale = Math.min(scaleX, scaleY, scaleZ);
+                            return Math.min(maxScale, curScale);
+                        }
+
+                        const MAX_Z = 500;
+                        const canvasRange = { x: coordinateSize.x, y: coordinateSize.y, z: MAX_Z };
+                        if (box3.max.x - box3.min.x > canvasRange.x || box3.max.y - box3.min.y > canvasRange.y) {
+                            const _scale = findSuitableScale(Infinity, canvasRange);
+                            const scale = 0.9 * _scale;
+                            geometry.scale(scale, scale, scale);
+                            geometry.computeBoundingBox();
+                            box3 = geometry.boundingBox;
+                            modelInitSize = {
+                                x: box3.max.x - box3.min.x,
+                                y: box3.max.y - box3.min.y,
+                                z: box3.max.z - box3.min.z
+                            };
+                        }
+                        dispatch(actions.updateState(headType, {
+                            showImportStackedModelModal: true,
+                            cutModelInfo: {
+                                originalName, uploadName, modelInitSize
+                            }
+                        }));
+                        progressStatesManager.finishProgress(true);
+                    },
+                    () => {}, // onprogress
+                    () => {
+                        modal({
+                            cancelTitle: i18n._('Close'),
+                            title: i18n._('Import Error'),
+                            body: i18n._('Failed to import this object. \nPlease select a supported file format.')
+                        });
+                        progressStatesManager.finishProgress(true);
                     }
-                }));
-                dispatch(actions.updateState(headType, {
-                    showImportStackedModelModal: true
-                }));
-                progressStatesManager.finishProgress(true);
+                );
             })
             .catch((err) => {
                 onError && onError(err);

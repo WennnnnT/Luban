@@ -14,23 +14,14 @@ import { actions as menuActions } from '../../../flux/appbar-menu';
 import ModelViewer from './Canvas';
 import { machineStore } from '../../../store/local-storage';
 
-let modelInitSize = {}, scale = 1, canvasRange = {};
+let scale = 1, canvasRange = {};
 const MAX_Z = 500, MIN_SIZE = 0.1, MAX_THICKNESS = 50;
 
-function findSuitableScale(curScale, limit) {
-    const scaleX = limit.x / modelInitSize.x;
-    const scaleY = limit.y / modelInitSize.y;
-    const scaleZ = limit.z / modelInitSize.z;
-
-    const maxScale = Math.min(scaleX, scaleY, scaleZ);
-    return Math.min(maxScale, curScale);
-}
-
 const StackedModel = ({ setStackedModelModalDsiabled }) => {
-    const { isProcessing = false, svgInfo, stlInfo, uploadName } = useSelector(state => state[HEAD_LASER].cutModelInfo);
+    const { isProcessing = false, svgInfo, stlInfo, modelInitSize } = useSelector(state => state[HEAD_LASER].cutModelInfo);
     const coordinateSize = useSelector(state => state[HEAD_LASER].coordinateSize, shallowEqual);
     const [disabled, setDisabled] = useState(false);
-    const [size, setSize] = useState({ x: 0, y: 0, z: 0 });
+    const [size, setSize] = useState(modelInitSize);
     const [cuttingModel, setCuttingModel] = useState(false);
     const [modelGeometry, setModelGeometry] = useState(null);
     const [thickness, setThickness] = useState(() => {
@@ -43,6 +34,15 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
         return value;
     });
     const dispatch = useDispatch();
+
+    function findSuitableScale(curScale, limit) {
+        const scaleX = limit.x / modelInitSize.x;
+        const scaleY = limit.y / modelInitSize.y;
+        const scaleZ = limit.z / modelInitSize.z;
+
+        const maxScale = Math.min(scaleX, scaleY, scaleZ);
+        return Math.min(maxScale, curScale);
+    }
 
     const actions = {
         loadModel: () => {
@@ -131,41 +131,11 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
         }
     }, [stlInfo]);
     useEffect(() => {
-        modelInitSize = {};
         canvasRange = {};
         scale = 1;
         dispatch(editorActions.setShortcutStatus(HEAD_LASER, false));
         dispatch(menuActions.disableMenu());
         canvasRange = { x: coordinateSize.x, y: coordinateSize.y, z: MAX_Z };
-        // actions.generateModelStack();
-        // load original model
-        new STLLoader().load(
-            `${DATA_PREFIX}/${uploadName}`,
-            (geometry) => {
-                geometry.computeBoundingBox();
-                let box3 = geometry.boundingBox;
-                modelInitSize = {
-                    x: box3.max.x - box3.min.x,
-                    y: box3.max.y - box3.min.y,
-                    z: box3.max.z - box3.min.z
-                };
-                if (box3.max.x - box3.min.x > canvasRange.x || box3.max.y - box3.min.y > canvasRange.y) {
-                    const _scale = findSuitableScale(Infinity, canvasRange);
-                    scale = 0.9 * _scale;
-                    geometry.scale(scale, scale, scale);
-                    geometry.computeBoundingBox();
-                    box3 = geometry.boundingBox;
-                    modelInitSize = {
-                        x: box3.max.x - box3.min.x,
-                        y: box3.max.y - box3.min.y,
-                        z: box3.max.z - box3.min.z
-                    };
-                }
-                setSize(modelInitSize);
-            },
-            () => {},
-            () => {}
-        );
 
         return () => {
             dispatch(editorActions.setShortcutStatus(HEAD_LASER, true));
