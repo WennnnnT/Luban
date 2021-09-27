@@ -69,7 +69,7 @@ const INITIAL_STATE = {
     selectedModelVisible: true,
     sourceType: '',
     mode: '',
-    showOrigin: null,
+    // showOrigin: null,
 
     printOrder: 1,
     transformation: {},

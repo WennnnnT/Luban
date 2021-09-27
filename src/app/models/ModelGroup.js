@@ -183,10 +183,10 @@ class ModelGroup extends EventEmitter {
         };
     }
 
-    changeShowOrigin() {
-        // todo
-        return this.selectedModelArray.length === 1 && this.selectedModelArray[0].changeShowOrigin();
-    }
+    // changeShowOrigin() {
+    //     // todo
+    //     return this.selectedModelArray.length === 1 && this.selectedModelArray[0].changeShowOrigin();
+    // }
 
     hasAnyModelVisible() {
         return this.models.filter(m => !m.supportTag).some((model) => model.visible);

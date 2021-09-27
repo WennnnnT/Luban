@@ -70,7 +70,8 @@ const CNCPath = ({ widgetActions }) => {
                         <ImageProcessMode
                             disabled={!selectedNotHide}
                             changeSelectedModelShowOrigin={
-                                () => dispatch(editorActions.changeSelectedModelShowOrigin('cnc'))
+                                () => {}
+                                // () => dispatch(editorActions.changeSelectedModelShowOrigin('cnc'))
                             }
                             changeSelectedModelMode={
                                 (newSourceType, newMode) => dispatch(editorActions.changeSelectedModelMode('cnc', newSourceType, newMode))

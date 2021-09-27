@@ -191,7 +191,7 @@ const TransformationSection = ({ headType, updateSelectedModelUniformScalingStat
                             </div>
                             <button
                                 type="button"
-                                disabled={disabled || !selectedNotHide || sourceType === 'raster'}
+                                disabled={disabled || !selectedNotHide}
                                 className={classNames(
                                     uniformScalingState ? styles.icon_size_lock : styles.icon_size_unlock,
                                     'display-inline',

@@ -626,16 +626,16 @@ export const actions = {
         dispatch(actions.processSelectedModel(headType));
     },
 
-    changeSelectedModelShowOrigin: (headType, show = undefined) => (dispatch, getState) => {
-        const { SVGActions, modelGroup } = getState()[headType];
-        const res = modelGroup.changeShowOrigin(show);
-        SVGActions.updateElementImage(res.showImageName);
+    // changeSelectedModelShowOrigin: (headType, show = undefined) => (dispatch, getState) => {
+    //     const { SVGActions, modelGroup } = getState()[headType];
+    //     const res = modelGroup.changeShowOrigin(show);
+    //     SVGActions.updateElementImage(res.showImageName);
 
-        dispatch(baseActions.updateState(headType, {
-            showOrigin: res.showOrigin,
-            renderingTimestamp: +new Date()
-        }));
-    },
+    //     dispatch(baseActions.updateState(headType, {
+    //         showOrigin: res.showOrigin,
+    //         renderingTimestamp: +new Date()
+    //     }));
+    // },
 
     /**
      *

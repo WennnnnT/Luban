@@ -927,7 +927,7 @@ class SvgModel extends BaseModel {
             this.modelObject3D = new THREE.Mesh(this.meshObject.geometry, material);
 
             this.meshObject.add(this.modelObject3D);
-            this.modelObject3D.visible = this.showOrigin;
+            // this.modelObject3D.visible = this.showOrigin;
         }
         this.updateTransformation(this.transformation);
     }
@@ -958,26 +958,26 @@ class SvgModel extends BaseModel {
         this.meshObject.add(this.processObject3D);
 
 
-        this.processObject3D.visible = !this.showOrigin;
+        // this.processObject3D.visible = !this.showOrigin;
 
         this.updateTransformation(this.transformation);
     }
 
-    changeShowOrigin(show = undefined) {
-        if (show === undefined) {
-            this.showOrigin = !this.showOrigin;
-        } else {
-            this.showOrigin = show;
-        }
-        this.modelObject3D.visible = this.showOrigin;
-        if (this.processObject3D) {
-            this.processObject3D.visible = !this.showOrigin;
-        }
-        return {
-            showOrigin: this.showOrigin,
-            showImageName: this.showOrigin ? this.uploadName : this.processImageName
-        };
-    }
+    // changeShowOrigin(show = undefined) {
+    //     if (show === undefined) {
+    //         this.showOrigin = !this.showOrigin;
+    //     } else {
+    //         this.showOrigin = show;
+    //     }
+    //     this.modelObject3D.visible = this.showOrigin;
+    //     if (this.processObject3D) {
+    //         this.processObject3D.visible = !this.showOrigin;
+    //     }
+    //     return {
+    //         showOrigin: this.showOrigin,
+    //         showImageName: this.showOrigin ? this.uploadName : this.processImageName
+    //     };
+    // }
 
     // updateVisible(param) {
     //     if (param === false) {
