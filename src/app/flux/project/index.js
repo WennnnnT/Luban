@@ -320,7 +320,7 @@ export const actions = {
         const [, tail] = file.name.split('.');
         if (!tail) return;
 
-        if (tail.substring(0, 4) === 'snap') {
+        if (tail.substring(0, 4).toLowerCase() === 'snap') {
             const formData = new FormData();
             let shouldSetFileName = true;
             if (!(file instanceof File)) {
