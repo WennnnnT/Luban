@@ -189,8 +189,9 @@ class AppLayout extends PureComponent {
                 try {
                     await this.props.openProject(file, this.props.history);
                     if (isElectron()) {
-                        const [, tail] = file.name.split('.');
+                        let [, tail] = file.name.split('.');
                         if (!tail) return;
+                        tail = tail.toLowerCase();
                         if (tail.substring(0, 4) === 'snap' || tail === 'gcode' || tail === 'cnc' || tail === 'nc') {
                             UniApi.File.addRecentFiles({ name: file.name, path: file.path });
                         }
