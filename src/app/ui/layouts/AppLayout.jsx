@@ -477,7 +477,11 @@ class AppLayout extends PureComponent {
                     return;
                 }
                 if (isElectron()) {
-                    const file = await UniApi.Dialog.showOpenFileDialog(pathname, this.props.store?.[pathname.slice(1)]?.materials?.isRotate);
+                    let type = pathname;
+                    if (this.props.store?.[pathname.slice(1)]?.materials?.isRotate && pathname === '/laser') {
+                        type = '/laser-rotate';
+                    }
+                    const file = await UniApi.Dialog.showOpenFileDialog(type);
                     if (!file) {
                         return;
                     }

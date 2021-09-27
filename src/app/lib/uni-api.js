@@ -277,18 +277,18 @@ const File = {
  * Dialogs control in electron
  */
 const Dialog = {
-    async showOpenFileDialog(type, isRotate) {
+    async showOpenFileDialog(type) {
         type = typeof type === 'string' ? type.slice(1) : '';
         let extensions = ['snap3dp', 'snaplzr', 'snapcnc'];
         switch (type) { // substring '/3dp' to '3dp'
             case 'printing':
                 extensions = ['stl', 'obj'];
                 break;
-            case 'laser':
+            case 'laser-rotate':
                 extensions = ['svg', 'png', 'jpg', 'jpeg', 'bmp', 'dxf'];
-                if (isRotate === false) {
-                    extensions.push('stl');
-                }
+                break;
+            case 'laser':
+                extensions = ['svg', 'png', 'jpg', 'jpeg', 'bmp', 'dxf', 'stl'];
                 break;
             case 'cnc':
                 extensions = ['svg', 'png', 'jpg', 'jpeg', 'bmp', 'dxf', 'stl'];
