@@ -41,8 +41,6 @@ import MoveOperation2D from '../operation-history/MoveOperation2D';
 import ScaleOperation2D from '../operation-history/ScaleOperation2D';
 import RotateOperation2D from '../operation-history/RotateOperation2D';
 import ModelLoader from '../../ui/widgets/PrintingVisualizer/ModelLoader';
-import modal from '../../lib/modal';
-import i18n from '../../lib/i18n';
 
 const getSourceType = (fileName) => {
     let sourceType;
@@ -2005,12 +2003,12 @@ export const actions = {
                         }
                     },
                     () => {}, // onprogress
-                    () => {
-                        modal({
-                            cancelTitle: i18n._('Close'),
-                            title: i18n._('Import Error'),
-                            body: i18n._('Failed to import this object. \nPlease select a supported file format.')
-                        });
+                    (err) => {
+                        onError && onError(err);
+                        dispatch(actions.updateState(headType, {
+                            stage: STEP_STAGE.PRINTING_LOAD_MODEL_FAILED,
+                            progress: 1
+                        }));
                         progressStatesManager.finishProgress(true);
                     }
                 );
