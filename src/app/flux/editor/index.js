@@ -1951,10 +1951,6 @@ export const actions = {
 
         api.uploadFile(formData)
             .then((res) => {
-                dispatch(actions.updateState(headType, {
-                    stage: STEP_STAGE.PRINTING_LOAD_MODEL_SUCCEED,
-                    progress: progressStatesManager.updateProgress(STEP_STAGE.PRINTING_LOADING_MODEL, 1)
-                }));
                 const { originalName, uploadName } = res.body;
                 new ModelLoader().load(
                     `${DATA_PREFIX}/${uploadName}`,
@@ -1996,6 +1992,10 @@ export const actions = {
                                 cutModelInfo: {
                                     originalName, uploadName, modelInitSize
                                 }
+                            }));
+                            dispatch(actions.updateState(headType, {
+                                stage: STEP_STAGE.PRINTING_LOAD_MODEL_SUCCEED,
+                                progress: progressStatesManager.updateProgress(STEP_STAGE.PRINTING_LOADING_MODEL, 1)
                             }));
                             progressStatesManager.finishProgress(true);
                         } else {

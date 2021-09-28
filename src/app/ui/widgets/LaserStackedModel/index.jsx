@@ -48,6 +48,7 @@ const StackedModel = ({ setStackedModelModalDsiabled }) => {
                     const y = -(box3.max.y + box3.min.y) / 2;
                     const z = -(box3.max.z + box3.min.z) / 2;
                     geometry.translate(x, y, z);
+                    geometry.scale(1, -1, 1);
                     setModelGeometry(geometry);
                     setCuttingModel(false);
                 },
