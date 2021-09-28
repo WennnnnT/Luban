@@ -26,24 +26,45 @@ class STLToSvgStack {
         this.meshProcess = new MeshProcess(this.modelInfo);
     }
 
+    slice() {
+        if (!this.slicer) {
+            this.meshProcess.mesh.addCoordinateSystem({ y: '-y' });
+
+            this.meshProcess.mesh.resize({
+                x: this.scale,
+                y: this.scale,
+                z: this.scale
+            });
+
+            this.meshProcess.mesh.offset({
+                x: -this.meshProcess.mesh.aabb.min.x,
+                y: -this.meshProcess.mesh.aabb.min.y,
+                z: -this.meshProcess.mesh.aabb.min.z
+            });
+
+            this.slicer = this.meshProcess.slice(this.materials.thickness);
+            this.aabb = {
+                max: {
+                    ...this.meshProcess.mesh.aabb.max
+                },
+                min: {
+                    ...this.meshProcess.mesh.aabb.min
+                },
+                length: {
+                    ...this.meshProcess.mesh.aabb.length
+                }
+            };
+            delete this.meshProcess.mesh;
+        }
+    }
+
     toSVGStackFiles() {
-        const aabb = this.meshProcess.mesh.aabb;
+        this.slice();
 
-        this.meshProcess.mesh.addCoordinateSystem({ y: '-y' });
+        const aabb = this.aabb;
+        const slicer = this.slicer;
 
-        this.meshProcess.mesh.resize({
-            x: this.scale,
-            y: this.scale,
-            z: this.scale
-        });
-
-        this.meshProcess.mesh.offset({
-            x: -aabb.min.x,
-            y: -aabb.min.y,
-            z: -aabb.min.z
-        });
-
-        const slicer = this.meshProcess.slice(this.materials.thickness);
+        delete this.meshProcess.mesh;
 
         this.outputFilename = `${pathWithRandomSuffix(this.modelInfo.uploadName)
             .replace('.stl', '')}`;
@@ -78,22 +99,22 @@ class STLToSvgStack {
 
         const result = [];
 
-        const svgFileStateWrite = (isWirte) => {
+        const svgFileStateWrite = (isWrite) => {
             svgFileState.startX += boundingBoxX;
 
             if (svgFileState.startX + boundingBoxX > width) {
                 if (svgFileState.startY + 2 * boundingBoxY > height) {
-                    isWirte = true;
+                    isWrite = true;
                 } else {
                     svgFileState.startX = 0;
                     svgFileState.startY += boundingBoxY;
                 }
             }
 
-            if(isWirte) {
+            if (isWrite) {
                 const svgStr = svgToString(svgFileState.svg);
                 fs.writeFileSync(`${DataStorage.tmpDir}/${this.outputFilename}_${svgFileState.index}.svg`, svgStr, 'utf8');
-    
+
                 result.push({
                     width: width,
                     height: height,
@@ -145,17 +166,10 @@ class STLToSvgStack {
     }
 
     toSVGStackSTL() {
-        const aabb = this.meshProcess.mesh.aabb;
+        this.slice();
 
-        this.meshProcess.mesh.addCoordinateSystem({ y: '-y' });
-
-        this.meshProcess.mesh.offset({
-            x: -aabb.min.x,
-            y: -aabb.min.y,
-            z: -aabb.min.z
-        });
-
-        const slicer = this.meshProcess.slice(this.materials.thickness);
+        const aabb = this.aabb;
+        const slicer = this.slicer;
 
         this.outputFilename = pathWithRandomSuffix(this.modelInfo.uploadName);
 
