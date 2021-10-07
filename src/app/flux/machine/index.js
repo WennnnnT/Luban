@@ -72,6 +72,7 @@ const INITIAL_STATE = {
     manualIp: '',
     isOpen: false,
     isConnected: false,
+    // for wifi connection ?
     workflowStatus: WORKFLOW_STATUS_UNKNOWN,
 
     // serial port related
@@ -103,7 +104,7 @@ const INITIAL_STATE = {
     consoleLogs: [],
     // Serial port
 
-    // from workflowState: idle, running, paused
+    // from workflowState: idle, running, paused/ for serial connection?
     workflowState: WORKFLOW_STATE_IDLE,
     isHomed: null,
 
@@ -116,6 +117,7 @@ const INITIAL_STATE = {
     airPurifierSwitch: false,
     airPurifierFanSpeed: 3,
     airPurifierFilterHealth: 2,
+    airPurifierHasPower: false,
 
     zAxisModule: null,
 
@@ -182,7 +184,15 @@ const INITIAL_STATE = {
     // endregion
     use4Axis: true,
     // use multiple engine
-    multipleEngine: false
+    multipleEngine: false,
+
+    // connect info
+    currentHeadType: '',
+    // emergencyStopButtonStatus: false,
+    // enclosureStatus: false,
+    // rotaryModuleStatus: false,
+    // airPurifierStatus: false
+    moduleStatusList: {}
 };
 
 
@@ -335,7 +345,7 @@ export const actions = {
             },
             'Marlin:settings': (options) => {
                 const { enclosureDoorDetection, enclosureOnline, enclosureFan = 0, enclosureLight = 0,
-                    airPurifier, airPurifierSwitch, airPurifierFanSpeed, airPurifierFilterHealth } = options.settings;
+                    airPurifierHasPower, airPurifier, airPurifierSwitch, airPurifierFanSpeed, airPurifierFilterHealth } = options.settings;
                 dispatch(baseActions.updateState({
                     enclosureDoorDetection,
                     enclosureOnline,
@@ -344,7 +354,8 @@ export const actions = {
                     airPurifier,
                     airPurifierSwitch,
                     airPurifierFanSpeed,
-                    airPurifierFilterHealth
+                    airPurifierFilterHealth,
+                    airPurifierHasPower
                 }));
             },
             'serialport:open': (options) => {
@@ -648,7 +659,9 @@ export const actions = {
                     airPurifierSwitch,
                     airPurifierFanSpeed,
                     airPurifierFilterHealth,
-                    isEmergencyStopped
+                    isEmergencyStopped,
+                    currentHeadType,
+                    moduleStatusList
                 } = result.data;
                 if (isEmergencyStopped) {
                     dispatch(baseActions.updateState({
@@ -674,7 +687,9 @@ export const actions = {
                     airPurifier: airPurifier,
                     airPurifierSwitch: airPurifierSwitch,
                     airPurifierFanSpeed: airPurifierFanSpeed,
-                    airPurifierFilterHealth: airPurifierFilterHealth
+                    airPurifierFilterHealth: airPurifierFilterHealth,
+                    currentHeadType,
+                    moduleStatusList
                 }));
                 // make 'workPosition' value as Number
                 if (!(_.isUndefined(b))) {
