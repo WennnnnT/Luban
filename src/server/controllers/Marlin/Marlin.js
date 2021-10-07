@@ -739,6 +739,12 @@ class MarlinLineParser {
         ];
 
         for (const parser of parsers) {
+            // let result = null;
+            // if (parser === MarlinReplyParserPurifierNotEnabled) {
+            //     result = parser.parse(line, settings);
+            // } else {
+            //     result = parser.parse(line);
+            // }
             const result = parser.parse(line);
             if (result) {
                 set(result, 'payload.raw', line);
