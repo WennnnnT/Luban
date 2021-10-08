@@ -10,6 +10,20 @@ import DataStorage from '../../DataStorage';
 import { svgToString } from '../../../shared/lib/SVGParser/SvgToString';
 import STLExporter from '../../../shared/lib/STL/STLExporter';
 
+// eslint-disable-next-line no-unused-vars
+const NUMBERS = [
+    [[0, 0], [4, 0], [4, 2], [0, 2], [0, 1]],
+    [[0, 1], [4, 1]],
+    [[0, 2], [0, 0], [2, 0], [2, 2], [4, 2], [4, 0]],
+    [[0, 0], [0, 2], [2, 2], [2, 0], [2, 2], [4, 2], [4, 0]],
+    [[0, 2], [4, 2], [2, 2], [2, 0], [4, 0]],
+    [[0, 0], [0, 2], [2, 2], [2, 0], [4, 0], [4, 2]],
+    [[4, 2], [4, 0], [0, 0], [0, 2], [2, 2], [2, 1]],
+    [[4, 0], [4, 2], [0, 2]],
+    [[0, 0], [4, 0], [4, 2], [0, 2], [0, 1], [0, 2], [2, 2], [2, 1]],
+    [[0, 0], [0, 2], [4, 2], [4, 0], [2, 0], [2, 1]]
+];
+
 class STLToSvgStack {
     meshProcess;
 
@@ -71,7 +85,7 @@ class STLToSvgStack {
 
         let { width, height } = this.materials;
 
-        const boundingBoxX = aabb.length.x + 10;
+        const boundingBoxX = aabb.length.x + 12;
         const boundingBoxY = aabb.length.y;
 
         if (boundingBoxX > width) {
@@ -79,6 +93,12 @@ class STLToSvgStack {
         }
         if (boundingBoxY > height) {
             height = boundingBoxY + 0.1;
+        }
+
+        const digits = Math.ceil(Math.log10(slicer.slicerLayers.length));
+        const countHeight = digits * 4 + 3;
+        if (countHeight > height) {
+            height = countHeight + 0.1;
         }
 
         const svgFileState = {
@@ -152,6 +172,24 @@ class STLToSvgStack {
                     [svgFileState.startX + boundingBoxX - 2, svgFileState.startY + boundingBoxY - 2],
                     [svgFileState.startX + aabb.length.x + 2, svgFileState.startY + boundingBoxY - 2], [svgFileState.startX + aabb.length.x + 2, svgFileState.startY + 2]]
             });
+
+            // Set digits
+            const numIndex = [];
+            let ii = i + 1;
+            while (ii > 0) {
+                numIndex.push(ii % 10);
+                ii = Math.floor(ii / 10);
+            }
+            const xOffset = svgFileState.startX + aabb.length.x + 2 + 2;
+            let yOffset = svgFileState.startY + 2 + 2;
+            for (let j = numIndex.length - 1; j >= 0; j--) {
+                const ni = numIndex[j];
+                svgFileState.svg.shapes[0].paths.push({
+                    points: NUMBERS[ni].map(v => { return [v[0] + xOffset, v[1] + yOffset]; })
+                });
+                yOffset += 4;
+            }
+
 
             polygonsPart.forEach(polygon => {
                 svgFileState.svg.shapes[0].paths.push({
