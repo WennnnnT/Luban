@@ -691,6 +691,7 @@ class SvgModel extends BaseModel {
     static recalculateElementAttributes(element, t) {
         const { x, y, width = 0, height = 0, angle } = t;
         let { scaleX, scaleY } = t;
+        let { imageWidth = 0, imageHeight = 0 } = t;
         const absScaleX = Math.abs(scaleX);
         const absScaleY = Math.abs(scaleY);
 
@@ -705,10 +706,14 @@ class SvgModel extends BaseModel {
                 break;
             }
             case 'image': {
-                element.setAttribute('x', x - width / 2);
-                element.setAttribute('y', y - height / 2);
-                element.setAttribute('width', width);
-                element.setAttribute('height', height);
+                if (imageWidth === 0 && imageHeight === 0) {
+                    imageWidth = width;
+                    imageHeight = height;
+                }
+                element.setAttribute('x', x - imageWidth / 2);
+                element.setAttribute('y', y - imageHeight / 2);
+                element.setAttribute('width', imageWidth);
+                element.setAttribute('height', imageHeight);
                 break;
             }
             case 'rect': {

@@ -14,6 +14,7 @@ function getPath(shape) {
     return `<path d="${pathExpression}" stroke="${shape.stroke ? shape.stroke : 'none'}"
                 fill="${shape.fill ? shape.fill : 'none'}"
                 fill-rule="${shape['fill-rule'] ? shape['fill-rule'] : 'nonzero'}"
+                style="fill: none; stroke: #000; stroke-width: 0.4px; vector-effect: non-scaling-stroke;"
                 stroke-width="${shape.strokeWidth}"/>`;
 }
 
@@ -32,9 +33,9 @@ export const svgInverse = (svg, flip = 1) => {
 
 export const svgToString = (svg) => {
     return `<svg xmlns="http://www.w3.org/2000/svg"
-        width="${svg.width}"
-        height="${svg.height}"
         viewBox="${svg.viewBox}"
+        preserveAspectRatio="none"
+        style="fill: none; stroke: #000; stroke-width: 0.4px; vector-effect: non-scaling-stroke;"
         version="1.1">
         ${svg.shapes.map(shape => `${getPath(shape)}\n`)}
       </svg>`;
