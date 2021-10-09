@@ -63,7 +63,7 @@ export const PRINTING_MATERIAL_CONFIG_KEYS = [
     'machine_heated_bed',
     'material_bed_temperature',
     'material_bed_temperature_layer_0',
-    //Extrude
+    // Extrude
     'material_flow',
     'material_flow_layer_0',
     // retraction
@@ -106,7 +106,13 @@ export const PRINTING_QUALITY_CONFIG_KEYS = [
     'support_angle',
     'support_pattern',
     'support_infill_rate',
-    'support_z_distance'
+    'support_z_distance',
+    'optimize_wall_printing_order',
+    'alternate_extra_perimeter',
+    'travel_compensate_overlapping_walls_enabled',
+    'travel_compensate_overlapping_walls_0_enabled',
+    'travel_compensate_overlapping_walls_x_enabled',
+    'filter_out_tiny_gaps'
 ];
 export const PRINTING_MATERIAL_CONFIG_GROUP = [
     {
@@ -162,7 +168,13 @@ export const PRINTING_QUALITY_CONFIG_GROUP = [
         name: 'Infill',
         fields: [
             'infill_sparse_density',
-            'infill_pattern'
+            'infill_pattern',
+            'optimize_wall_printing_order',
+            'alternate_extra_perimeter',
+            'travel_compensate_overlapping_walls_enabled',
+            'travel_compensate_overlapping_walls_0_enabled',
+            'travel_compensate_overlapping_walls_x_enabled',
+            'filter_out_tiny_gaps'
         ]
     },
     {
