@@ -1171,7 +1171,7 @@ class SvgModel extends BaseModel {
 
     getSerializableConfig() {
         const {
-            modelID, limitSize, headType, sourceType, sourceHeight, sourceWidth, originalName, uploadName, config, mode,
+            modelID, limitSize, headType, sourceType, originalName, uploadName, config, mode,
             transformation, processImageName
         } = this;
         return {
@@ -1179,8 +1179,8 @@ class SvgModel extends BaseModel {
             limitSize,
             headType,
             sourceType,
-            sourceHeight,
-            sourceWidth,
+            sourceHeight: transformation.height,
+            sourceWidth: transformation.width,
             originalName,
             uploadName,
             config,
