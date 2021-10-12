@@ -487,10 +487,10 @@ class SvgModel extends BaseModel {
             //     break;
             case 'rect':
             case 'image': {
-                elem.setAttribute('x', x - width / 2);
-                elem.setAttribute('y', y - height / 2);
-                elem.setAttribute('width', width);
-                elem.setAttribute('height', height);
+                elem.setAttribute('x', x - transformation.width / 2);
+                elem.setAttribute('y', y - transformation.height / 2);
+                elem.setAttribute('width', transformation.width);
+                elem.setAttribute('height', transformation.height);
                 if (!elem.getAttribute('href')) {
                     elem.setAttribute('href', checkIsImageSuffix(href) ? href : './resources/images/loading.gif');
                 }
