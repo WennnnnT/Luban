@@ -133,7 +133,7 @@ const INITIAL_STATE = {
     nozzleTargetTemperature: 0,
     heatedBedTemperature: 0,
     heatedBedTargetTemperature: 0,
-    laserCamera: true,
+    laserCamera: false,
     isFilamentOut: false,
 
     workPosition: { // work position
@@ -663,7 +663,8 @@ export const actions = {
                     airPurifierFilterHealth,
                     isEmergencyStopped,
                     currentHeadType,
-                    moduleStatusList
+                    moduleStatusList,
+                    laserCamera
                 } = result.data;
                 if (isEmergencyStopped) {
                     dispatch(baseActions.updateState({
@@ -691,7 +692,8 @@ export const actions = {
                     airPurifierFanSpeed: airPurifierFanSpeed,
                     airPurifierFilterHealth: airPurifierFilterHealth,
                     currentHeadType,
-                    moduleStatusList
+                    moduleStatusList,
+                    laserCamera
                 }));
                 // make 'workPosition' value as Number
                 if (!(_.isUndefined(b))) {
