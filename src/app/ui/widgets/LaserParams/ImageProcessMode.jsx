@@ -21,7 +21,6 @@ const ImageProcessMode = ({ disabled }) => {
     const sourceType = useSelector(state => state?.laser?.modelGroup?.getSelectedModel()?.sourceType);
     const mode = useSelector(state => state?.laser?.modelGroup?.getSelectedModel()?.mode);
     const originalName = useSelector(state => state?.laser?.modelGroup?.getSelectedModel()?.originalName);
-    // const showOrigin = useSelector(state => state?.laser?.modelGroup?.getSelectedModel()?.showOrigin);
     const isBW = mode === PROCESS_MODE_BW;
     const isGreyscale = mode === PROCESS_MODE_GREYSCALE;
     const isRasterVector = sourceType === SOURCE_TYPE_RASTER && mode === PROCESS_MODE_VECTOR;
@@ -35,7 +34,6 @@ const ImageProcessMode = ({ disabled }) => {
             setExpanded(!expanded);
         },
         changeSelectedModelMode: (newMode) => {
-            // showOrigin && dispatch(editorActions.changeSelectedModelShowOrigin(HEAD_LASER, false));
             dispatch(editorActions.changeSelectedModelMode(HEAD_LASER, sourceType, newMode));
         }
     };
@@ -100,22 +98,6 @@ const ImageProcessMode = ({ disabled }) => {
                                 </div>
                             )}
                         </div>
-                        {/* <TipTrigger
-                            title={i18n._('key-Laser/ProcessingModeSection/ImageProcessMode-Show Original Image')}
-                            content={i18n._('key-Laser/ProcessingModeSection/ImageProcessMode-Shows the original image.')}
-                        >
-                            <div className="sm-flex height-32 margin-vertical-8">
-                                <span className="sm-flex-width">{i18n._('key-Laser/ProcessingModeSection/ImageProcessMode-Show Original Image')}</span>
-                                <Checkbox
-                                    disabled={disabled}
-                                    className="sm-flex-auto"
-                                    checked={showOrigin}
-                                    onChange={() => {
-                                        dispatch(editorActions.changeSelectedModelShowOrigin(HEAD_LASER, !showOrigin));
-                                    }}
-                                />
-                            </div>
-                        </TipTrigger> */}
                         {isBW && <ConfigRasterBW disabled={disabled} />}
                         {isGreyscale && <ConfigGreyscale disabled={disabled} />}
                         {isRasterVector && <ConfigRasterVector disabled={disabled} />}

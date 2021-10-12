@@ -36,6 +36,7 @@ export default class ScaleOperation2D extends Operation {
                 y: this.state.to.scaleY
             });
             svgActions.clearSelection();
+            model.elem.onload = null;
         };
         if (isImageElement) {
             model.elem.onload = restore;
@@ -66,6 +67,7 @@ export default class ScaleOperation2D extends Operation {
                 y: this.state.from.scaleY
             });
             svgActions.clearSelection();
+            model.elem.onload = null;
         };
         if (isImageElement) {
             model.elem.onload = restore;

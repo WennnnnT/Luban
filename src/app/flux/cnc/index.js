@@ -66,7 +66,6 @@ const INITIAL_STATE = {
     selectedModelVisible: true,
     sourceType: '',
     mode: '', // bw, greyscale, vector
-    // showOrigin: null,
 
     transformation: {},
     transformationUpdateTime: new Date().getTime(),

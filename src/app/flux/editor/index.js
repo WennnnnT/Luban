@@ -189,6 +189,7 @@ function recordScaleActionsToHistory(scaleActionsFn, elements, SVGActions, headT
                 });
             }
         });
+        // all the SVGModel changed, record operations to history
         Promise.all(promises).then(() => {
             dispatch(operationHistoryActions.setOperations(headType, operations));
         }).catch(() => {
@@ -726,17 +727,6 @@ export const actions = {
 
         dispatch(actions.processSelectedModel(headType));
     },
-
-    // changeSelectedModelShowOrigin: (headType, show = undefined) => (dispatch, getState) => {
-    //     const { SVGActions, modelGroup } = getState()[headType];
-    //     const res = modelGroup.changeShowOrigin(show);
-    //     SVGActions.updateElementImage(res.showImageName);
-
-    //     dispatch(baseActions.updateState(headType, {
-    //         showOrigin: res.showOrigin,
-    //         renderingTimestamp: +new Date()
-    //     }));
-    // },
 
     /**
      *
