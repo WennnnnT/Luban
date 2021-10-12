@@ -112,7 +112,8 @@ export const PRINTING_QUALITY_CONFIG_KEYS = [
     'travel_compensate_overlapping_walls_enabled',
     'travel_compensate_overlapping_walls_0_enabled',
     'travel_compensate_overlapping_walls_x_enabled',
-    'filter_out_tiny_gaps'
+    'filter_out_tiny_gaps',
+    'material_flow_layer_0'
 ];
 export const PRINTING_MATERIAL_CONFIG_GROUP = [
     {
@@ -152,7 +153,8 @@ export const PRINTING_QUALITY_CONFIG_GROUP = [
         fields: [
             'layer_height',
             'layer_height_0',
-            'initial_layer_line_width_factor'
+            'initial_layer_line_width_factor',
+            'material_flow_layer_0'
         ]
     },
     {

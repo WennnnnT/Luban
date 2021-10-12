@@ -67,7 +67,12 @@
         },
         "resolution": {
             "type": "category",
-            "children": {}
+            "children": {
+                "material_flow_layer_0": {
+                    "label": "Initial Layer Flow",
+                    "default_value": 100
+                }
+            }
         },
         "shell": {
             "type": "category",
