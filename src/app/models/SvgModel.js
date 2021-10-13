@@ -485,7 +485,13 @@ class SvgModel extends BaseModel {
             // case 'path':
             //     changes.d = elem.getAttribute('d');
             //     break;
-            case 'rect':
+            case 'rect': {
+                elem.setAttribute('x', x - width / 2);
+                elem.setAttribute('y', y - height / 2);
+                elem.setAttribute('width', width);
+                elem.setAttribute('height', height);
+                break;
+            }
             case 'image': {
                 elem.setAttribute('x', x - transformation.width / 2);
                 elem.setAttribute('y', y - transformation.height / 2);
