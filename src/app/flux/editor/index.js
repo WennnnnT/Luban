@@ -1505,7 +1505,7 @@ export const actions = {
             return;
         }
         const selectedModel = selectedModels[0];
-        if (selectedModel.sourceType !== 'image3d' && selectedModel.config.svgNodeName === 'image') {
+        if (selectedModel.sourceType !== 'image3d' && selectedModel.elem.tagName.toLowerCase() === 'image') {
             dispatch(actions.processSelectedModel(headType));
         }
 
