@@ -21,6 +21,13 @@ function normalize(x) {
     return Math.round(x);
 }
 
+function updateDensity(width, height, density) {
+    let newDensity = density;
+    if (Math.abs(Math.ceil(width * density) / density - width) > 0.1 || Math.abs(Math.ceil(height * density) / density - height) > 0.1) {
+        newDensity = 10;
+    }
+    return newDensity;
+}
 
 const algorithms = {
     Atkinson: [
@@ -68,8 +75,9 @@ export async function processLaserGreyscale(modelInfo, onProgress) {
     const { width, height, scaleX = 1, scaleY = 1 } = modelInfo.transformation;
 
     const { invert, contrast, brightness, whiteClip, algorithm } = modelInfo.config;
-    const { density = 4 } = modelInfo.gcodeConfig || {};
-    console.log('pathWithRandomSuffix', uploadName);
+    let { density = 4 } = modelInfo.gcodeConfig || {};
+    density = updateDensity(width, height, density);
+
     const outputFilename = pathWithRandomSuffix(uploadName);
 
     const matrix = algorithms[algorithm];
@@ -145,7 +153,8 @@ export async function processCNCGreyscale(modelInfo, onProgress) {
     const { width, height, rotationZ = 0, scaleX = 1, scaleY = 1 } = modelInfo.transformation;
 
     const { invert } = modelInfo.config;
-    const { density = 4 } = modelInfo.gcodeConfig || {};
+    let { density = 4 } = modelInfo.gcodeConfig || {};
+    density = updateDensity(width, height, density);
 
     const outputFilename = pathWithRandomSuffix(uploadName);
 
@@ -178,7 +187,8 @@ export async function processBW(modelInfo, onProgress) {
     const { width, height, rotationZ = 0, scaleX = 1, scaleY = 1 } = modelInfo.transformation;
 
     const { invert, bwThreshold } = modelInfo.config;
-    const { density = 4 } = modelInfo.gcodeConfig || {};
+    let { density = 4 } = modelInfo.gcodeConfig || {};
+    density = updateDensity(width, height, density);
 
     const outputFilename = pathWithRandomSuffix(uploadName);
     const img = await Jimp.read(`${DataStorage.tmpDir}/${uploadName}`);
@@ -216,7 +226,9 @@ export async function processHalftone(modelInfo, onProgress) {
     const { width, height, rotationZ = 0, scaleX = 1, scaleY = 1 } = modelInfo.transformation;
 
     const { npType, npSize, npAngle, threshold } = modelInfo.config;
-    const { density = 4 } = modelInfo.gcodeConfig || {};
+    let { density = 4 } = modelInfo.gcodeConfig || {};
+    density = updateDensity(width, height, density);
+
     const outputFilename = pathWithRandomSuffix(uploadName);
     const img = await Jimp.read(`${DataStorage.tmpDir}/${uploadName}`);
     onProgress && onProgress(0.6);
