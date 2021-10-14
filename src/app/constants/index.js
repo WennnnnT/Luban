@@ -83,7 +83,7 @@ export const PRINTING_QUALITY_CONFIG_KEYS = [
     'bottom_thickness',
     'outer_inset_first',
     'infill_sparse_density',
-    'infill_pattern',
+    'skin_edge_support_layers',
     // 'speed_print',
     'speed_print_layer_0',
     'speed_infill',
@@ -162,7 +162,7 @@ export const PRINTING_QUALITY_CONFIG_GROUP = [
         name: 'Infill',
         fields: [
             'infill_sparse_density',
-            'infill_pattern'
+            'skin_edge_support_layers'
         ]
     },
     {
@@ -261,7 +261,7 @@ export const LASER_PRESENT_CONFIG_GROUP = [
     {
         name: 'Speed',
         fields: [
-            'jog_speed',
+            // 'jog_speed',
             'work_speed',
             'dwell_time'
         ]
@@ -294,7 +294,7 @@ export const CNC_TOOL_CONFIG_GROUP = [
         name: 'Parameters',
         fields: [
             'jog_speed',
-            'work_speed',
+            // 'work_speed',
             'plunge_speed',
             'step_down',
             'step_over'
