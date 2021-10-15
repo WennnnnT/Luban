@@ -140,7 +140,8 @@ export const actions = {
                     uploadName: response.uploadName,
                     size: file.size,
                     lastModified: file.lastModified,
-                    thumbnail: header[';thumbnail'] || ''
+                    thumbnail: header[';thumbnail'] || '',
+                    renderGcodeFileName: file.renderGcodeFileName || file.name
                 };
                 dispatch(actions.addGcodeFiles(gcodeFile));
             })
@@ -172,7 +173,8 @@ export const actions = {
                     uploadName: response.uploadName,
                     size: file.size,
                     lastModified: +file.lastModified,
-                    thumbnail: header[';thumbnail'] || ''
+                    thumbnail: header[';thumbnail'] || '',
+                    renderGcodeFileName: file.renderGcodeFileName || file.name
                 };
                 dispatch(actions.renderGcodeFile(gcodeFile));
             })
@@ -283,6 +285,7 @@ export const actions = {
         if (newName !== null) {
             find.newName = newName;
             find.name = newName;
+            find.renderGcodeFileName = newName;
         }
         if (isRenaming !== null) {
             find.isRenaming = isRenaming;
