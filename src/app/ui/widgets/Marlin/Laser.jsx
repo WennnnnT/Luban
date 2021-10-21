@@ -58,6 +58,10 @@ class Laser extends PureComponent {
                 this.props.executeGcode('M5');
             } else {
                 this.props.executeGcode(`M3 P${this.state.laserPower} S${this.state.laserPower * 255 / 100}`);
+                if (this.state.laserPower > 1) {
+                    this.props.executeGcode('G4 P500');
+                    this.props.executeGcode('M3 P1 S2.55');
+                }
             }
             this.setState({
                 laserPowerOpen: !this.state.laserPowerOpen
@@ -148,7 +152,7 @@ class Laser extends PureComponent {
                             color="#FFA940"
                             onClick={actions.onSaveLaserPower}
                         />
-                        <span>The laser power will be reset to 1% after 5 s.</span>
+                        <span>The laser power will be reset to 1% after 0.5 s.</span>
                     </div>
                 )}
             </div>

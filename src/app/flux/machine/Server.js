@@ -83,6 +83,7 @@ export class Server extends events.EventEmitter {
                 remainingTime: 0
             },
             isEmergencyStopped: false,
+            laser10WErrorState: 0,
             airPurifier: false,
             airPurifierSwitch: false,
             airPurifierFanSpeed: 1,
@@ -243,6 +244,7 @@ export class Server extends events.EventEmitter {
                 isNotNull(data.isEnclosureDoorOpen) && (this.state.isEnclosureDoorOpen = data.isEnclosureDoorOpen);
                 isNotNull(data.doorSwitchCount) && (this.state.doorSwitchCount = data.doorSwitchCount);
                 isNotNull(data.isEmergencyStopped) && (this.state.isEmergencyStopped = data.isEmergencyStopped);
+                isNotNull(data.laser10WErrorState) && (this.state.laser10WErrorState = data.laser10WErrorState);
                 // this state controls filter widget disable
                 this.state.airPurifier = isNotNull(data.airPurifierSwitch);
                 isNotNull(data.airPurifierSwitch) && (this.state.airPurifierSwitch = data.airPurifierSwitch);
@@ -500,6 +502,7 @@ export class Server extends events.EventEmitter {
             heatedBedTargetTemperature: this.state.heatedBedTargetTemperature,
             gcodePrintingInfo: this.state.gcodePrintingInfo,
             isEmergencyStopped: this.state.isEmergencyStopped,
+            laser10WErrorState: this.state.laser10WErrorState,
             airPurifier: this.state.airPurifier,
             airPurifierSwitch: this.state.airPurifierSwitch,
             airPurifierFanSpeed: this.state.airPurifierFanSpeed,

@@ -663,6 +663,21 @@ class MarlinParserHomeState {
     }
 }
 
+class MarlinParserLaser10WErrorState {
+    static parse(line) {
+        const r = line.match(/^security_state: ([0-9]),.*$/);
+        if (!r) {
+            return null;
+        }
+        return {
+            type: MarlinParserLaser10WErrorState,
+            payload: {
+                laser10WErrorState: parseInt(r[1])
+            }
+        };
+    }
+}
+
 class MarlinLineParser {
     parse(line) {
         const parsers = [
@@ -723,6 +738,9 @@ class MarlinLineParser {
             MarlinLineParserResultTemperature,
             // Homed: YES
             MarlinParserHomeState,
+
+            // laser 10w error state
+            MarlinParserLaser10WErrorState,
 
             MarlinParserOriginOffset,
 
@@ -809,6 +827,12 @@ class Marlin extends events.EventEmitter {
         zFocus: 0,
         gcodeHeader: 0,
         isHomed: null,
+
+        // 0 byte: state
+        // 1 byte: temperature error
+        // 2 byte: angel error
+        laser10WErrorState: 0,
+
         originOffset: {
             x: 0,
             y: 0,
@@ -1008,6 +1032,9 @@ class Marlin extends events.EventEmitter {
         } else if (type === MarlinParserHomeState) {
             this.setState({ isHomed: payload.isHomed });
             this.emit('home', payload);
+        } else if (type === MarlinParserLaser10WErrorState) {
+            this.setState({ laser10WErrorState: payload.laser10WErrorState });
+            this.emit('laser10w:state', payload);
         } else if (type === MarlinParserSelectedOrigin) {
             this.emit('selected', payload);
         } else if (type === MarlinParserSelectedCurrent) {

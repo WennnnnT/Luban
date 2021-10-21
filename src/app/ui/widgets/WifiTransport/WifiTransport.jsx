@@ -35,7 +35,7 @@ import usePrevious from '../../../lib/hooks/previous';
 
 const changeNameInput = [];
 
-const GcodePreviewItem = React.memo(({ gcodeFile, index, selected, onSelectFile, gRef, setSelectFileIndex, handlePreviewModalShow }) => {
+const GcodePreviewItem = React.memo(({ gcodeFile, index, selected, onSelectFile, gRef, setSelectFileIndex, handleShowPreviewModal }) => {
     const dispatch = useDispatch();
     // const name = gcodeFile.name.length > 25
     //     ? `${gcodeFile.name.substring(0, 15)}...${gcodeFile.name.substring(gcodeFile.name.length - 10, gcodeFile.name.length)}`
@@ -186,7 +186,7 @@ const GcodePreviewItem = React.memo(({ gcodeFile, index, selected, onSelectFile,
                 onClick={e => {
                     e.stopPropagation();
                     onSelectFile(gcodeFile.uploadName, null, null, false);
-                    handlePreviewModalShow(true);
+                    handleShowPreviewModal(true);
                     // dispatch.renderPreviewGcodeFile()
                     dispatch(workspaceActions.renderPreviewGcodeFile(gcodeFile, index));
                 }}
@@ -201,7 +201,7 @@ GcodePreviewItem.propTypes = {
     onSelectFile: PropTypes.func.isRequired,
     gRef: PropTypes.object.isRequired,
     setSelectFileIndex: PropTypes.func.isRequired,
-    handlePreviewModalShow: PropTypes.func
+    handleShowPreviewModal: PropTypes.func
 };
 
 const visualizerGroup = {
@@ -215,7 +215,8 @@ function WifiTransport({ widgetActions, controlActions }) {
     const [selectFileName, setSelectFileName] = useState('');
     const [selectFileType, setSelectFileType] = useState('');
     const [selectFileIndex, setSelectFileIndex] = useState(-1);
-    const [previewModalShow, setPreviewModalShow] = useState(false);
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
+    const [showStartModal, setShowStartModal] = useState(true);
     const [currentWorkflowStatus, setCurrentWorkflowStatus] = useState('');
     const dispatch = useDispatch();
     const fileInput = useRef();
@@ -260,8 +261,9 @@ function WifiTransport({ widgetActions, controlActions }) {
             // if (loadToWorkspaceOnLoad) {
             //     dispatch(workspaceActions.uploadGcodeFile(file));
             // } else {
-            //     dispatch(workspaceActions.uploadGcodeFileToList(file));
+            //     dispatch( workspaceActions.uploadGcodeFileToList(file));
             // }
+            setShowStartModal(false);
             dispatch(workspaceActions.uploadGcodeFileToList(file));
         },
         onClickToUpload: () => {
@@ -283,7 +285,8 @@ function WifiTransport({ widgetActions, controlActions }) {
             if (!find) {
                 return;
             }
-            await dispatch(workspaceActions.renderGcodeFile(find, false));
+            setShowStartModal(true);
+            // await dispatch(workspaceActions.renderGcodeFile(find, false));
             controlActions.onCallBackRun();
         },
 
@@ -404,62 +407,6 @@ function WifiTransport({ widgetActions, controlActions }) {
                 multiple={false}
                 onChange={actions.onChangeFile}
             />
-            {/* <Button
-                width="160px"
-                type="primary"
-                className="margin-bottom-8 display-inline"
-                priority="level-three"
-                onClick={actions.onClickToUpload}
-            >
-                {i18n._('key-Workspace/WifiTransport-Open G-code')}
-            </Button>
-            <Button
-                width="160px"
-                type="primary"
-                className="margin-bottom-8 display-inline margin-left-8"
-                priority="level-three"
-                onClick={actions.onExport}
-            >
-                {i18n._('key-Workspace/WifiTransport-Export G-code')}
-            </Button>
-            <div className="margin-bottom-8">
-                <Checkbox
-                    checked={loadToWorkspaceOnLoad}
-                    onChange={actions.onChangeShouldPreview}
-                />
-                <span className="margin-left-8">{i18n._('key-Workspace/WifiTransport-Preview in Workspace')}</span>
-            </div>
-            {
-                _.map(gcodeFiles, (gcodeFile, index) => {
-                    return (
-                        <React.Fragment key={index}>
-                            <GcodePreviewItem
-                                gcodeFile={gcodeFile}
-                                index={index}
-                                selected={selectFileName === gcodeFile.uploadName}
-                                onSelectFile={onSelectFile}
-                            />
-                        </React.Fragment>
-                    );
-                })
-            }
-            <Button
-                type="primary"
-                className="margin-vertical-8"
-                priority="level-two"
-                disabled={!hasFile}
-                onClick={actions.loadGcodeToWorkspace}
-            >
-                {i18n._('key-Workspace/WifiTransport-Load G-code to Workspace')}
-            </Button>
-            <Button
-                type="primary"
-                className="margin-bottom-16"
-                priority="level-two"
-                disabled={!(hasFile && isConnected && isHeadType && connectionType === CONNECTION_TYPE_WIFI)}
-                onClick={actions.sendFile}
-            >
-            </Button> */}
             <div className={classNames('height-176-default', 'position-re', 'overflow-y-auto')}>
                 {!hasFile && (
                     <div className={styles['import-btn-dashed']}>
@@ -484,8 +431,7 @@ function WifiTransport({ widgetActions, controlActions }) {
                                     onSelectFile={onSelectFile}
                                     gRef={gcodeItemRef}
                                     setSelectFileIndex={setSelectFileIndex}
-                                    // handlePreviewModalShow={controlActions.onPreviewModalShow}
-                                    handlePreviewModalShow={setPreviewModalShow}
+                                    handleShowPreviewModal={setShowPreviewModal}
                                 />
                             </React.Fragment>
                         );
@@ -543,12 +489,64 @@ function WifiTransport({ widgetActions, controlActions }) {
                     </Button>
                 </div>
             </div>
-            {previewModalShow && (
+            {showStartModal && (
                 <Modal
                     centered
-                    visible={previewModalShow}
+                    visible={showStartModal}
                     onClose={() => {
-                        setPreviewModalShow(false);
+                        setShowStartModal(false);
+                    }}
+                >
+                    <Modal.Header>
+                        Start Print title
+                        {/*{i18n._('key-Workspace/Transport-Preview')}*/}
+                    </Modal.Header>
+                    <Modal.Body>
+                        Start Print content
+                        {i18n._('key-Workspace/WifiTransport-Sending File')}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button priority="level-three" width="88px" onClick={() => setShowPreviewModal(false)} className="margin-right-16">{i18n._('key-unused-Cancel')}</Button>
+                        {isConnected && (currentWorkflowStatus !== 'idle' || connectionType === 'serial') && <Button priority="level-two" type="primary" width="200px">{i18n._('key-Workspace/WifiTransport-Sending File')}</Button>}
+                        {isConnected && (currentWorkflowStatus === 'idle' && connectionType === 'wifi') && (
+                            <Dropdown
+                                className="display-inline"
+                                overlay={() => (
+                                    <Menu>
+                                        <Menu.Item onClick={() => {
+                                            actions.sendFile();
+                                            setShowPreviewModal(false);
+                                        }}
+                                        >
+                                            <div className="align-c">{i18n._('key-Workspace/WifiTransport-Sending File')}</div>
+                                        </Menu.Item>
+                                    </Menu>
+                                )}
+                                trigger="hover"
+                            >
+                                <Button
+                                    suffixIcon={<SvgIcon name="DropdownOpen" type={['static']} color="#d5d6d9" />}
+                                    priority="level-two"
+                                    type="primary"
+                                    width="200px"
+                                    onClick={() => {
+                                        actions.loadGcodeToWorkspace();
+                                        setShowPreviewModal(false);
+                                    }}
+                                >
+                                    {i18n._('key-Workspace/Transport-Start Print')}
+                                </Button>
+                            </Dropdown>
+                        )}
+                    </Modal.Footer>
+                </Modal>
+            )}
+            {showPreviewModal && (
+                <Modal
+                    centered
+                    visible={showPreviewModal}
+                    onClose={() => {
+                        setShowPreviewModal(false);
                     }}
                 >
                     <Modal.Header>
@@ -575,7 +573,7 @@ function WifiTransport({ widgetActions, controlActions }) {
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button priority="level-three" width="88px" onClick={() => setPreviewModalShow(false)} className="margin-right-16">{i18n._('key-unused-Cancel')}</Button>
+                        <Button priority="level-three" width="88px" onClick={() => setShowPreviewModal(false)} className="margin-right-16">{i18n._('key-unused-Cancel')}</Button>
                         {isConnected && (currentWorkflowStatus !== 'idle' || connectionType === 'serial') && <Button priority="level-two" type="primary" width="200px">{i18n._('key-Workspace/WifiTransport-Sending File')}</Button>}
                         {isConnected && (currentWorkflowStatus === 'idle' && connectionType === 'wifi') && (
                             <Dropdown
@@ -584,7 +582,7 @@ function WifiTransport({ widgetActions, controlActions }) {
                                     <Menu>
                                         <Menu.Item onClick={() => {
                                             actions.sendFile();
-                                            setPreviewModalShow(false);
+                                            setShowPreviewModal(false);
                                         }}
                                         >
                                             <div className="align-c">{i18n._('key-Workspace/WifiTransport-Sending File')}</div>
@@ -600,7 +598,7 @@ function WifiTransport({ widgetActions, controlActions }) {
                                     width="200px"
                                     onClick={() => {
                                         actions.loadGcodeToWorkspace();
-                                        setPreviewModalShow(false);
+                                        setShowPreviewModal(false);
                                     }}
                                 >
                                     {i18n._('key-Workspace/Transport-Start Print')}
