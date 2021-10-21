@@ -162,13 +162,12 @@ class Laser extends PureComponent {
 
 const mapStateToProps = (state) => {
     const machine = state.machine;
-    const { workflowStatus, connectionType, server, laserPower, headStatus, isLaserPrintAutoMode, workPosition } = machine;
+    const { workflowStatus, connectionType, server, laserPower, headStatus, isLaserPrintAutoMode } = machine;
 
     return {
         workflowStatus,
         connectionType,
         server,
-        workPosition,
         laserPower,
         headStatus,
         isLaserPrintAutoMode

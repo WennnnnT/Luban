@@ -672,7 +672,7 @@ class MarlinParserLaser10WErrorState {
         return {
             type: MarlinParserLaser10WErrorState,
             payload: {
-                laser10WErrorState: parseInt(r[1])
+                laser10WErrorState: parseInt(r[1], 10)
             }
         };
     }

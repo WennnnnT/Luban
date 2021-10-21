@@ -30,8 +30,9 @@ import Modal from '../../components/Modal';
 import Canvas from '../../components/SMCanvas';
 import PrintablePlate from '../WorkspaceVisualizer/PrintablePlate';
 import usePrevious from '../../../lib/hooks/previous';
-// import Checkbox from '../../components/Checkbox';
-
+import { actions as machineActions } from '../../../flux/machine';
+import Checkbox from '../../components/Checkbox';
+import { NumberInput as Input } from '../../components/Input';
 
 const changeNameInput = [];
 
@@ -209,6 +210,9 @@ const visualizerGroup = {
 };
 let printableArea = null;
 function WifiTransport({ widgetActions, controlActions }) {
+    const isLaserPrintAutoMode = useSelector(state => state?.machine?.isLaserPrintAutoMode);
+    const materialThickness = useSelector(state => state?.machine?.materialThickness);
+    const isFourAxis = useSelector(state => state?.machine?.workPosition?.isFourAxis);
     const { previewBoundingBox, gcodeFiles, previewModelGroup, previewRenderState, previewStage } = useSelector(state => state.workspace);
     const { server, isConnected, headType, connectionType, size, workflowStatus, workflowState } = useSelector(state => state.machine);
     const [loadToWorkspaceOnLoad, setLoadToWorkspaceOnLoad] = useState(true);
@@ -216,7 +220,7 @@ function WifiTransport({ widgetActions, controlActions }) {
     const [selectFileType, setSelectFileType] = useState('');
     const [selectFileIndex, setSelectFileIndex] = useState(-1);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
-    const [showStartModal, setShowStartModal] = useState(true);
+    const [showStartModal, setShowStartModal] = useState(false);
     const [currentWorkflowStatus, setCurrentWorkflowStatus] = useState('');
     const dispatch = useDispatch();
     const fileInput = useRef();
@@ -280,13 +284,20 @@ function WifiTransport({ widgetActions, controlActions }) {
             setLoadToWorkspaceOnLoad(!loadToWorkspaceOnLoad);
         },
 
+        startPrint: async () => {
+            if (headType === HEAD_LASER) {
+                setShowStartModal(true);
+            } else {
+                actions.loadGcodeToWorkspace();
+            }
+        },
+
         loadGcodeToWorkspace: async () => {
             const find = gcodeFiles.find(v => v.uploadName === selectFileName);
             if (!find) {
                 return;
             }
-            setShowStartModal(true);
-            // await dispatch(workspaceActions.renderGcodeFile(find, false));
+            await dispatch(workspaceActions.renderGcodeFile(find, false));
             controlActions.onCallBackRun();
         },
 
@@ -337,6 +348,13 @@ function WifiTransport({ widgetActions, controlActions }) {
             } else {
                 actions.onClickToUpload();
             }
+        },
+        onChangeLaserPrintMode: () => {
+            dispatch(machineActions.updateIsLaserPrintAutoMode(!isLaserPrintAutoMode));
+        },
+
+        onChangeMaterialThickness: (value) => {
+            dispatch(machineActions.updateMaterialThickness(value));
         }
     };
 
@@ -483,7 +501,7 @@ function WifiTransport({ widgetActions, controlActions }) {
                         priority="level-two"
                         width="144px"
                         disabled={!hasFile || !isConnected || currentWorkflowStatus !== 'idle'}
-                        onClick={actions.loadGcodeToWorkspace}
+                        onClick={actions.startPrint}
                     >
                         {i18n._('key-Workspace/Transport-Start Print')}
                     </Button>
@@ -502,42 +520,42 @@ function WifiTransport({ widgetActions, controlActions }) {
                         {/*{i18n._('key-Workspace/Transport-Preview')}*/}
                     </Modal.Header>
                     <Modal.Body>
-                        Start Print content
-                        {i18n._('key-Workspace/WifiTransport-Sending File')}
+                        <div className="sm-flex height-32 justify-space-between margin-vertical-8">
+                            <span>{i18n._('key-unused-Auto Mode')}</span>
+                            <Checkbox
+                                className="sm-flex-auto"
+                                checked={isLaserPrintAutoMode}
+                                onChange={actions.onChangeLaserPrintMode}
+                            />
+                        </div>
+                        {!isLaserPrintAutoMode && !isFourAxis && (
+                            <div className="sm-flex height-32 justify-space-between margin-vertical-8">
+                                <span className="">{i18n._('key-unused-Material Thickness')}</span>
+                                <Input
+                                    suffix="mm"
+                                    className="sm-flex-auto"
+                                    size="small"
+                                    value={materialThickness}
+                                    max={size.z - 40}
+                                    min={0}
+                                    onChange={actions.onChangeMaterialThickness}
+                                />
+                            </div>
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button priority="level-three" width="88px" onClick={() => setShowPreviewModal(false)} className="margin-right-16">{i18n._('key-unused-Cancel')}</Button>
-                        {isConnected && (currentWorkflowStatus !== 'idle' || connectionType === 'serial') && <Button priority="level-two" type="primary" width="200px">{i18n._('key-Workspace/WifiTransport-Sending File')}</Button>}
-                        {isConnected && (currentWorkflowStatus === 'idle' && connectionType === 'wifi') && (
-                            <Dropdown
-                                className="display-inline"
-                                overlay={() => (
-                                    <Menu>
-                                        <Menu.Item onClick={() => {
-                                            actions.sendFile();
-                                            setShowPreviewModal(false);
-                                        }}
-                                        >
-                                            <div className="align-c">{i18n._('key-Workspace/WifiTransport-Sending File')}</div>
-                                        </Menu.Item>
-                                    </Menu>
-                                )}
-                                trigger="hover"
-                            >
-                                <Button
-                                    suffixIcon={<SvgIcon name="DropdownOpen" type={['static']} color="#d5d6d9" />}
-                                    priority="level-two"
-                                    type="primary"
-                                    width="200px"
-                                    onClick={() => {
-                                        actions.loadGcodeToWorkspace();
-                                        setShowPreviewModal(false);
-                                    }}
-                                >
-                                    {i18n._('key-Workspace/Transport-Start Print')}
-                                </Button>
-                            </Dropdown>
-                        )}
+                        <Button
+                            priority="level-two"
+                            type="primary"
+                            width="88px"
+                            onClick={() => {
+                                actions.loadGcodeToWorkspace();
+                                setShowStartModal(false);
+                            }}
+                        >
+                            {i18n._('开始')}
+                        </Button>
                     </Modal.Footer>
                 </Modal>
             )}
@@ -597,7 +615,7 @@ function WifiTransport({ widgetActions, controlActions }) {
                                     type="primary"
                                     width="200px"
                                     onClick={() => {
-                                        actions.loadGcodeToWorkspace();
+                                        actions.startPrint();
                                         setShowPreviewModal(false);
                                     }}
                                 >

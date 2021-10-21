@@ -817,7 +817,6 @@ class Visualizer extends Component {
 const mapStateToProps = (state) => {
     const machine = state.machine;
     const workspace = state.workspace;
-    console.log('laser10WErrorState', machine.laser10WErrorState);
     return {
         size: machine.size,
         doorSwitchCount: machine.doorSwitchCount,
