@@ -516,14 +516,15 @@ function WifiTransport({ widgetActions, controlActions }) {
                     }}
                 >
                     <Modal.Header>
-                        Start Print title
-                        {/*{i18n._('key-Workspace/Transport-Preview')}*/}
+                        Start Job
+                        {/*{i18n._('key-Workspace/LaserStartJob-start_job')}*/}
                     </Modal.Header>
                     <Modal.Body>
                         <div className="sm-flex height-32 justify-space-between margin-vertical-8">
                             <span>{i18n._('key-unused-Auto Mode')}</span>
                             <Checkbox
                                 className="sm-flex-auto"
+                                disabled={isFourAxis}
                                 checked={isLaserPrintAutoMode}
                                 onChange={actions.onChangeLaserPrintMode}
                             />
