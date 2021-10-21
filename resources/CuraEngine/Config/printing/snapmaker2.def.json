@@ -113,10 +113,6 @@
         "infill": {
             "type": "category",
             "children": {
-                "infill_pattern": {
-                    "label": "Infill Pattern",
-                    "default_value": "trihexagon"
-                },
                 "zig_zaggify_infill": {
                     "label": "Connect Infill Lines",
                     "default_value": true
