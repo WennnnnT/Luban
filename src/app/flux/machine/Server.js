@@ -300,6 +300,28 @@ export class Server extends events.EventEmitter {
             });
     };
 
+    getLaserMaterialThickness = (options, callback) => {
+        if (!this.token) {
+            callback && callback({
+                msg: 'this token is null'
+            });
+            return;
+        }
+        const { x, y, feedRate } = options;
+        const api = `${this.host}/api/request_Laser_Material_Thickness?token=${this.token}&x=${x}&y=${y}&feedRate=${feedRate}`;
+        request
+            .get(api)
+            .end((err, res) => {
+                const { data } = this._getResult(err, res);
+                const { status, thickness } = data;
+                if (callback) {
+                    callback({
+                        status,
+                        thickness
+                    });
+                }
+            });
+    }
 
     getGcodeFile = (callback) => {
         if (!this.token) {

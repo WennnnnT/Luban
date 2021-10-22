@@ -15,14 +15,11 @@ class Laser extends PureComponent {
     static propTypes = {
         headStatus: PropTypes.bool,
         laserPower: PropTypes.number,
-        isLaserPrintAutoMode: PropTypes.bool,
         workflowStatus: PropTypes.string,
         connectionType: PropTypes.string,
         server: PropTypes.object,
 
-        executeGcode: PropTypes.func.isRequired,
-        updateIsLaserPrintAutoMode: PropTypes.func.isRequired,
-        updateMaterialThickness: PropTypes.func.isRequired
+        executeGcode: PropTypes.func.isRequired
     };
 
     state = {
@@ -83,15 +80,6 @@ class Laser extends PureComponent {
                 }
                 this.props.executeGcode('M500');
             }
-        },
-        onChangeLaserPrintMode: () => {
-            this.props.updateIsLaserPrintAutoMode(!this.props.isLaserPrintAutoMode);
-        },
-        onChangeMaterialThickness: (value) => {
-            this.props.updateMaterialThickness(value);
-        },
-        onChangeFourAxisMaterialThickness: (value) => {
-            this.props.updateMaterialThickness(value / 2);
         }
     };
 
@@ -162,23 +150,20 @@ class Laser extends PureComponent {
 
 const mapStateToProps = (state) => {
     const machine = state.machine;
-    const { workflowStatus, connectionType, server, laserPower, headStatus, isLaserPrintAutoMode } = machine;
+    const { workflowStatus, connectionType, server, laserPower, headStatus } = machine;
 
     return {
         workflowStatus,
         connectionType,
         server,
         laserPower,
-        headStatus,
-        isLaserPrintAutoMode
+        headStatus
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        executeGcode: (gcode, context) => dispatch(machineActions.executeGcode(gcode, context)),
-        updateIsLaserPrintAutoMode: (isLaserPrintAutoMode) => dispatch(machineActions.updateIsLaserPrintAutoMode(isLaserPrintAutoMode)),
-        updateMaterialThickness: (materialThickness) => dispatch(machineActions.updateMaterialThickness(materialThickness))
+        executeGcode: (gcode, context) => dispatch(machineActions.executeGcode(gcode, context))
     };
 };
 

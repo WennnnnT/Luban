@@ -116,7 +116,7 @@ function WifiConnection() {
                 }
                 if (data.toolHead && data.toolHead === LEVEL_TWO_POWER_LASER_FOR_SM2) {
                     // TODO: can set toolhead hear
-                    console.log('data', data);
+                    console.log('tool head data', data);
                 }
             }));
         },

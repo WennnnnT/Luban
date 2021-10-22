@@ -16,7 +16,8 @@ import { normalizeNameDisplay } from '../../../lib/normalize-range';
 import styles from './index.styl';
 import {
     CONNECTION_TYPE_WIFI,
-    DATA_PREFIX, HEAD_CNC, HEAD_LASER, HEAD_PRINTING
+    DATA_PREFIX, HEAD_CNC, HEAD_LASER, HEAD_PRINTING,
+    LEVEL_TWO_POWER_LASER_FOR_SM2, LEVEL_ONE_POWER_LASER_FOR_SM2
 } from '../../../constants';
 import { actions as workspaceActions, WORKSPACE_STAGE } from '../../../flux/workspace';
 import { actions as projectActions } from '../../../flux/project';
@@ -213,6 +214,7 @@ function WifiTransport({ widgetActions, controlActions }) {
     const isLaserPrintAutoMode = useSelector(state => state?.machine?.isLaserPrintAutoMode);
     const materialThickness = useSelector(state => state?.machine?.materialThickness);
     const isFourAxis = useSelector(state => state?.machine?.workPosition?.isFourAxis);
+    const toolHeadName = useSelector(state => state?.machine?.toolHead.laserToolhead);
     const { previewBoundingBox, gcodeFiles, previewModelGroup, previewRenderState, previewStage } = useSelector(state => state.workspace);
     const { server, isConnected, headType, connectionType, size, workflowStatus, workflowState } = useSelector(state => state.machine);
     const [loadToWorkspaceOnLoad, setLoadToWorkspaceOnLoad] = useState(true);
@@ -298,6 +300,22 @@ function WifiTransport({ widgetActions, controlActions }) {
                 return;
             }
             await dispatch(workspaceActions.renderGcodeFile(find, false));
+
+            if (toolHeadName === LEVEL_TWO_POWER_LASER_FOR_SM2 && isLaserPrintAutoMode && !isFourAxis) {
+                // TODO: need to calculate options value with bounding box and gcode
+                const options = {
+                    x: 120,
+                    y: 120,
+                    feedRate: 1500
+                };
+                server.getLaserMaterialThickness(options, async ({ status, thickness }) => {
+                    if (status) {
+                        await actions.onChangeMaterialThickness(thickness);
+                    }
+                    controlActions.onCallBackRun();
+                });
+                return;
+            }
             controlActions.onCallBackRun();
         },
 
@@ -353,8 +371,12 @@ function WifiTransport({ widgetActions, controlActions }) {
             dispatch(machineActions.updateIsLaserPrintAutoMode(!isLaserPrintAutoMode));
         },
 
-        onChangeMaterialThickness: (value) => {
+        onChangeMaterialThickness: async (value) => {
             dispatch(machineActions.updateMaterialThickness(value));
+        },
+
+        onChangeFourAxisMaterialThickness: async (value) => {
+            dispatch(machineActions.updateMaterialThickness(value / 2));
         }
     };
 
@@ -520,16 +542,58 @@ function WifiTransport({ widgetActions, controlActions }) {
                         {/*{i18n._('key-Workspace/LaserStartJob-start_job')}*/}
                     </Modal.Header>
                     <Modal.Body>
-                        <div className="sm-flex height-32 justify-space-between margin-vertical-8">
-                            <span>{i18n._('key-unused-Auto Mode')}</span>
-                            <Checkbox
-                                className="sm-flex-auto"
-                                disabled={isFourAxis}
-                                checked={isLaserPrintAutoMode}
-                                onChange={actions.onChangeLaserPrintMode}
-                            />
-                        </div>
-                        {!isLaserPrintAutoMode && !isFourAxis && (
+                        { toolHeadName === LEVEL_ONE_POWER_LASER_FOR_SM2 && (
+                            <div className="sm-flex height-32 justify-space-between margin-vertical-8">
+                                <span>{i18n._('key-unused-Auto Mode')}</span>
+                                <Checkbox
+                                    className="sm-flex-auto"
+                                    disabled={isFourAxis}
+                                    checked={isLaserPrintAutoMode}
+                                    onChange={actions.onChangeLaserPrintMode}
+                                />
+                            </div>
+                        )}
+                        { toolHeadName === LEVEL_ONE_POWER_LASER_FOR_SM2 && isLaserPrintAutoMode && !isFourAxis && (
+                            <div className="sm-flex height-32 justify-space-between margin-vertical-8">
+                                <span className="">{i18n._('key-unused-Material Thickness')}</span>
+                                <Input
+                                    suffix="mm"
+                                    className="sm-flex-auto"
+                                    size="small"
+                                    value={materialThickness}
+                                    max={size.z - 40}
+                                    min={0}
+                                    onChange={actions.onChangeMaterialThickness}
+                                />
+                            </div>
+                        )}
+                        { toolHeadName === LEVEL_ONE_POWER_LASER_FOR_SM2 && isLaserPrintAutoMode && isFourAxis && (
+                            <div className="sm-flex height-32 justify-space-between margin-vertical-8">
+                                <span className="">{i18n._('key-unused-Material Thickness')}</span>
+                                <Input
+                                    suffix="mm"
+                                    className="sm-flex-auto"
+                                    size="small"
+                                    value={materialThickness * 2}
+                                    max={size.z - 40}
+                                    min={0}
+                                    onChange={actions.onChangeFourAxisMaterialThickness}
+                                />
+                            </div>
+                        )}
+
+                        { toolHeadName === LEVEL_TWO_POWER_LASER_FOR_SM2 && (
+                            <div className="sm-flex height-32 justify-space-between margin-vertical-8">
+                                <span>{i18n._('auto setting thickness')}</span>
+                                <Checkbox
+                                    className="sm-flex-auto"
+                                    disabled={isFourAxis}
+                                    checked={isLaserPrintAutoMode}
+                                    onChange={actions.onChangeLaserPrintMode}
+                                />
+                            </div>
+                        )}
+                        { toolHeadName === LEVEL_TWO_POWER_LASER_FOR_SM2 && !isLaserPrintAutoMode && !isFourAxis && (
                             <div className="sm-flex height-32 justify-space-between margin-vertical-8">
                                 <span className="">{i18n._('key-unused-Material Thickness')}</span>
                                 <Input
@@ -545,7 +609,7 @@ function WifiTransport({ widgetActions, controlActions }) {
                         )}
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button priority="level-three" width="88px" onClick={() => setShowPreviewModal(false)} className="margin-right-16">{i18n._('key-unused-Cancel')}</Button>
+                        <Button priority="level-three" width="88px" onClick={() => setShowStartModal(false)} className="margin-right-16">{i18n._('key-unused-Cancel')}</Button>
                         <Button
                             priority="level-two"
                             type="primary"
