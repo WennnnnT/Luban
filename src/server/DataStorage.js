@@ -65,6 +65,7 @@ class DataStorage {
      constructor() {
          if (isElectron()) {
              this.userDataDir = app.getPath('userData');
+             console.log('this.userDataDir', this.userDataDir);
          } else {
              this.userDataDir = '.';
          }
