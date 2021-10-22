@@ -7,7 +7,9 @@ import {
     MACHINE_HEAD_TYPE,
     MACHINE_SERIES,
     WORKFLOW_STATUS_IDLE,
-    WORKFLOW_STATUS_UNKNOWN
+    WORKFLOW_STATUS_UNKNOWN,
+    LEVEL_TWO_POWER_LASER_FOR_SM2,
+    LEVEL_ONE_POWER_LASER_FOR_SM2
 } from '../../constants';
 import { valueOf } from '../../lib/contants-utils';
 
@@ -137,6 +139,12 @@ export class Server extends events.EventEmitter {
                     data.headType = headTypeValue ? headTypeValue.value : null;
                     if (data.headType === '3dp') {
                         data.headType = HEAD_PRINTING;
+                    }
+                    if (data.headType === HEAD_LASER) {
+                        data.toolHead = LEVEL_ONE_POWER_LASER_FOR_SM2;
+                    } else if (data.headType === '10w-laser') {
+                        data.headType = HEAD_LASER;
+                        data.toolHead = LEVEL_TWO_POWER_LASER_FOR_SM2;
                     }
                     this.state.series = data.series;
                     this.state.headType = data.headType;
