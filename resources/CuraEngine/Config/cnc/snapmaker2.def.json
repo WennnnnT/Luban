@@ -40,15 +40,6 @@
             "label": "Jog Speed",
             "description": "Set the speed at which the tool moves on the material when it is not carving."
         },
-        "work_speed": {
-            "default_value": 300,
-            "type": "float",
-            "min": 1,
-            "max": 6000,
-            "unit": "mm/min",
-            "label": "Work Speed",
-            "description": "Set the speed at which the tool moves on the material when it is carving."
-        },
         "plunge_speed": {
             "default_value": 300,
             "type": "float",

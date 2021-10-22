@@ -16,9 +16,6 @@
         "jog_speed": {
             "default_value": 1500
         },
-        "work_speed": {
-            "default_value": 300
-        },
         "plunge_speed": {
             "default_value": 300
         },
