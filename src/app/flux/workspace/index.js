@@ -156,7 +156,11 @@ export const actions = {
                     uploadName: response.uploadName,
                     size: file.size,
                     lastModified: file.lastModified,
-                    thumbnail: header[';thumbnail'] || ''
+                    thumbnail: header[';thumbnail'] || '',
+                    maxX: header[';max_x(mm)'],
+                    maxY: header[';max_y(mm)'],
+                    minX: header[';min_x(mm)'],
+                    minY: header[';min_y(mm)']
                 };
                 dispatch(actions.addGcodeFiles(gcodeFile));
             })

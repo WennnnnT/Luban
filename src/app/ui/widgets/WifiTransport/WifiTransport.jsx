@@ -214,6 +214,7 @@ function WifiTransport({ widgetActions, controlActions }) {
     const isLaserPrintAutoMode = useSelector(state => state?.machine?.isLaserPrintAutoMode);
     const materialThickness = useSelector(state => state?.machine?.materialThickness);
     const isFourAxis = useSelector(state => state?.machine?.workPosition?.isFourAxis);
+    const originOffset = useSelector(state => state?.machine?.originOffset);
     const toolHeadName = useSelector(state => state?.machine?.toolHead.laserToolhead);
     const { previewBoundingBox, gcodeFiles, previewModelGroup, previewRenderState, previewStage } = useSelector(state => state.workspace);
     const { server, isConnected, headType, connectionType, size, workflowStatus, workflowState } = useSelector(state => state.machine);
@@ -302,10 +303,16 @@ function WifiTransport({ widgetActions, controlActions }) {
             await dispatch(workspaceActions.renderGcodeFile(find, false));
 
             if (toolHeadName === LEVEL_TWO_POWER_LASER_FOR_SM2 && isLaserPrintAutoMode && !isFourAxis) {
-                // TODO: need to calculate options value with bounding box and gcode
+                const { maxX, minX, maxY, minY } = find;
+                const deltaY = 10;
+                const deltaX = 19;
+                const z0 = 166;
+                const deltaRedLine = 30;
+                const x = (maxX + minX) / 2 - originOffset.x + z0 / Math.sqrt(3) - deltaRedLine + deltaX / 2;
+                const y = (maxY + minY) / 2 - originOffset.y + deltaY / 2;
                 const options = {
-                    x: 120,
-                    y: 120,
+                    x: x,
+                    y: y,
                     feedRate: 1500
                 };
                 server.getLaserMaterialThickness(options, async ({ status, thickness }) => {
