@@ -9,7 +9,12 @@ import { NumberInput as Input } from '../../components/Input';
 import SvgIcon from '../../components/SvgIcon';
 import { actions as machineActions } from '../../../flux/machine';
 import WorkSpeed from './WorkSpeed';
-import { CONNECTION_TYPE_WIFI, WORKFLOW_STATUS_PAUSED, WORKFLOW_STATUS_RUNNING } from '../../../constants';
+import {
+    CONNECTION_TYPE_WIFI,
+    LEVEL_TWO_POWER_LASER_FOR_SM2,
+    WORKFLOW_STATUS_PAUSED,
+    WORKFLOW_STATUS_RUNNING
+} from '../../../constants';
 
 class Laser extends PureComponent {
     static propTypes = {
@@ -18,13 +23,15 @@ class Laser extends PureComponent {
         workflowStatus: PropTypes.string,
         connectionType: PropTypes.string,
         server: PropTypes.object,
+        isConnected: PropTypes.bool,
+        toolHead: PropTypes.object,
 
         executeGcode: PropTypes.func.isRequired
     };
 
     state = {
         laserPowerOpen: this.props.headStatus,
-        laserPower: this.props.laserPower || 5,
+        laserPower: this.props.laserPower || 1,
         laserPowerMarks: {
             0: 0,
             5: 5,
@@ -82,6 +89,17 @@ class Laser extends PureComponent {
             }
         }
     };
+
+    getSnapshotBeforeUpdate(prevProps) {
+        if (prevProps.isConnected !== this.props.isConnected && this.props.isConnected) {
+            if (this.props.toolHead.laserToolhead === LEVEL_TWO_POWER_LASER_FOR_SM2) {
+                this.setState({
+                    laserPower: 1
+                });
+            }
+        }
+    }
+
 
     render() {
         const { workflowStatus } = this.props;
@@ -150,14 +168,16 @@ class Laser extends PureComponent {
 
 const mapStateToProps = (state) => {
     const machine = state.machine;
-    const { workflowStatus, connectionType, server, laserPower, headStatus } = machine;
+    const { workflowStatus, connectionType, server, laserPower, headStatus, isConnected, toolHead } = machine;
 
     return {
         workflowStatus,
         connectionType,
         server,
         laserPower,
-        headStatus
+        headStatus,
+        isConnected,
+        toolHead
     };
 };
 
