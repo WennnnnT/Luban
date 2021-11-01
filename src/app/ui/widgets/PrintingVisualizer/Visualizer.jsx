@@ -202,11 +202,13 @@ class Visualizer extends PureComponent {
             model.setVertexColors();
         },
         stopSupportMode: () => {
-            this.setState({ isSupporting: false });
-            this.supportActions.saveSupport();
-            this.canvas.current.stopSupportMode();
-            const model = this.props.selectedModelArray[0];
-            model && model.removeVertexColors();
+            if (this.props.transformMode === 'support') {
+                this.setState({ isSupporting: false });
+                this.supportActions.saveSupport();
+                this.canvas.current.stopSupportMode();
+                const model = this.props.selectedModelArray[0];
+                model && model.removeVertexColors();
+            }
         },
         moveSupport: (position) => {
             const { modelGroup } = this.props;

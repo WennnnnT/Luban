@@ -91,7 +91,7 @@ const ThreeUtils = {
         object.setRotationFromQuaternion(quaternion);
 
         const parentQuaternion = ThreeUtils.getObjectWorldQuaternion(object.parent);
-        object.applyQuaternion(parentQuaternion.inverse());
+        object.applyQuaternion(parentQuaternion.invert());
     },
 
     scaleObjectToWorldSize(object, targetSize, pivot) {
