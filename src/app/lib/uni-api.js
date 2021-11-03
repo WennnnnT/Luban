@@ -198,6 +198,7 @@ const File = {
             const fs = window.require('fs');
             const { app } = window.require('electron').remote;
             tmpFile = app.getPath('userData') + tmpFile;
+            console.log('ddd', targetFile.split('.'), process.platform === 'linux', process.arch === 'x64');
             // eslint-disable-next-line no-use-before-define
             const saveDialogReturnValue = await Dialog.showSaveDialog({
                 title: targetFile,
@@ -235,6 +236,7 @@ const File = {
             const fs = window.require('fs');
             const { app } = window.require('electron').remote;
             tmpFile = app.getPath('userData') + tmpFile;
+            console.log('exportAs', targetFile.split('.'), targetFile.split('.').pop());
             // eslint-disable-next-line no-use-before-define
             const saveDialogReturnValue = await Dialog.showSaveDialog({
                 // title: targetFile,
