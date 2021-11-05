@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import path from 'path';
 
 import i18n from '../../../lib/i18n';
 import { toFixed, toFixedNumber } from '../../../lib/numeric-utils';
@@ -41,7 +42,7 @@ const TransformationSection = ({ headType, updateSelectedModelUniformScalingStat
     const sourceType = (selectedModelArray.length === 1) ? selectedModelArray[0].sourceType : null;
     const { x, y, width, height, scaleX, scaleY, angle } = selectedElementsTransformation;
     const isCNC4AxisImage3d = (sourceType === 'image3d' && headType === HEAD_CNC && isRotate);
-
+    const [minSize, setMinSize] = useState(0.1);
     // calculate logical transformation
     // TODO: convert positions in flux
     const { x: logicalX, y: logicalY } = convertSVGPointToLogicalPoint({ x, y }, size);
@@ -53,6 +54,16 @@ const TransformationSection = ({ headType, updateSelectedModelUniformScalingStat
     const selectedNotHide = (selectedModelArray.length === 1) && selectedModelArray[0].visible || selectedModelArray.length > 1;
 
     const dispatch = useDispatch();
+    useEffect(() => {
+        selectedModelArray.length && selectedModelArray.forEach((item) => {
+            const extname = path.extname(item.uploadName);
+            if (extname !== '.svg' && extname !== '.dxf') {
+                minSize < 1 && setMinSize(1);
+            } else {
+                minSize > 0.1 && setMinSize(0.1);
+            }
+        });
+    }, [selectedModelArray]);
 
     const actions = {
         onChangeLogicalX: (newLogicalX) => {
@@ -183,7 +194,7 @@ const TransformationSection = ({ headType, updateSelectedModelUniformScalingStat
                                         className="margin-horizontal-2"
                                         disabled={disabled || !selectedNotHide || canResize === false}
                                         value={toFixed(logicalWidth, 1)}
-                                        min={0.1}
+                                        min={minSize}
                                         size="small"
                                         max={size.x}
                                         onChange={(value) => {
@@ -216,7 +227,7 @@ const TransformationSection = ({ headType, updateSelectedModelUniformScalingStat
                                         className="margin-horizontal-2"
                                         disabled={disabled || !selectedNotHide || canResize === false}
                                         value={toFixed(logicalHeight, 1)}
-                                        min={1}
+                                        min={minSize}
                                         max={size.y}
                                         size="small"
                                         onChange={(value) => {

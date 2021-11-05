@@ -160,7 +160,6 @@ class Visualizer extends Component {
         },
         onChangeFile: (event) => {
             const file = event.target.files[0];
-            console.log(file, this.state.canclePictureLimit);
             const extname = path.extname(file.name).toLowerCase();
             if (extname === '.stl' && this.props.materials.isRotate) {
                 modal({
@@ -182,7 +181,6 @@ class Visualizer extends Component {
                 file,
                 uploadMode
             });
-            console.log(uploadMode, this.props.uploadImage);
             // Switch to PAGE_EDITOR page if new image being uploaded
             this.props.switchToPage(PAGE_EDITOR);
             if (extname === '.stl' && !this.props.materials.isRotate) {
@@ -193,15 +191,16 @@ class Visualizer extends Component {
                         body: i18n._('Failed to import this object. \nPlease select a supported file format.')
                     });
                 });
-            } else {
-                // this.props.uploadImage(file, uploadMode, () => {
-                //     modal({
-                //         cancelTitle: i18n._('key-Laser/Edit/ContextMenu-Close'),
-                //         title: i18n._('key-Laser/Edit/ContextMenu-Import Error'),
-                //         body: i18n._('Failed to import this object. \nPlease select a supported file format.')
-                //     });
-                // });
+            } else if (extname === '.dxf' || extname === '.svg') {
                 this.props.checkIsOversizeImage(file, () => {
+                    modal({
+                        cancelTitle: i18n._('key-Laser/Edit/ContextMenu-Close'),
+                        title: i18n._('key-Laser/Edit/ContextMenu-Import Error'),
+                        body: i18n._('Failed to import this object. \nPlease select a supported file format.')
+                    });
+                });
+            } else {
+                this.props.uploadImage(true, file, uploadMode, () => {
                     modal({
                         cancelTitle: i18n._('key-Laser/Edit/ContextMenu-Close'),
                         title: i18n._('key-Laser/Edit/ContextMenu-Import Error'),
