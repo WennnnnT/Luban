@@ -92,7 +92,6 @@ const convertTextToSvg = async (options) => {
     const uploadName = pathWithRandomSuffix(name).replace(/\.svg$/i, 'parsed.svg');
 
     const fontObj = await fontManager.getFont(fontFamily, null, style);
-    console.log('fontObj', fontObj?.tables?.os2?.sTypoDescender, fontObj?.descender);
     const unitsPerEm = fontObj.unitsPerEm;
     const descender = _.isNil(fontObj?.tables?.os2?.sTypoDescender) ? fontObj?.descender : fontObj?.tables?.os2?.sTypoDescender;
 
