@@ -131,7 +131,7 @@ class Laser extends PureComponent {
                         value={laserPower}
                         onChange={actions.onChangeLaserPower}
                     />
-                    <div className="">
+                    <div className="sm-flex height-32">
                         <span>{this.props.laserPower}/</span>
                         <Input
                             suffix="%"
@@ -154,7 +154,7 @@ class Laser extends PureComponent {
                     <div className="sm-flex">
                         <SvgIcon
                             name="WarningTipsWarning"
-                            size={24}
+                            type={['static']}
                             color="#FFA940"
                             onClick={actions.onSaveLaserPower}
                         />

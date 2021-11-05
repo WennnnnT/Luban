@@ -801,8 +801,8 @@ class Visualizer extends PureComponent {
                     <ModalSmall
                         title={i18n._('key-Workspace/Window-10W Laser Overheating protection')}
                         text={i18n._('key-Workspace/Window-10W Laser Overheating protection Info')}
-                        img="WarningTipsEmergencyStop"
-                        iconColor="#FF4D4F"
+                        img="WarningTipsWarning"
+                        iconColor="#FFA940"
                         onClose={this.actions.closeModal}
                     />
                 )}
@@ -810,8 +810,8 @@ class Visualizer extends PureComponent {
                     <ModalSmall
                         title={i18n._('key-Workspace/Window-10W Laser Attitude detection')}
                         text={i18n._('key-Workspace/Window-10W Laser Attitude detection Info')}
-                        img="WarningTipsEmergencyStop"
-                        iconColor="#FF4D4F"
+                        img="WarningTipsWarning"
+                        iconColor="#FFA940"
                         onClose={this.actions.closeModal}
                     />
                 )}

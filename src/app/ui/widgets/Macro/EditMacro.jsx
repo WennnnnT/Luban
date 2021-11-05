@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Button } from '../../components/Buttons';
 import Modal from '../../components/Modal';
-import { Form, Input, Textarea } from '../../components/Validation';
+import { Form, Textarea, Input } from '../../components/Validation';
 import i18n from '../../../lib/i18n';
 import portal from '../../../lib/portal';
 import * as validations from '../../../lib/validations';

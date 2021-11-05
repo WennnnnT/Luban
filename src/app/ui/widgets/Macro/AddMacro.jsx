@@ -8,7 +8,6 @@ import * as validations from '../../../lib/validations';
 
 class AddMacro extends PureComponent {
     static propTypes = {
-        modalParams: PropTypes.object,
         addMacro: PropTypes.func.isRequired,
         closeModal: PropTypes.func.isRequired
     };
@@ -34,9 +33,6 @@ class AddMacro extends PureComponent {
     }
 
     render() {
-        const { modalParams } = this.props;
-        const { content = '', repeat = 1 } = { ...modalParams };
-
         return (
             <Modal disableOverlay size="md" onClose={this.props.closeModal}>
                 <Modal.Header>
@@ -63,7 +59,6 @@ class AddMacro extends PureComponent {
                                 type="text"
                                 className="form-control"
                                 name="name"
-                                value=""
                                 validations={[validations.required]}
                             />
                         </div>
@@ -79,7 +74,6 @@ class AddMacro extends PureComponent {
                                 rows="10"
                                 className="form-control"
                                 name="content"
-                                value={content}
                                 validations={[validations.required]}
                             />
                         </div>
@@ -93,7 +87,6 @@ class AddMacro extends PureComponent {
                                 type="number"
                                 className="form-control"
                                 name="repeat"
-                                value={repeat}
                                 min={1}
                                 validations={[validations.required]}
                             />
