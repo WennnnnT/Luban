@@ -50,6 +50,9 @@ class FontManager {
         // preload fonts config
         this.systemFonts = [];
         libFontManager.getAvailableFontsSync().forEach((font) => {
+            if (path.extname(font.path).toLocaleLowerCase() !== '.ttc') {
+                console.log('ddd', font, this.systemFonts.findIndex(i => i.family === font.family));
+            }
             if (path.extname(font.path).toLocaleLowerCase() !== '.ttc'
                 && this.systemFonts.findIndex(i => i.family === font.family) < 0) {
                 this.systemFonts.push(font);
@@ -189,6 +192,7 @@ class FontManager {
             fontConfig = this.systemFonts[0];
             family = fontConfig?.family;
             if (!fontConfig || !fontConfig.path) {
+                console.log('not found');
                 throw new Error('No Font Found!');
             }
         }
