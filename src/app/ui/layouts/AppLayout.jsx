@@ -261,13 +261,15 @@ class AppLayout extends PureComponent {
             } else {
                 format = path.split('.').pop();
             }
+
+            const defaultPath = UniApi.File.resolveDownloadsPath(path);
             const output = new ModelExporter().parse(this.props.modelGroup.object, format, isBinary);
             if (!output) {
                 // export error
                 return;
             }
             const blob = new Blob([output], { type: 'text/plain;charset=utf-8' });
-            UniApi.File.writeBlobToFile(blob, path);
+            UniApi.File.writeBlobToFile(blob, defaultPath);
         },
         initUniEvent: () => {
             UniApi.Event.on('message', (event, message) => {
@@ -500,6 +502,7 @@ class AppLayout extends PureComponent {
             });
             UniApi.Event.on('appbar-menu:export-model', () => {
                 const pathname = this.props.currentModalPath || this.props.history.location.pathname;
+                console.log('pathname', pathname, this.props.modelGroup.hasModel());
                 if (pathname === '/printing' && this.props.modelGroup.hasModel()) {
                     const promise = UniApi.Dialog.showSaveDialog({
                         title: i18n._('key-App/Settings/FirmwareTool-Export Model'),
@@ -511,9 +514,8 @@ class AppLayout extends PureComponent {
                     if (promise) {
                         // called from Electron
                         promise.then((result) => {
-                            const defaultPath = UniApi.File.resolveDownloadsPath(result.filePath);
-                            if (defaultPath) {
-                                this.actions.exportModel(defaultPath);
+                            if (result.filePath) {
+                                this.actions.exportModel(result.filePath);
                             }
                         });
                     } else {
