@@ -95,6 +95,7 @@ class ExtractSquareTrace extends PureComponent {
                 return;
             }
             await this.props.server.executeGcode('G53;');
+            this.props.toolHead.laserToolhead = LEVEL_TWO_POWER_LASER_FOR_SM2;
 
             this.setState({
                 isStitched: false,

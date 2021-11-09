@@ -259,6 +259,12 @@ function WifiTransport({ widgetActions, controlActions }) {
             setSelectFileName(_selectFileName);
         }
         setSelectFileType(type);
+        const gcodeFile = gcodeFiles.find(item => item?.name === _selectFileName);
+        console.log('gcodeFiles', gcodeFiles, gcodeFile, _selectFileName);
+        dispatch(workspaceActions.updateState({
+            gcodeFile: gcodeFile,
+            boundingBox: gcodeFile?.boundingBox
+        }));
     }, [selectFileName]);
 
     const actions = {

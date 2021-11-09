@@ -19,6 +19,7 @@ const SetBackground = ({ hideModal }) => {
     const address = useSelector(state => state?.machine?.server?.address);
     const size = useSelector(state => state?.machine?.size);
     const toolHead = useSelector(state => state.machine.toolHead);
+    console.log('toolHead', toolHead);
 
     const [canTakePhoto, setCanTakePhoto] = useState(true);
     const [xSize, setXSize] = useState([]);
