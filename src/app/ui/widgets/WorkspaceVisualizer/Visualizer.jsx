@@ -519,12 +519,12 @@ class Visualizer extends PureComponent {
                     y: size.y * 2
                 });
             } else {
-                this.state.printableArea.updateSize({
+                this.state.printableArea && this.state.printableArea.updateSize({
                     x: size.x * 2,
                     y: size.y * 2
                 });
             }
-            this.canvas.current.setCamera(new THREE.Vector3(0, 0, Math.min(size.z * 2, 300)), new THREE.Vector3());
+            this.canvas.current && this.canvas.current.setCamera(new THREE.Vector3(0, 0, Math.min(size.z * 2, 300)), new THREE.Vector3());
         }
 
         if (this.props.workflowStatus !== WORKFLOW_STATUS_IDLE && nextProps.workflowStatus === WORKFLOW_STATUS_IDLE) {
@@ -708,7 +708,7 @@ class Visualizer extends PureComponent {
 
     autoFocus() {
         const child = this.props.modelGroup.children[0];
-        this.canvas.current.autoFocus(child);
+        this.canvas.current.autoFocus(child, true);
     }
 
     notice() {
