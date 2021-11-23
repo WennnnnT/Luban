@@ -83,6 +83,7 @@ function ToolSelector({ toolDefinitions, setCurrentToolDefinition, setCurrentVal
         // return true;
     });
     Object.values(toolDefinitionOptionsObj).forEach((item) => {
+        console.log('item', toolDefinitionOptionsObj, item);
         toolDefinitionOptions.push(item);
     });
 
