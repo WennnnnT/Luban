@@ -123,6 +123,8 @@ class ChangedReactSelect extends PureComponent {
                 <div className={classNames(styles['override-select'], className)} style={{ width: size }}>
                     <TreeSelect
                         className={styles[size]}
+                        showSearch
+                        style={{ width: size }}
                         value={defaultValue?.definitionId}
                         treeData={treeData}
                         onChange={(option) => this.actions.handleTreeChange(option)}
