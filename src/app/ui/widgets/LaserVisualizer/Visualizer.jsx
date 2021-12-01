@@ -357,6 +357,9 @@ class Visualizer extends Component {
         if (renderingTimestamp !== this.props.renderingTimestamp) {
             this.canvas.current.renderScene();
             this.canvas.current.setCameraOnTop();
+
+            this.canvas.current.controls.panOffset.add(new THREE.Vector3(this.props.target.x, this.props.target.y, 0));
+            this.canvas.current.controls.updateCamera();
         }
 
         if (nextProps.displayedType !== this.props.displayedType) {
