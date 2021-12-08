@@ -340,8 +340,9 @@ class SVGParser {
                 case SVG_TAG_SVG: {
                     const tagParser = new SVGTagParser(this);
                     if (attributes.viewBox) {
-                        node.$.viewBox = attributes.viewBox.join('');
+                        node.$.viewBox = attributes.viewBox.join(' ');
                     } else {
+                        console.log('attributes.width', node, attributes);
                         node.$.viewBox = `0 0 ${attributes.width || 100} ${attributes.height || 100}`;
                     }
                     tagParser.parse(node, attributes);
