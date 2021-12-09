@@ -257,7 +257,7 @@ export const actions = {
         await dispatch(actions.updateState(envHeadType, { unSaved: true }));
     },
 
-    exportFile: (targetFile, renderGcodeFileName = '') => async () => {
+    exportFile: (targetFile, renderGcodeFileName = null) => async () => {
         const tmpFile = `/Tmp/${targetFile}`;
         await UniApi.File.exportAs(targetFile, tmpFile, renderGcodeFileName);
     },
@@ -269,6 +269,7 @@ export const actions = {
         } else {
             configFile = `/Config/${targetFile}`;
         }
+        console.log('targetFile, configFile', targetFile, configFile);
         await UniApi.File.exportAs(targetFile, configFile);
     },
 
